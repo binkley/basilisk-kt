@@ -1,4 +1,4 @@
-package x.micronaut
+package hm.binkley.basilisk
 
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect

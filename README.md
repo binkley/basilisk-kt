@@ -92,20 +92,20 @@ You can reach some conclusions from all this information:
 
 ### Implementing
 
-* [`Recipe`](basilisk-service/src/main/java/hm/binkley/basilisk/flora/recipe/Recipe.java)
+* [`Recipe`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/flora/recipe/Recipe.java)
   is an aggregate root
-* [`Ingredient`](basilisk-service/src/main/java/hm/binkley/basilisk/flora/ingredient/Ingredient.java)
+* [`Ingredient`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/flora/ingredient/Ingredient.java)
   is a kind of root as well, in that unused ingredients are important, but
   ingredients can also belong to a recipe as well, as your "meal planners"
   schedule stock for each location and season
-* [`Source`](basilisk-service/src/main/java/hm/binkley/basilisk/flora/source/Source.java)
+* [`Source`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/flora/source/Source.java)
   defines ingredients, in a similar fashion to classes in Java define
   instances; it is its own aggregate root
-* [`Chef`](basilisk-service/src/main/java/hm/binkley/basilisk/flora/chef/Chef.java)
+* [`Chef`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/flora/chef/Chef.java)
   is important, but _not_ an aggregate root.  You move chefs around your
   locations over time, but the recipes are tied more to ingredients, and
   possibly restricted by location and season
-* [`Location`](basilisk-service/src/main/java/hm/binkley/basilisk/flora/location/Location.java)
+* [`Location`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/flora/location/Location.java)
   restricts what ingredients are available at a location (eg, _The Dallas
   Yellow Rose_)
 
@@ -164,8 +164,8 @@ Other relationships:
 * [Spring Data JDBC upsert](#spring-data-jdbc-upsert)
 * Example [natural key](#natural-keys) (ongoing to add these to more types)
 * Example [injected logger](#injected-logger)
-* [Etags](basilisk-service/src/main/java/hm/binkley/basilisk/configuration/EtagConfiguration.java)
-* [X-B3 headers](basilisk-service/src/main/java/hm/binkley/basilisk/rest/TraceResponseFilter.java)
+* [Etags](basilisk-service/src/main/java/hm/hm.binkley/basilisk/configuration/EtagConfiguration.java)
+* [X-B3 headers](basilisk-service/src/main/java/hm/hm.binkley/basilisk/rest/TraceResponseFilter.java)
 * [Feign logging](#feign-logging)
 
 [[TOC]](#basilisk)
@@ -173,7 +173,7 @@ Other relationships:
 
 ## Feedback
 
-_Please_ file [GitHub issues](https://github.com/binkley/basilisk/issues) for
+_Please_ file [GitHub issues](https://github.com/hm.binkley/basilisk/issues) for
 questions, suggestions, additions, bugs, or improvements!
 
 [[TOC]](#basilisk)
@@ -204,26 +204,26 @@ Some reading:
 
 ### Spring Data JDBC
 
-- [Simple ownership](basilisk-service/src/main/java/hm/binkley/basilisk/store)
-- [Complex ownership](basilisk-persistence/src/main/java/hm/binkley/basilisk/store/x)
+- [Simple ownership](basilisk-service/src/main/java/hm/hm.binkley/basilisk/store)
+- [Complex ownership](basilisk-persistence/src/main/java/hm/hm.binkley/basilisk/store/x)
 
 #### Example complex cases
 
 - Test cases:
-  * [`ConditionsTest`](basilisk-service/src/test/java/hm/binkley/basilisk/x/ConditionsTest.java)
-  * [`RepositoryTest`](basilisk-service/src/databaseTest/java/hm/binkley/basilisk/x/store/RepositoriesTest.java)
+  * [`ConditionsTest`](basilisk-service/src/test/java/hm/hm.binkley/basilisk/x/ConditionsTest.java)
+  * [`RepositoryTest`](basilisk-service/src/databaseTest/java/hm/hm.binkley/basilisk/x/store/RepositoriesTest.java)
 - Many-to-one, value-to-entity:
-  [`Middle`](basilisk-service/src/main/java/hm/binkley/basilisk/x/middle/Middle.java)
+  [`Middle`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/x/middle/Middle.java)
   to
-  [`Bottom`](basilisk-service/src/main/java/hm/binkley/basilisk/x/middle/Bottom.java)
+  [`Bottom`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/x/middle/Bottom.java)
 - Many-to-one, entity-to-entity:
-  [`Top`](basilisk-service/src/main/java/hm/binkley/basilisk/x/top/Top.java)
+  [`Top`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/x/top/Top.java)
   to
-  [`Middle`](basilisk-service/src/main/java/hm/binkley/basilisk/x/middle/Middle.java)
+  [`Middle`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/x/middle/Middle.java)
 - One-to-one, entity-to-entity:
-  [`Kind`](basilisk-service/src/main/java/hm/binkley/basilisk/x/kind/Kind.java)
+  [`Kind`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/x/kind/Kind.java)
   to
-  [`Middle`](basilisk-service/src/main/java/hm/binkley/basilisk/x/middle/Middle.java)
+  [`Middle`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/x/middle/Middle.java)
   
 See
 [_Spring Data JDBC, References, and Aggregates_](https://spring.io/blog/2018/09/24/spring-data-jdbc-references-and-aggregates)
@@ -232,30 +232,30 @@ for more details.
 #### Patterns to aid with Spring Data JDBC
 
 - **repository** -
-  [`MiddleRepository`](basilisk-service/src/main/java/hm/binkley/basilisk/x/middle/store/MiddleRepository.java)
+  [`MiddleRepository`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/x/middle/store/MiddleRepository.java)
   - Repositories are the key feature of Spring Data JDBC.  These are enhanced
   with a helper `readAll()` method to provide a streaming view of records (and
   an example of _default methods_ on interfaces)
 - **record** -
-  [`MiddleRecord`](basilisk-service/src/main/java/hm/binkley/basilisk/x/middle/store/MiddleRecord.java)
+  [`MiddleRecord`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/x/middle/store/MiddleRecord.java)
   - Records directly support Spring Data JDBC; annotations and other
   implementation details go here.  These are injected with a "store" reference
   to give a partial "active record" pattern (still, business logic, and
   service should be kept separate by distinguishing records from domain
   objects)
 - **store** -
-  [`MiddleStore`](basilisk-service/src/main/java/hm/binkley/basilisk/x/middle/store/MiddleStore.java)
+  [`MiddleStore`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/x/middle/store/MiddleStore.java)
   - Stores are light wrappers around repositories, managing the abstraction.
   In principle, one could replace Spring Data JDBC with, say, Spring Data JPA
   or jOOQ, and need only update the store.  These talk to their own repository
   only; for other records, they delegate to their matching factory
 - **domain object** -
-  [`Middle`](basilisk-service/src/main/java/hm/binkley/basilisk/x/middle/Middle.java)
+  [`Middle`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/x/middle/Middle.java)
   - Domain objects abstract business logic from service, and are light
   wrappers around records.  These implement policy, such as if mutation should
   trigger an immediate service write or not
 - **factory**
-  [`Middles`](basilisk-service/src/main/java/hm/binkley/basilisk/x/middle/Middles.java)
+  [`Middles`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/x/middle/Middles.java)
   - Factories manage domain object searching and creation, and are light
   wrappers around stores, translating records into domain objects.  These talk
   to their own store only; for other domain objects they talk to the
@@ -371,7 +371,7 @@ Bring up the program with:
 * Command line &mdash; `./run-it.sh run` (Docker compose)
 * Command line &mdash; `./gradlew bootRun` (DB already running)
 * IntelliJ &mdash; run/debug/profile
-[the application](basilisk-service/src/main/java/hm/binkley/basilisk/BasiliskApplication.java)
+[the application](basilisk-service/src/main/java/hm/hm.binkley/basilisk/BasiliskApplication.java)
 
 ### Reports
 
@@ -411,9 +411,9 @@ individual types of tests:
 To run all test types, use `./gradlew check`.  To refresh the build, and force
 all tests to re-run, use `./gradlew clean check --no-build-cache`.
 
-[`SpecialServiceTest`](basilisk-service/src/test/java/hm/binkley/basilisk/flora/service/SpecialServiceTest.java)
+[`SpecialServiceTest`](basilisk-service/src/test/java/hm/hm.binkley/basilisk/flora/service/SpecialServiceTest.java)
 (unit) and
-[`SpecialServiceValidationTest`](basilisk-service/src/integrationTest/java/hm/binkley/basilisk/flora/service/SpecialServiceValidationTest.java)
+[`SpecialServiceValidationTest`](basilisk-service/src/integrationTest/java/hm/hm.binkley/basilisk/flora/service/SpecialServiceValidationTest.java)
 (integration) are an example of splitting testing of a class to limit
 resources, and speed up the tests.
 
@@ -425,7 +425,7 @@ external database process.
 
 Rather than use embedded JSON strings in Java tests, throughout is used JSON
 test files, for example, 
-[`chef-response-test.json`](basilisk-service/src/integrationTest/resources/hm/binkley/basilisk/flora/chef/rest/chef-response-test.json).
+[`chef-response-test.json`](basilisk-service/src/integrationTest/resources/hm/hm.binkley/basilisk/flora/chef/rest/chef-response-test.json).
 The rules of thumb for these:
 
 1. Place the JSON test file in the same package as the test class, but under
@@ -447,8 +447,8 @@ long-standing Spring MVC complaint.
 
 Two kinds of help in this project for JSON-based REST endpoints:
 
-- [happy path](basilisk-service/src/integrationTest/java/hm/binkley/basilisk/configuration/JsonWebMvcTest.java)
-- [sad path](basilisk-service/src/integrationTest/java/hm/binkley/basilisk/configuration/ProblemWebMvcTest.java)
+- [happy path](basilisk-service/src/integrationTest/java/hm/hm.binkley/basilisk/configuration/JsonWebMvcTest.java)
+- [sad path](basilisk-service/src/integrationTest/java/hm/hm.binkley/basilisk/configuration/ProblemWebMvcTest.java)
 
 These replace Spring `@WebMvcTest` annotation to ensure JSON sent and received.
 
@@ -465,13 +465,13 @@ logging events; they are not for development/QA-only logging:
 Spring blogs on Spring Data JDBC domain relationships in
 [_Spring Data JDBC, References, and Aggregates_](https://spring.io/blog/2018/09/24/spring-data-jdbc-references-and-aggregates).
 
-- [`RecipeRepositoryTest`](basilisk-service/src/databaseTest/java/hm/binkley/basilisk/flora/recipe/store/RecipeRepositoryTest.java)
+- [`RecipeRepositoryTest`](basilisk-service/src/databaseTest/java/hm/hm.binkley/basilisk/flora/recipe/store/RecipeRepositoryTest.java)
   tests [the sample domain model](#model)
-- [`OneToOneRepositoryTest`](basilisk-service/src/databaseTest/java/hm/binkley/basilisk/store/OneToOneRepositoryTest.java)
+- [`OneToOneRepositoryTest`](basilisk-service/src/databaseTest/java/hm/hm.binkley/basilisk/store/OneToOneRepositoryTest.java)
   tests a one-to-one domain model
-- [`ManyToOneRepositoryTest`](basilisk-service/src/databaseTest/java/hm/binkley/basilisk/store/ManyToOneRepositoryTest.java)
+- [`ManyToOneRepositoryTest`](basilisk-service/src/databaseTest/java/hm/hm.binkley/basilisk/store/ManyToOneRepositoryTest.java)
   tests a many-to-one domain model
-- [`ManyToManyRepositoryTest`](basilisk-service/src/databaseTest/java/hm/binkley/basilisk/store/ManyToManyRepositoryTest.java)
+- [`ManyToManyRepositoryTest`](basilisk-service/src/databaseTest/java/hm/hm.binkley/basilisk/store/ManyToManyRepositoryTest.java)
   tests a many-to-many domain model
 
 ### Contract tests
@@ -480,7 +480,7 @@ To improve the red-green-refactor cycle in IntelliJ for Spring Cloud Contract:
 
 - Defer building and testing to Gradle
 - Observe
-  [the contract test](basilisk-contracts/build/generated-test-sources/contracts/hm/binkley/basilisk/contracts/FloraTest.java)
+  [the contract test](basilisk-contracts/build/generated-test-sources/contracts/hm/hm.binkley/basilisk/contracts/FloraTest.java)
   and run this directly; Spring Cloud Contract automatically adds this as a
   source root in IntelliJ
 
@@ -518,29 +518,29 @@ Keep your top-level application class in the root of your package hierarchy.
 Break up the rest of your classes into categories of related function.  In
 this project, there are only four:
 
-- [configuration](basilisk-service/src/main/java/hm/binkley/basilisk/configuration)
-- [endpoints](basilisk-service/src/main/java/hm/binkley/basilisk/rest)
-- [persistence](basilisk-service/src/main/java/hm/binkley/basilisk/store)
-- [services](basilisk-service/src/main/java/hm/binkley/basilisk/flora/service)
+- [configuration](basilisk-service/src/main/java/hm/hm.binkley/basilisk/configuration)
+- [endpoints](basilisk-service/src/main/java/hm/hm.binkley/basilisk/rest)
+- [persistence](basilisk-service/src/main/java/hm/hm.binkley/basilisk/store)
+- [services](basilisk-service/src/main/java/hm/hm.binkley/basilisk/flora/service)
 
 Recall that package names are stylistically singular, not plural, _eg_,
 `service` rather than `services`.
 
 ### Test types
 
-- [application (live)](basilisk-service/src/liveTest/java/hm/binkley/basilisk/BasiliskLiveTest.java)
+- [application (live)](basilisk-service/src/liveTest/java/hm/hm.binkley/basilisk/BasiliskLiveTest.java)
 - [application (contract)](basilisk-contracts/src/test/resources/contracts/flora/A_see_no_chefs.yml)
-- [configuration (unit)](basilisk-service/src/test/java/hm/binkley/basilisk/configuration/JsonConfigurationTest.java)
-- [configuration (integration)](basilisk-service/src/integrationTest/java/hm/binkley/basilisk/configuration/PropertiesConfigurationTest.java)
-- [controller (integration)](basilisk-service/src/integrationTest/java/hm/binkley/basilisk/flora/recipe/rest/RecipeControllerTest.java)
-- [controller validation (integration)](basilisk-service/src/integrationTest/java/hm/binkley/basilisk/flora/recipe/rest/RecipeControllerValidationTest.java)
-- [json request (unit)](basilisk-service/src/test/java/hm/binkley/basilisk/flora/recipe/rest/RecipeRequestTest.java)
-- [json response (integration)](basilisk-service/src/integrationTest/java/hm/binkley/basilisk/flora/recipe/rest/RecipeResponseTest.java)
-- [logging (integration)](basilisk-service/src/integrationTest/java/hm/binkley/basilisk/flora/recipe/rest/RecipeControllerTest.java)
+- [configuration (unit)](basilisk-service/src/test/java/hm/hm.binkley/basilisk/configuration/JsonConfigurationTest.java)
+- [configuration (integration)](basilisk-service/src/integrationTest/java/hm/hm.binkley/basilisk/configuration/PropertiesConfigurationTest.java)
+- [controller (integration)](basilisk-service/src/integrationTest/java/hm/hm.binkley/basilisk/flora/recipe/rest/RecipeControllerTest.java)
+- [controller validation (integration)](basilisk-service/src/integrationTest/java/hm/hm.binkley/basilisk/flora/recipe/rest/RecipeControllerValidationTest.java)
+- [json request (unit)](basilisk-service/src/test/java/hm/hm.binkley/basilisk/flora/recipe/rest/RecipeRequestTest.java)
+- [json response (integration)](basilisk-service/src/integrationTest/java/hm/hm.binkley/basilisk/flora/recipe/rest/RecipeResponseTest.java)
+- [logging (integration)](basilisk-service/src/integrationTest/java/hm/hm.binkley/basilisk/flora/recipe/rest/RecipeControllerTest.java)
 - record validation (unit) -- *TODO*
-- [repository (database)](basilisk-service/src/databaseTest/java/hm/binkley/basilisk/flora/recipe/store/RecipeRepositoryTest.java)
-- [service (unit)](basilisk-service/src/test/java/hm/binkley/basilisk/flora/service/SpecialServiceTest.java)
-- [service validation (integration)](basilisk-service/src/integrationTest/java/hm/binkley/basilisk/flora/service/SpecialServiceValidationTest.java)
+- [repository (database)](basilisk-service/src/databaseTest/java/hm/hm.binkley/basilisk/flora/recipe/store/RecipeRepositoryTest.java)
+- [service (unit)](basilisk-service/src/test/java/hm/hm.binkley/basilisk/flora/service/SpecialServiceTest.java)
+- [service validation (integration)](basilisk-service/src/integrationTest/java/hm/hm.binkley/basilisk/flora/service/SpecialServiceValidationTest.java)
 
 Note the source root of each test depends on the resources it uses.  See
 [Testing - Layout](#layout).  Also note the prevalence of integration
@@ -556,11 +556,11 @@ Specialize your configuration classes as makes sense.
 
 See:
 
-- [`BasiliskApplication`](basilisk-service/src/main/java/hm/binkley/basilisk/BasiliskApplication.java)
-- [`BasiliskConfiguration`](basilisk-service/src/main/java/hm/binkley/basilisk/configuration/BasiliskConfiguration.java)
-- [`ProblemConfiguration`](basilisk-service/src/main/java/hm/binkley/basilisk/configuration/ProblemConfiguration.java)
-- [`SecurityConfiguration`](basilisk-service/src/main/java/hm/binkley/basilisk/configuration/SecurityConfiguration.java)
-- [`SwaggerConfiguration`](basilisk-service/src/main/java/hm/binkley/basilisk/configuration/SwaggerConfiguration.java)
+- [`BasiliskApplication`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/BasiliskApplication.java)
+- [`BasiliskConfiguration`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/configuration/BasiliskConfiguration.java)
+- [`ProblemConfiguration`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/configuration/ProblemConfiguration.java)
+- [`SecurityConfiguration`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/configuration/SecurityConfiguration.java)
+- [`SwaggerConfiguration`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/configuration/SwaggerConfiguration.java)
 
 ### Autowiring
 
@@ -613,10 +613,10 @@ sparingly, and "withers" are [forbidden](lombok.config).
 
 Any bean can be validated by adding `@Validated` to the class.  See examples
 of
-[`RecipeController`](basilisk-service/src/main/java/hm/binkley/basilisk/flora/recipe/rest/RecipeController.java),
-[`FloraProperties`](basilisk-service/src/main/java/hm/binkley/basilisk/flora/configuration/FloraProperties.java),
+[`RecipeController`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/flora/recipe/rest/RecipeController.java),
+[`FloraProperties`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/flora/configuration/FloraProperties.java),
 and
-[`SpecialService`](basilisk-service/src/main/java/hm/binkley/basilisk/flora/service/SpecialService.java).
+[`SpecialService`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/flora/service/SpecialService.java).
 
 Note: Spring Data JDBC does not support validating entities/records in this
 way.  However, a well-written schema will catch issues, and controller and 
@@ -642,8 +642,8 @@ basilisk:
 
 See:
 
-- [`BasiliskProperties`](basilisk-service/src/main/java/hm/binkley/basilisk/configuration/BasiliskProperties.java)
-- [`OverlappedProperties`](basilisk-service/src/main/java/hm/binkley/basilisk/configuration/OverlappedProperties.java)
+- [`BasiliskProperties`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/configuration/BasiliskProperties.java)
+- [`OverlappedProperties`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/configuration/OverlappedProperties.java)
 
 ### Spring-injected tests
 
@@ -678,24 +678,24 @@ your test.  Among the choices include:
 
 - `@SpringBootTest` (use `classes` property to limit beans created);
   example in
-  [`PropertiesConfigurationTest`](basilisk-service/src/integrationTest/java/hm/binkley/basilisk/configuration/PropertiesConfigurationTest.java)
+  [`PropertiesConfigurationTest`](basilisk-service/src/integrationTest/java/hm/hm.binkley/basilisk/configuration/PropertiesConfigurationTest.java)
 - `@DataJdbcTest`; example in
-  [`RecipeRepositoryTest`](basilisk-service/src/databaseTest/java/hm/binkley/basilisk/flora/recipe/store/RecipeRepositoryTest.java)
+  [`RecipeRepositoryTest`](basilisk-service/src/databaseTest/java/hm/hm.binkley/basilisk/flora/recipe/store/RecipeRepositoryTest.java)
 - `@WebMvcTest` (use the `value` property to limit test to one controller);
   example in
-  [`RecipeControllerTest`](basilisk-service/src/integrationTest/java/hm/binkley/basilisk/flora/recipe/rest/RecipeControllerTest.java)
+  [`RecipeControllerTest`](basilisk-service/src/integrationTest/java/hm/hm.binkley/basilisk/flora/recipe/rest/RecipeControllerTest.java)
 
 ### Configuration through annotations
 
 Spring makes heavy use of configuration in Java through annotations.  Examples
 include `@EnableConfigurationProperties` and `@Import`.  See
-[`JsonWebMvcTest`](basilisk-service/src/integrationTest/java/hm/binkley/basilisk/configuration/JsonWebMvcTest.java)
+[`JsonWebMvcTest`](basilisk-service/src/integrationTest/java/hm/hm.binkley/basilisk/configuration/JsonWebMvcTest.java)
 for an example of writing your own.
 
 ### Custom JSON formatting
 
 See
-[`JsonConfiguration`](basilisk-service/src/main/java/hm/binkley/basilisk/configuration/JsonConfiguration.java)
+[`JsonConfiguration`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/configuration/JsonConfiguration.java)
 for an example of global custom JSON formatting, in this case, showing
 `Instant` as, _eg_, "2011-02-03T04:05:06Z" (no milliseconds; UTC timezone),
 based on `spring.jackson.date-format` and `spring.jackson.time-zone`
@@ -706,17 +706,17 @@ application properties.  Compare to
 ### Custom health check
 
 See
-[`Happy`](basilisk-service/src/main/java/hm/binkley/basilisk/rest/Happy.java)
+[`Happy`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/rest/Happy.java)
 as an example custom health check;
-[`TimeConfiguration`](basilisk-service/src/main/java/hm/binkley/basilisk/configuration/TimeConfiguration.java)
+[`TimeConfiguration`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/configuration/TimeConfiguration.java)
 for setting a default, UTC clock; and
-[`HappyTest`](basilisk-service/src/integrationTest/java/hm/binkley/basilisk/rest/HappyTest.java)
+[`HappyTest`](basilisk-service/src/integrationTest/java/hm/hm.binkley/basilisk/rest/HappyTest.java)
 for testing time. 
 
 ### Quieter Spring Boot tests
 
 See
-[`SuppressSpringBootTestsLoggingApplicationListener`](basilisk-testing/src/test/java/hm/binkley/basilisk/SuppressSpringBootTestsLoggingApplicationListenerTest.java)
+[`SuppressSpringBootTestsLoggingApplicationListener`](basilisk-testing/src/test/java/hm/hm.binkley/basilisk/SuppressSpringBootTestsLoggingApplicationListenerTest.java)
 and matching
 [`spring.factories`](basilisk-testing/src/main/resources/META-INF/spring.factories)
 for one approach to suppressing "started application" INFO logs during
@@ -725,33 +725,33 @@ for one approach to suppressing "started application" INFO logs during
 ### Spring Data JDBC auditing
 
 See
-[`DatabaseConfiguration`](basilisk-service/src/main/java/hm/binkley/basilisk/configuration/DatabaseConfiguration.java).
+[`DatabaseConfiguration`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/configuration/DatabaseConfiguration.java).
 
 ### Spring Data JDBC upsert
 
 See
-[`StandardRepository`](basilisk-service/src/main/java/hm/binkley/basilisk/store/SeasonRepository.java).
+[`StandardRepository`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/store/SeasonRepository.java).
 
 ### Auto-closing streams
 
 To avoid leaking database connections, or holding table/row locks overlong,
 use
-[auto-closing streams](basilisk-persistence/src/main/java/hm/binkley/basilisk/AutoClosingStream.java)
+[auto-closing streams](basilisk-persistence/src/main/java/hm/hm.binkley/basilisk/AutoClosingStream.java)
 in _Store_ objects, to wrap streams returned from Spring Data JDBC.
 
 ### Natural keys
 
 See
-[`ChefRecord`](basilisk-service/src/main/java/hm/binkley/basilisk/flora/chef/store/ChefRecord.java)
+[`ChefRecord`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/flora/chef/store/ChefRecord.java)
 and the `code` field.  In the database this is expressed as `code VARCHAR NOT
 NULL UNIQUE`, while retaining the surrogate key, `id`.
 
 ### Injected logger
 
 Rather than using a statically-defined logger instance, see
-[`RecipeController`](basilisk-service/src/main/java/hm/binkley/basilisk/flora/recipe/rest/RecipeController.java)
+[`RecipeController`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/flora/recipe/rest/RecipeController.java)
 for a Spring-injected logger on demand, suitable for
-[testing](basilisk-service/src/integrationTest/java/hm/binkley/basilisk/flora/recipe/rest/RecipeControllerTest.java).
+[testing](basilisk-service/src/integrationTest/java/hm/hm.binkley/basilisk/flora/recipe/rest/RecipeControllerTest.java).
 
 Note the edit to [PMD configuration](config/pmd/ruleset.xml) to recognize the
 pattern for testable logging.
@@ -768,8 +768,8 @@ tests.
 ### Feign logging
 
 See
-[`LogbookFeignLogger`](basilisk-service/src/main/java/hm/binkley/basilisk/LogbookFeignLogger.java),
-[`FeignConfiguration`](basilisk-service/src/main/java/hm/binkley/basilisk/configuration/FeignConfiguration.java),
+[`LogbookFeignLogger`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/LogbookFeignLogger.java),
+[`FeignConfiguration`](basilisk-service/src/main/java/hm/hm.binkley/basilisk/configuration/FeignConfiguration.java),
 [`bootstrap.yml`](basilisk-service/src/main/resources/bootstrap.yml),
 [`application.yml`](basilisk-service/src/main/resources/application.yml), and
 [`logback-spring.xml`](basilisk-service/src/main/resources/logback-spring.xml)

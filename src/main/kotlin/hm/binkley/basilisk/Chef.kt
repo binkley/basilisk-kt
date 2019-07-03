@@ -1,4 +1,4 @@
-package x.micronaut
+package hm.binkley.basilisk
 
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
