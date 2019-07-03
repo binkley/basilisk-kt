@@ -1,0 +1,24 @@
+datasources:
+  default:
+    # TODO: Postgres
+    url: jdbc:h2:mem:default;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: ""
+    driverClassName: org.h2.Driver
+
+endpoints:
+  all:
+    enabled: true
+    path: /admin
+    sensitive: false
+  health:
+    details-visible: ANONYMOUS
+
+flyway:
+  datasources:
+    default:
+      locations: classpath:db/migration
+
+micronaut:
+  application:
+    name: kotlin-micronaut
