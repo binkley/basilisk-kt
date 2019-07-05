@@ -8,9 +8,12 @@ import io.micronaut.http.client.annotation.Client
 import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.test.annotation.MicronautTest
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import javax.inject.Inject
 
 @MicronautTest
+@TestInstance(PER_CLASS)
 class HelloControllerSpec {
     @Inject
     lateinit var server: EmbeddedServer

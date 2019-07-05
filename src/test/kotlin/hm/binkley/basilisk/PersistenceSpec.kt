@@ -5,8 +5,11 @@ import ch.tutteli.atrium.verbs.expect
 import io.micronaut.test.annotation.MicronautTest
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 
 @MicronautTest
+@TestInstance(PER_CLASS)
 class PersistenceSpec {
     @Test
     fun shouldRoundTripSimple() {
