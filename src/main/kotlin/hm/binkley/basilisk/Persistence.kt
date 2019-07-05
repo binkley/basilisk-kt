@@ -18,7 +18,13 @@ class DatabaseSetup(dataSource: DataSource) {
         Database.connect(dataSource)
         if (seeSchemaInStdOut) transaction {
             addLogger(StdOutSqlLogger)
-            SchemaUtils.create(LocationRepository, IngredientRepository, RecipeRepository, ChefRepository)
+            SchemaUtils.create(
+                    LocationRepository,
+                    IngredientRepository,
+                    RecipeRepository,
+                    ChefRepository,
+                    TripRepository,
+                    LegRepository)
         }
     }
 }
