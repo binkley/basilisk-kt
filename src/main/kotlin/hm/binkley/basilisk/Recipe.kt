@@ -8,6 +8,8 @@ import org.jetbrains.exposed.dao.IntIdTable
 class Recipe(private val record: RecipeRecord) {
     val name
         get() = record.name
+    val chef
+        get() = record.chef
 }
 
 object RecipeRepository : IntIdTable("RECIPE") {
