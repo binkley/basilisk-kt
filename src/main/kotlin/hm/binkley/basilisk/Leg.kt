@@ -7,8 +7,8 @@ import org.jetbrains.exposed.dao.IntIdTable
 
 object LegRepository : IntIdTable("LEG") {
     val trip = reference("trip_id", TripRepository)
-    val start = reference("start_id", LocationRepository)
-    val end = reference("end_id", LocationRepository)
+    val start = reference("start_location_id", LocationRepository)
+    val end = reference("end_location_id", LocationRepository)
 }
 
 class LegRecord(id: EntityID<Int>) : IntEntity(id) {
