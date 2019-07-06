@@ -44,7 +44,6 @@ class PersistenceSpec {
             }
             sourceA.flush()
             val ingredientA = IngredientRecord.new {
-                name = "RHUBARB"
                 source = sourceA
                 this.chef = chef
                 this.recipe = recipe
@@ -55,7 +54,6 @@ class PersistenceSpec {
             }
             sourceB.flush()
             val ingredientB = IngredientRecord.new {
-                name = "NUTMEG"
                 source = sourceB
                 this.chef = chef
                 this.recipe = recipe
