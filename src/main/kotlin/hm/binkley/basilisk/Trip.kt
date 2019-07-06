@@ -7,13 +7,13 @@ import org.jetbrains.exposed.dao.IntIdTable
 
 object TripRepository : IntIdTable("TRIP") {
     val name = text("name")
-    val chef = IngredientRepository.reference("chef_id", ChefRepository)
+    val chef = reference("chef_id", ChefRepository)
 }
 
 class TripRecord(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<TripRecord>(TripRepository)
 
     var name by TripRepository.name
-    var chef by ChefRecord referencedOn IngredientRepository.chef
+    var chef by ChefRecord referencedOn TripRepository.chef
     val legs by LegRecord referrersOn LegRepository.trip
 }

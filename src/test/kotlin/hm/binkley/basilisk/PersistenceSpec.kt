@@ -78,4 +78,47 @@ class PersistenceSpec {
             rollback() // TODO: Integrate with @MicronautTest rollbacks
         }
     }
+
+    @Test
+    fun shouldRoundTripMultiple() {
+        transaction {
+            val chef = ChefRecord.new {
+                name = "CHEF BOB"
+            }
+            chef.flush()
+            val trip = TripRecord.new {
+                name = "ROUND THE WORLD"
+                this.chef = chef
+            }
+            trip.flush()
+            val locationA = LocationRecord.new {
+                name = "DALLAS"
+            }
+            locationA.flush()
+            val locationB = LocationRecord.new {
+                name = "MELBOURNE"
+            }
+            locationB.flush()
+            val locationC = LocationRecord.new {
+                name = "TOKYO"
+            }
+            locationB.flush()
+            val legA = LegRecord.new {
+                this.trip = trip
+                start = locationA
+                end = locationB
+            }
+            legA.flush()
+            val legB = LegRecord.new {
+                this.trip = trip
+                start = locationB
+                end = locationC
+            }
+            legB.flush()
+
+            expect(trip.legs).contains.inAnyOrder.only.values(legA, legB)
+
+            rollback()
+        }
+    }
 }
