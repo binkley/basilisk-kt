@@ -5,13 +5,6 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
 
-class Recipe(private val record: RecipeRecord) {
-    val name
-        get() = record.name
-    val chef
-        get() = record.chef
-}
-
 object RecipeRepository : IntIdTable("RECIPE") {
     val name = text("name")
     val chef = reference("chef_id", ChefRepository)

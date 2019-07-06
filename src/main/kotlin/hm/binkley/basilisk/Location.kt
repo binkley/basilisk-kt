@@ -5,11 +5,6 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
 
-class Location(private val record: LocationRecord) {
-    val name
-        get() = record.name
-}
-
 object LocationRepository : IntIdTable("LOCATION") {
     val name = text("name")
 }
