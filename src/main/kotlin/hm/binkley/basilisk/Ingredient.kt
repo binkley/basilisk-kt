@@ -6,7 +6,7 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
 
 object IngredientRepository : IntIdTable("INGREDIENT") {
-    val name = text("name")
+    val name = text("name") //  TODO: Read from Source
     val chef = reference("chef_id", ChefRepository)
     val recipe = reference("recipe_id", RecipeRepository).nullable()
     // TODO: What to do about "source" hiding parent class member?
