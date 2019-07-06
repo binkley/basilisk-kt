@@ -15,4 +15,5 @@ class TripRecord(id: EntityID<Int>) : IntEntity(id) {
 
     var name by TripRepository.name
     var chef by ChefRecord referencedOn IngredientRepository.chef
+    val legs by LegRecord referrersOn LegRepository.trip
 }
