@@ -1,0 +1,18 @@
+version: '3.1'
+
+services:
+  basilisk-db:
+    environment:
+      - POSTGRES_USER=basilisk
+    image: postgres:11.4-alpine
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d
+
+  basilisk-service:
+    image: basilisk
+    restart: always
+    ports:
+      - 8080:8080

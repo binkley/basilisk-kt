@@ -68,7 +68,9 @@ dependencies {
     compile "io.micronaut.configuration:micronaut-jdbc-hikari"
     compile "org.jetbrains.exposed:exposed:${exposedVersion}"
     compile "io.micronaut.configuration:micronaut-flyway"
-    runtime "com.h2database:h2"
+    runtime "org.postgresql:postgresql:42.2.6"
+    testCompile "org.testcontainers:junit-jupiter:1.11.3"
+    testCompile "org.testcontainers:postgresql:1.11.3"
 
     testCompile "org.junit.jupiter:junit-jupiter-api:${junit5Version}"
     testCompile "io.micronaut.test:micronaut-test-junit5"
