@@ -4,7 +4,9 @@
 
 *THIS REPO IS A WORK IN PROGRESS MIGRATING FROM A JAVA PROJECT*
 
-Demonstrate Java 11, Micronaut, Kotlin Exposed, JUnit 5, et al
+(See [Java version](https://github.com/binkley/basilisk.)
+
+Demonstrate Kotlin, Micronaut, Kotlin Exposed, JUnit 5, et al
 
 * [Building](#building)
 * [Model](#model)
