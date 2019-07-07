@@ -6,7 +6,7 @@
 
 (See [Java version](https://github.com/binkley/basilisk.)
 
-Demonstrate Kotlin, Micronaut, Kotlin Exposed, JUnit 5, et al
+Demonstrate Kotlin, Micronaut, Kotlin Exposed, JUnit 5, Docker, et al
 
 * [Building](#building)
 * [Model](#model)
