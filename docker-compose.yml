@@ -5,14 +5,14 @@ services:
     environment:
       - POSTGRES_USER=basilisk
     image: postgres:11.4-alpine
-    restart: always
     ports:
       - 5432:5432
     volumes:
       - ./initdb:/docker-entrypoint-initdb.d
 
   basilisk-service:
+    depends_on:
+      - basilisk-db
     image: basilisk
-    restart: always
     ports:
       - 8080:8080
