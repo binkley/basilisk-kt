@@ -84,7 +84,13 @@ dependencies {
     testRuntime "org.jetbrains.spek:spek-junit-platform-engine:${spekVersion}"
 }
 
-test.classpath += configurations.developmentOnly
+test {
+    classpath += configurations.developmentOnly
+    testLogging {
+        showExceptions = true
+        showStandardStreams = true
+    }
+}
 
 mainClassName = "hm.binkley.basilisk.Application"
 
