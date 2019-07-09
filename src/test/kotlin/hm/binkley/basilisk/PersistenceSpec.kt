@@ -4,6 +4,7 @@ import ch.tutteli.atrium.api.cc.en_GB.*
 import ch.tutteli.atrium.verbs.expect
 import io.micronaut.test.annotation.MicronautTest
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
@@ -103,16 +104,21 @@ class PersistenceSpec {
                 name = "TOKYO"
             }
             locationB.flush()
+            val tripStartAt = DateTime.parse("2011-02-03T14:15:16Z")
             val legA = LegRecord.new {
                 this.trip = trip
                 start = locationA
+                startAt = tripStartAt
                 end = locationB
+                endAt = tripStartAt.plusDays(1)
             }
             legA.flush()
             val legB = LegRecord.new {
                 this.trip = trip
                 start = locationB
+                startAt = tripStartAt.plusDays(2)
                 end = locationC
+                endAt = tripStartAt.plusDays(3)
             }
             legB.flush()
 
