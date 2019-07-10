@@ -15,5 +15,6 @@ class TripRecord(id: EntityID<Int>) : IntEntity(id) {
 
     var name by TripRepository.name
     var chef by ChefRecord referencedOn TripRepository.chef
-    val legs by LegRecord referrersOn LegRepository.trip
+    private val _legs by LegRecord referrersOn LegRepository.trip
+    val legs: Iterable<LegRecord> by lazy { sort(_legs) }
 }

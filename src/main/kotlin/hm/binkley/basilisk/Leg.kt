@@ -13,12 +13,12 @@ object LegRepository : IntIdTable("LEG") {
     val endAt = datetime("end_at")
 }
 
-class LegRecord(id: EntityID<Int>) : IntEntity(id) {
+class LegRecord(id: EntityID<Int>) : IntEntity(id), Span<LocationRecord> {
     companion object : IntEntityClass<LegRecord>(LegRepository)
 
     var trip by TripRecord referencedOn LegRepository.trip
-    var start by LocationRecord referencedOn LegRepository.start
+    override var start by LocationRecord referencedOn LegRepository.start
     var startAt by LegRepository.startAt
-    var end by LocationRecord referencedOn LegRepository.end
+    override var end by LocationRecord referencedOn LegRepository.end
     var endAt by LegRepository.endAt
 }
