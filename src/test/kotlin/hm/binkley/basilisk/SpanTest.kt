@@ -5,33 +5,23 @@ import ch.tutteli.atrium.verbs.expect
 import org.junit.jupiter.api.Test
 
 class SpanTest {
-    val span1 = TestSpan(1, 2)
-    val span2 = TestSpan(2, 3)
-    val span3 = TestSpan(3, 4)
-    val span4 = TestSpan(4, 5)
-
     @Test
     fun shouldSort0() {
-        expect(sort(listOf<TestSpan>()))
-                .toBe(listOf())
+        expect(sort(listOf<TestSpan>())).toBe(listOf())
     }
 
     @Test
     fun shouldSort1() {
-        expect(sort(listOf(span1)))
-                .toBe(listOf(span1))
+        val one = TestSpan(1, 2)
+
+        expect(sort(listOf(one))).toBe(listOf(one))
     }
 
     @Test
-    fun shouldSortA() {
-        expect(sort(listOf(span1, span2, span3, span4)))
-                .toBe(listOf(span1, span2, span3, span4))
-    }
+    fun shouldSortMany() {
+        val unsorted = (1..100).map { TestSpan(it, it + 1) }.shuffled()
 
-    @Test
-    fun shouldSortB() {
-        expect(sort(listOf(span3, span4, span1, span2)))
-                .toBe(listOf(span1, span2, span3, span4))
+        expect(sort(unsorted).map { it.start }).toBe((1..100).toList())
     }
 
     data class TestSpan(override val start: Int, override val end: Int)
