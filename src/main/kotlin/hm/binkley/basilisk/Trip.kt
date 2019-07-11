@@ -10,11 +10,14 @@ object TripRepository : IntIdTable("TRIP") {
     val chef = reference("chef_id", ChefRepository)
 }
 
-class TripRecord(id: EntityID<Int>) : IntEntity(id) {
+class TripRecord(id: EntityID<Int>) : IntEntity(id), Span<LegRecord> {
     companion object : IntEntityClass<TripRecord>(TripRepository)
 
     var name by TripRepository.name
     var chef by ChefRecord referencedOn TripRepository.chef
     private val _legs by LegRecord referrersOn LegRepository.trip
-    val legs: Iterable<LegRecord> by lazy { sort(_legs) }
+    val legs: Iterable<LegRecord>
+        get() = sort(_legs)
+    override val start = legs.first()
+    override val end = legs.last()
 }
