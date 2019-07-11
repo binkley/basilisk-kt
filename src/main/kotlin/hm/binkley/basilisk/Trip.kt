@@ -16,8 +16,10 @@ class TripRecord(id: EntityID<Int>) : IntEntity(id), Span<LegRecord> {
     var name by TripRepository.name
     var chef by ChefRecord referencedOn TripRepository.chef
     private val _legs by LegRecord referrersOn LegRepository.trip
-    val legs: Iterable<LegRecord>
-        get() = sort(_legs)
-    override val start = legs.first()
-    override val end = legs.last()
+    // TODO: What is right here?  Memoized or live?
+    val legs: Iterable<LegRecord> by lazy { sort(_legs) }
+    override val start
+        get() = legs.first()
+    override val end
+        get() = legs.last()
 }

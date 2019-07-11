@@ -25,25 +25,29 @@ fun <T, S : Span<T>> sort(unsorted: Iterable<S>): Iterable<S> {
         0, 1 -> return unsorted
     }
 
+    var iters = 0
     var i = 0
-    next@ while (i < toSort.size) {
+    top@ while (i < toSort.size) {
+        ++iters
         val curr = toSort[i]
         var j = 0
         while (j < toSort.size) {
+            ++iters
             val sub = toSort[j]
-            if (curr.start == sub.end) {
-                sub.addAll(curr)
-                toSort.removeAt(i)
-                continue@next
-            } else if (curr.end == sub.start) {
+            if (curr.end == sub.start) {
                 curr.addAll(sub)
                 toSort.removeAt(j)
-                continue@next
+                continue
+            } else if (curr.start == sub.end) {
+                sub.addAll(curr)
+                toSort.removeAt(i)
+                continue@top
             }
             ++j
         }
         ++i
     }
 
+//    println("iters: ${iters}")
     return toSort[0]
 }
