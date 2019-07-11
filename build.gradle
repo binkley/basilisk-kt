@@ -22,11 +22,9 @@ gradle.afterProject { project ->
     linkPrePush(project)
 }
 
-version "0.1"
-group "hm.binkley"
-
-sourceCompatibility = 11
-targetCompatibility = 11
+version = "0.1"
+group = "hm.binkley"
+mainClassName = "hm.binkley.basilisk.Application"
 
 ext {
     atriumVersion = "0.8.0"
@@ -101,17 +99,13 @@ test {
     }
 }
 
-mainClassName = "hm.binkley.basilisk.Application"
-
 shadowJar {
     mergeServiceFiles()
 }
 
-run.classpath += configurations.developmentOnly
-run.jvmArgs("-noverify", "-XX:TieredStopAtLevel=1", "-Dcom.sun.management.jmxremote")
-
-test {
-    useJUnitPlatform()
+run {
+    classpath += configurations.developmentOnly
+    jvmArgs("-noverify", "-XX:TieredStopAtLevel=1", "-Dcom.sun.management.jmxremote")
 }
 
 allOpen {
