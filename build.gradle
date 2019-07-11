@@ -85,7 +85,12 @@ dependencies {
 }
 
 test {
+    systemProperty "java.util.logging.config.file", "${project.rootDir}/config/logging.properties"
+
     classpath += configurations.developmentOnly
+
+    useJUnitPlatform()
+
     testLogging {
         showExceptions = true
         showStandardStreams = true
