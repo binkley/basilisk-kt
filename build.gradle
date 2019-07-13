@@ -135,6 +135,8 @@ wrapper {
     gradleVersion = "5.5.1"
 }
 
+defaultTasks 'build'
+
 static void linkPrePush(project) {
     def link = Paths.get("${project.rootDir}", ".git", "hooks", "pre-push")
     def target = Paths.get("${project.rootDir}", "pre-push")
