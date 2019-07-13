@@ -15,7 +15,7 @@ fun <T, S : Span<T>> sort(unsorted: Iterable<S>): Iterable<S> {
         override val end: T
             get() = l.last().end
 
-        override fun equals(other: Any?) = l.equals(other)
+        override fun equals(other: Any?) = l == other
         override fun hashCode() = l.hashCode()
         override fun toString() = l.toString()
     }
