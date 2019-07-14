@@ -1,6 +1,8 @@
 package hm.binkley.basilisk
 
-import ch.tutteli.atrium.api.cc.en_GB.*
+import ch.tutteli.atrium.api.cc.en_GB.contains
+import ch.tutteli.atrium.api.cc.en_GB.containsExactly
+import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
 import io.micronaut.test.annotation.MicronautTest
 import org.jetbrains.exposed.sql.SizedCollection
@@ -63,19 +65,19 @@ class PersistenceSpec {
             ingredientB.flush()
 
             val chefs = ChefRecord.all()
-            expect(chefs).contains.inAnyOrder.only.values(chef)
+            expect(chefs).contains(chef)
 
             val recipes = RecipeRecord.all()
-            expect(recipes).contains.inAnyOrder.only.values(recipe)
+            expect(recipes).contains(recipe)
 
             val sources = SourceRecord.all()
-            expect(sources).contains.inAnyOrder.only.values(sourceA, sourceB)
+            expect(sources).contains(sourceA, sourceB)
 
             val ingredients = IngredientRecord.all()
-            expect(ingredients).contains.inAnyOrder.only.values(ingredientA, ingredientB)
+            expect(ingredients).contains(ingredientA, ingredientB)
 
             val readBack = RecipeRecord[recipe.id]
-            expect(readBack.ingredients).contains.inAnyOrder.only.values(ingredientA, ingredientB)
+            expect(readBack.ingredients).contains(ingredientA, ingredientB)
 
             rollback() // TODO: Integrate with @MicronautTest rollbacks
         }
@@ -123,7 +125,7 @@ class PersistenceSpec {
             }
             legB.flush()
 
-            expect(trip.legs).contains.inAnyOrder.only.values(legA, legB)
+            expect(trip.legs).contains(legA, legB)
 
             rollback()
         }
@@ -150,17 +152,20 @@ class PersistenceSpec {
             }
 
             val source = transaction {
-                val source1 = SourceRecord.new {
+                val source = SourceRecord.new {
                     name = "RHUBARB"
                 }
-                source1.flush()
+                source.flush()
 
-                source1
+                source
             }
 
             transaction {
                 source.locations = SizedCollection(locations)
             }
+
+            expect(SourceRecord.findById(source.id)!!.locations.toSet())
+                    .toBe(locations.toSet())
 
             rollback()
         }
