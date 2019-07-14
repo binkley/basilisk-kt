@@ -20,4 +20,5 @@ class IngredientRecord(id: EntityID<Int>) : IntEntity(id) {
     var chef by ChefRecord referencedOn IngredientRepository.chef
     var recipe by RecipeRecord optionalReferencedOn IngredientRepository.recipe
     var source by SourceRecord referencedOn IngredientRepository.sourceRef
+    var locations by LocationRecord via IngredientLocationsRepository
 }

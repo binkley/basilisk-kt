@@ -63,4 +63,22 @@ CREATE TABLE IF NOT EXISTS source_location
     CONSTRAINT pk_SOURCE_LOCATION PRIMARY KEY (source_id, location_id),
     CONSTRAINT fk_source_location_source_id_id FOREIGN KEY (source_id) REFERENCES "source" (id) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT fk_source_location_location_id_id FOREIGN KEY (location_id) REFERENCES "location" (id) ON DELETE RESTRICT ON UPDATE RESTRICT
-)
+);
+
+CREATE TABLE IF NOT EXISTS ingredient_location
+(
+    ingredient_id INT,
+    location_id   INT,
+    CONSTRAINT pk_INGREDIENT_LOCATION PRIMARY KEY (ingredient_id, location_id),
+    CONSTRAINT fk_ingredient_location_ingredient_id_id FOREIGN KEY (ingredient_id) REFERENCES "ingredient" (id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT fk_ingredient_location_location_id_id FOREIGN KEY (location_id) REFERENCES "location" (id) ON DELETE RESTRICT ON UPDATE RESTRICT
+);
+
+CREATE TABLE IF NOT EXISTS recipe_location
+(
+    recipe_id   INT,
+    location_id INT,
+    CONSTRAINT pk_RECIPE_LOCATION PRIMARY KEY (recipe_id, location_id),
+    CONSTRAINT fk_recipe_location_recipe_id_id FOREIGN KEY (recipe_id) REFERENCES "recipe" (id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT fk_recipe_location_location_id_id FOREIGN KEY (location_id) REFERENCES "location" (id) ON DELETE RESTRICT ON UPDATE RESTRICT
+);
