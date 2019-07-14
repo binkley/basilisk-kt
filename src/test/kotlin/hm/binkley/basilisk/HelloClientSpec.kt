@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 @MicronautTest
 @TestInstance(PER_CLASS)
-class HelloClientSpec {
+internal class HelloClientSpec {
     @Inject
     lateinit var client: HelloClient
 

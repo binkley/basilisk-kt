@@ -16,7 +16,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @MicronautTest
 @TestInstance(PER_CLASS)
 @Testcontainers
-class PersistenceSpec {
+internal class PersistenceSpec {
     @Test
     fun shouldRoundTripSimple() {
         transaction {
