@@ -13,4 +13,5 @@ class SourceRecord(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<SourceRecord>(SourceRepository)
 
     var name by SourceRepository.name
+    var locations by LocationRecord via SourceLocationsRepository
 }

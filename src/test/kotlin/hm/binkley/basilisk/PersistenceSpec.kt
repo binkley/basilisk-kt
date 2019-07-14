@@ -3,6 +3,7 @@ package hm.binkley.basilisk
 import ch.tutteli.atrium.api.cc.en_GB.*
 import ch.tutteli.atrium.verbs.expect
 import io.micronaut.test.annotation.MicronautTest
+import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import org.junit.jupiter.api.Test
@@ -103,7 +104,7 @@ class PersistenceSpec {
             val locationC = LocationRecord.new {
                 name = "TOKYO"
             }
-            locationB.flush()
+            locationC.flush()
             val tripStartAt = DateTime.parse("2011-02-03T14:15:16Z")
             val legA = LegRecord.new {
                 this.trip = trip
@@ -123,6 +124,43 @@ class PersistenceSpec {
             legB.flush()
 
             expect(trip.legs).contains.inAnyOrder.only.values(legA, legB)
+
+            rollback()
+        }
+    }
+
+    @Test
+    fun shouldHaveLocationsPerSource() {
+        transaction {
+            val locations = transaction {
+                val locationA = LocationRecord.new {
+                    name = "DALLAS"
+                }
+                locationA.flush()
+                val locationB = LocationRecord.new {
+                    name = "MELBOURNE"
+                }
+                locationB.flush()
+                val locationC = LocationRecord.new {
+                    name = "TOKYO"
+                }
+                locationC.flush()
+
+                listOf(locationA, locationB, locationC)
+            }
+
+            val source = transaction {
+                val source1 = SourceRecord.new {
+                    name = "RHUBARB"
+                }
+                source1.flush()
+
+                source1
+            }
+
+            transaction {
+                source.locations = SizedCollection(locations)
+            }
 
             rollback()
         }

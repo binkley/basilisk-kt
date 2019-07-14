@@ -15,7 +15,9 @@ class DatabaseSetup(dataSource: DataSource) {
     private val seeSchemaInStdOut = true
 
     init {
-        Database.connect(dataSource)
+        val db = Database.connect(dataSource)
+        db.useNestedTransactions = true
+
         if (seeSchemaInStdOut) transaction {
             addLogger(StdOutSqlLogger)
             SchemaUtils.create(
@@ -24,7 +26,8 @@ class DatabaseSetup(dataSource: DataSource) {
                     RecipeRepository,
                     ChefRepository,
                     TripRepository,
-                    LegRepository)
+                    LegRepository,
+                    SourceLocationsRepository)
         }
     }
 }
