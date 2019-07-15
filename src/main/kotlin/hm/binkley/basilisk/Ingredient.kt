@@ -20,7 +20,7 @@ class Ingredients(@Inject private val publisher: ApplicationEventPublisher) {
 
 interface IngredientRecordData {
     val name: String
-    // val code: String TODO: Share between record and domain
+    val code: String
 }
 
 data class IngredientSavedEvent(val ingredient: Ingredient)
@@ -50,7 +50,7 @@ class IngredientRecord(id: EntityID<Int>) : IntEntity(id), IngredientRecordData 
 
     override val name
         get() = source.name
-    var code by IngredientRepository.code
+    override var code by IngredientRepository.code
     var chef by ChefRecord referencedOn IngredientRepository.chef
     var recipe by RecipeRecord optionalReferencedOn IngredientRepository.recipe
     var source by SourceRecord referencedOn IngredientRepository.sourceRef
