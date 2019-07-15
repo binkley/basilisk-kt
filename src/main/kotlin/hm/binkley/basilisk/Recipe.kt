@@ -7,6 +7,7 @@ import org.jetbrains.exposed.dao.IntIdTable
 
 object RecipeRepository : IntIdTable("RECIPE") {
     val name = text("name")
+    val code = text("code")
     val chef = reference("chef_id", ChefRepository)
 }
 
@@ -14,6 +15,7 @@ class RecipeRecord(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<RecipeRecord>(RecipeRepository)
 
     var name by RecipeRepository.name
+    var code by RecipeRepository.code
     var chef by ChefRecord referencedOn RecipeRepository.chef
     val ingredients by IngredientRecord optionalReferrersOn IngredientRepository.recipe
     var locations by LocationRecord via RecipeLocationsRepository

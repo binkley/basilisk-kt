@@ -20,6 +20,7 @@ class Ingredients(@Inject private val publisher: ApplicationEventPublisher) {
 
 interface IngredientRecordData {
     val name: String
+    // val code: String TODO: Share between record and domain
 }
 
 data class IngredientSavedEvent(val ingredient: Ingredient)
@@ -37,6 +38,7 @@ class Ingredient(
 }
 
 object IngredientRepository : IntIdTable("INGREDIENT") {
+    val code = text("code")
     val chef = reference("chef_id", ChefRepository)
     val recipe = reference("recipe_id", RecipeRepository).nullable()
     // TODO: What to do about "source" hiding parent class member?
@@ -48,6 +50,7 @@ class IngredientRecord(id: EntityID<Int>) : IntEntity(id), IngredientRecordData 
 
     override val name
         get() = source.name
+    var code by IngredientRepository.code
     var chef by ChefRecord referencedOn IngredientRepository.chef
     var recipe by RecipeRecord optionalReferencedOn IngredientRepository.recipe
     var source by SourceRecord referencedOn IngredientRepository.sourceRef

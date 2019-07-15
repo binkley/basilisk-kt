@@ -8,12 +8,14 @@ import java.util.*
 
 object LocationRepository : IntIdTable("LOCATION") {
     val name = text("name")
+    val code = text("code")
 }
 
 class LocationRecord(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<LocationRecord>(LocationRepository)
 
     var name by LocationRepository.name
+    var code by LocationRepository.code
 
     override fun toString(): String {
         return "${super.toString()}{id=$id, name=$name}"

@@ -22,6 +22,7 @@ internal class PersistenceSpec {
         transaction {
             val chef = ChefRecord.new {
                 name = "CHEF BOB"
+                code = "CHEF123"
             }
             chef.flush()
             val chefs = ChefRecord.all()
@@ -36,10 +37,12 @@ internal class PersistenceSpec {
         transaction {
             val chef = ChefRecord.new {
                 name = "CHEF BOB"
+                code = "CHEF123"
             }
             chef.flush()
             val recipe = RecipeRecord.new {
                 name = "TASTY STEW"
+                code = "REC456"
                 this.chef = chef
             }
             recipe.flush()
@@ -49,6 +52,7 @@ internal class PersistenceSpec {
             sourceA.flush()
             val ingredientA = IngredientRecord.new {
                 source = sourceA
+                code = "ING789"
                 this.chef = chef
                 this.recipe = recipe
             }
@@ -59,6 +63,7 @@ internal class PersistenceSpec {
             sourceB.flush()
             val ingredientB = IngredientRecord.new {
                 source = sourceB
+                code = "ING890"
                 this.chef = chef
                 this.recipe = recipe
             }
@@ -88,6 +93,7 @@ internal class PersistenceSpec {
         transaction {
             val chef = ChefRecord.new {
                 name = "CHEF BOB"
+                code = "CHEF123"
             }
             chef.flush()
             val trip = TripRecord.new {
@@ -97,14 +103,17 @@ internal class PersistenceSpec {
             trip.flush()
             val locationA = LocationRecord.new {
                 name = "DALLAS"
+                code = "DAL"
             }
             locationA.flush()
             val locationB = LocationRecord.new {
                 name = "MELBOURNE"
+                code = "MEL"
             }
             locationB.flush()
             val locationC = LocationRecord.new {
                 name = "TOKYO"
+                code = "TOK"
             }
             locationC.flush()
             val tripStartAt = DateTime.parse("2011-02-03T14:15:16Z")
@@ -137,14 +146,17 @@ internal class PersistenceSpec {
             val locations = transaction {
                 val locationA = LocationRecord.new {
                     name = "DALLAS"
+                    code = "DAL"
                 }
                 locationA.flush()
                 val locationB = LocationRecord.new {
                     name = "MELBOURNE"
+                    code = "MEL"
                 }
                 locationB.flush()
                 val locationC = LocationRecord.new {
                     name = "TOKYO"
+                    code = "TOK"
                 }
                 locationC.flush()
 
@@ -177,14 +189,17 @@ internal class PersistenceSpec {
             val locations = transaction {
                 val locationA = LocationRecord.new {
                     name = "DALLAS"
+                    code = "DAL"
                 }
                 locationA.flush()
                 val locationB = LocationRecord.new {
                     name = "MELBOURNE"
+                    code = "MEL"
                 }
                 locationB.flush()
                 val locationC = LocationRecord.new {
                     name = "TOKYO"
+                    code = "TOK"
                 }
                 locationC.flush()
 
@@ -194,6 +209,7 @@ internal class PersistenceSpec {
             val ingredient = transaction {
                 val chef = ChefRecord.new {
                     name = "CHEF BOB"
+                    code = "CHEF123"
                 }
                 chef.flush()
                 val source = SourceRecord.new {
@@ -202,6 +218,7 @@ internal class PersistenceSpec {
                 source.flush()
 
                 val ingredient = IngredientRecord.new {
+                    code = "ING789"
                     this.chef = chef
                     this.source = source
                 }
@@ -227,14 +244,17 @@ internal class PersistenceSpec {
             val locations = transaction {
                 val locationA = LocationRecord.new {
                     name = "DALLAS"
+                    code = "DAL"
                 }
                 locationA.flush()
                 val locationB = LocationRecord.new {
                     name = "MELBOURNE"
+                    code = "MEL"
                 }
                 locationB.flush()
                 val locationC = LocationRecord.new {
                     name = "TOKYO"
+                    code = "TOK"
                 }
                 locationC.flush()
 
@@ -244,6 +264,7 @@ internal class PersistenceSpec {
             val recipe = transaction {
                 val chef = ChefRecord.new {
                     name = "CHEF BOB"
+                    code = "CHEF123"
                 }
                 chef.flush()
                 val source = SourceRecord.new {
@@ -253,6 +274,7 @@ internal class PersistenceSpec {
 
                 val recipe = RecipeRecord.new {
                     name = "TASTY PIE"
+                    code = "REC456"
                     this.chef = chef
                 }
                 recipe.flush()
