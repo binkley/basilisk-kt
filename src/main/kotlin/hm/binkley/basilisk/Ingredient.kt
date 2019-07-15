@@ -18,7 +18,7 @@ class Ingredients(@Inject private val publisher: ApplicationEventPublisher) {
     }
 }
 
-interface IngredientData {
+interface IngredientRecordData {
     val name: String
 }
 
@@ -28,7 +28,7 @@ data class IngredientSavedEvent(val ingredient: Ingredient)
 class Ingredient(
         private val record: IngredientRecord,
         private val publisher: ApplicationEventPublisher)
-    : IngredientData by record {
+    : IngredientRecordData by record {
     fun save(): Ingredient {
         record.flush()
         publisher.publishEvent(IngredientSavedEvent(this))
@@ -43,7 +43,7 @@ object IngredientRepository : IntIdTable("INGREDIENT") {
     val sourceRef = reference("source_id", SourceRepository)
 }
 
-class IngredientRecord(id: EntityID<Int>) : IntEntity(id), IngredientData {
+class IngredientRecord(id: EntityID<Int>) : IntEntity(id), IngredientRecordData {
     companion object : IntEntityClass<IngredientRecord>(IngredientRepository)
 
     override val name
