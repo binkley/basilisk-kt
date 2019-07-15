@@ -170,4 +170,104 @@ internal class PersistenceSpec {
             rollback()
         }
     }
+
+    @Test
+    fun shouldHaveLocationsPerIngredient() {
+        transaction {
+            val locations = transaction {
+                val locationA = LocationRecord.new {
+                    name = "DALLAS"
+                }
+                locationA.flush()
+                val locationB = LocationRecord.new {
+                    name = "MELBOURNE"
+                }
+                locationB.flush()
+                val locationC = LocationRecord.new {
+                    name = "TOKYO"
+                }
+                locationC.flush()
+
+                listOf(locationA, locationB, locationC)
+            }
+
+            val ingredient = transaction {
+                val chef = ChefRecord.new {
+                    name = "CHEF BOB"
+                }
+                chef.flush()
+                val source = SourceRecord.new {
+                    name = "RHUBARB"
+                }
+                source.flush()
+
+                val ingredient = IngredientRecord.new {
+                    this.chef = chef
+                    this.source = source
+                }
+                ingredient.flush()
+
+                ingredient
+            }
+
+            transaction {
+                ingredient.locations = SizedCollection(locations)
+            }
+
+            expect(IngredientRecord.findById(ingredient.id)!!.locations.toSet())
+                    .toBe(locations.toSet())
+
+            rollback()
+        }
+    }
+
+    @Test
+    fun shouldHaveLocationsPerRecipe() {
+        transaction {
+            val locations = transaction {
+                val locationA = LocationRecord.new {
+                    name = "DALLAS"
+                }
+                locationA.flush()
+                val locationB = LocationRecord.new {
+                    name = "MELBOURNE"
+                }
+                locationB.flush()
+                val locationC = LocationRecord.new {
+                    name = "TOKYO"
+                }
+                locationC.flush()
+
+                listOf(locationA, locationB, locationC)
+            }
+
+            val recipe = transaction {
+                val chef = ChefRecord.new {
+                    name = "CHEF BOB"
+                }
+                chef.flush()
+                val source = SourceRecord.new {
+                    name = "RHUBARB"
+                }
+                source.flush()
+
+                val recipe = RecipeRecord.new {
+                    name = "TASTY PIE"
+                    this.chef = chef
+                }
+                recipe.flush()
+
+                recipe
+            }
+
+            transaction {
+                recipe.locations = SizedCollection(locations)
+            }
+
+            expect(RecipeRecord.findById(recipe.id)!!.locations.toSet())
+                    .toBe(locations.toSet())
+
+            rollback()
+        }
+    }
 }
