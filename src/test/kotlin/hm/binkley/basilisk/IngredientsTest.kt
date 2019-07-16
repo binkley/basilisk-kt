@@ -3,7 +3,6 @@ package hm.binkley.basilisk
 import ch.tutteli.atrium.api.cc.en_GB.isA
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
-import io.micronaut.context.event.ApplicationEventPublisher
 import io.micronaut.test.annotation.MicronautTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -15,13 +14,13 @@ import javax.inject.Inject
 @Testcontainers
 internal class IngredientsTest {
     @Inject
-    lateinit var publisher: ApplicationEventPublisher
+    lateinit var ingredients: Ingredients
 
     @Test
     fun shouldFindNoIngredient() {
         val code = "ING789"
         testTransaction {
-            val ingredient = Ingredients(publisher).ingredient(code)
+            val ingredient = ingredients.ingredient(code)
 
             expect(ingredient).toBe(null)
         }
@@ -41,14 +40,13 @@ internal class IngredientsTest {
                 this.name = name
             }
             source.flush()
-            val record = IngredientRecord.new {
+            IngredientRecord.new {
                 this.code = code
                 this.chef = chef
                 this.source = source
-            }
-            record.flush()
+            }.flush()
 
-            val ingredient = Ingredients(publisher).ingredient(code)
+            val ingredient = ingredients.ingredient(code)
 
             expect(ingredient!!.code).toBe(code)
             expect(ingredient.name).toBe(name)
@@ -76,15 +74,14 @@ internal class IngredientsTest {
                 this.chef = chef
             }
             recipe.flush()
-            val record = IngredientRecord.new {
+            IngredientRecord.new {
                 this.code = code
                 this.chef = chef
                 this.source = source
                 this.recipe = recipe
-            }
-            record.flush()
+            }.flush()
 
-            val ingredient = Ingredients(publisher).ingredient(code)
+            val ingredient = ingredients.ingredient(code)
 
             expect(ingredient!!.code).toBe(code)
             expect(ingredient.name).toBe(name)

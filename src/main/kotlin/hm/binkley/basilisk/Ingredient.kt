@@ -9,15 +9,17 @@ import org.jetbrains.exposed.dao.IntIdTable
 import javax.inject.Singleton
 
 @Singleton
-class Ingredients(private val publisher: ApplicationEventPublisher) {
+class Ingredients(
+        private val chefs: Chefs,
+        private val publisher: ApplicationEventPublisher) {
     fun ingredient(code: String): Ingredient? {
         val record = IngredientRecord.findOne {
             IngredientRepository.code eq code
         }
 
         return if (null == record) null
-        else if (null == record.recipe) UnusedIngredient(record, publisher)
-        else UsedIngredient(record, publisher)
+        else if (null == record.recipe) UnusedIngredient(record, chefs, publisher)
+        else UsedIngredient(record, chefs, publisher)
     }
 }
 
@@ -31,8 +33,11 @@ data class IngredientSavedEvent(val ingredient: Ingredient)
 
 sealed class Ingredient(
         private val record: IngredientRecord,
+        chefs: Chefs,
         private val publisher: ApplicationEventPublisher)
     : IngredientRecordData by record {
+    val chef = chefs.chef(record.chef)
+
     fun save(): Ingredient {
         record.flush()
         publisher.publishEvent(IngredientSavedEvent(this))
@@ -41,12 +46,16 @@ sealed class Ingredient(
 }
 
 class UnusedIngredient(
-        record: IngredientRecord, publisher: ApplicationEventPublisher)
-    : Ingredient(record, publisher)
+        record: IngredientRecord,
+        chefs: Chefs,
+        publisher: ApplicationEventPublisher)
+    : Ingredient(record, chefs, publisher)
 
 class UsedIngredient(
-        record: IngredientRecord, publisher: ApplicationEventPublisher)
-    : Ingredient(record, publisher)
+        record: IngredientRecord,
+        chefs: Chefs,
+        publisher: ApplicationEventPublisher)
+    : Ingredient(record, chefs, publisher)
 
 object IngredientRepository : IntIdTable("INGREDIENT") {
     val code = text("code")

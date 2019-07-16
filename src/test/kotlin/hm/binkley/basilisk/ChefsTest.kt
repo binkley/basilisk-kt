@@ -2,7 +2,6 @@ package hm.binkley.basilisk
 
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
-import io.micronaut.context.event.ApplicationEventPublisher
 import io.micronaut.test.annotation.MicronautTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -14,13 +13,13 @@ import javax.inject.Inject
 @Testcontainers
 internal class ChefsTest {
     @Inject
-    lateinit var publisher: ApplicationEventPublisher
+    lateinit var chefs: Chefs
 
     @Test
     fun shouldFindNoChef() {
         val code = "CHEF123"
         testTransaction {
-            val ingredient = Chefs(publisher).chef(code)
+            val ingredient = chefs.chef(code)
 
             expect(ingredient).toBe(null)
         }
@@ -36,7 +35,7 @@ internal class ChefsTest {
                 this.code = code
             }.flush()
 
-            val chef = Chefs(publisher).chef(code)
+            val chef = chefs.chef(code)
 
             expect(chef!!.code).toBe(code)
             expect(chef.name).toBe(name)
