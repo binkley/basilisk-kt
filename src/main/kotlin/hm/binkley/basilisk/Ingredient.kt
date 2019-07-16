@@ -6,15 +6,23 @@ import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
-import javax.inject.Inject
+import java.util.*
 import javax.inject.Singleton
 
 @Singleton
-class Ingredients(@Inject private val publisher: ApplicationEventPublisher) {
+class Ingredients(private val publisher: ApplicationEventPublisher) {
     // TODO: Throw or return null when ID not found?
-    fun ingredient(id: Int): Ingredient {
-        val found = IngredientRecord.findById(id)
-        return Ingredient(found!!, publisher)
+    fun ingredient(code: String): Ingredient {
+        val found = IngredientRecord.find {
+            IngredientRepository.code eq code
+        }
+        if (1 != found.count()) throw NoSuchElementException("No singular result")
+        val record = found.first()
+
+        return if (null == record.recipe)
+            UnusedIngredient(record, publisher)
+        else
+            UsedIngredient(record, publisher)
     }
 }
 
@@ -26,7 +34,7 @@ interface IngredientRecordData {
 data class IngredientSavedEvent(val ingredient: Ingredient)
     : ApplicationEvent(ingredient)
 
-class Ingredient(
+sealed class Ingredient(
         private val record: IngredientRecord,
         private val publisher: ApplicationEventPublisher)
     : IngredientRecordData by record {
@@ -36,6 +44,14 @@ class Ingredient(
         return this
     }
 }
+
+class UsedIngredient(
+        record: IngredientRecord, publisher: ApplicationEventPublisher)
+    : Ingredient(record, publisher)
+
+class UnusedIngredient(
+        record: IngredientRecord, publisher: ApplicationEventPublisher)
+    : Ingredient(record, publisher)
 
 object IngredientRepository : IntIdTable("INGREDIENT") {
     val code = text("code")
