@@ -5,7 +5,6 @@ import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
 import io.micronaut.context.event.ApplicationEventPublisher
 import io.micronaut.test.annotation.MicronautTest
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -21,12 +20,10 @@ internal class IngredientsTest {
     @Test
     fun shouldFindNoIngredient() {
         val code = "ING789"
-        transaction {
+        testTransaction {
             val ingredient = Ingredients(publisher).ingredient(code)
 
             expect(ingredient).toBe(null)
-
-            rollback()
         }
     }
 
@@ -34,7 +31,7 @@ internal class IngredientsTest {
     fun shouldFindUnusedIngredient() {
         val code = "ING789"
         val name = "RHUBARB"
-        transaction {
+        testTransaction {
             val chef = ChefRecord.new {
                 this.name = "CHEF BOB"
                 this.code = "CHEF123"
@@ -56,8 +53,6 @@ internal class IngredientsTest {
             expect(ingredient!!.code).toBe(code)
             expect(ingredient.name).toBe(name)
             expect(ingredient).isA<UnusedIngredient> { }
-
-            rollback()
         }
     }
 
@@ -65,7 +60,7 @@ internal class IngredientsTest {
     fun shouldFindUsedIngredient() {
         val code = "ING789"
         val name = "RHUBARB"
-        transaction {
+        testTransaction {
             val chef = ChefRecord.new {
                 this.name = "CHEF BOB"
                 this.code = "CHEF123"
@@ -94,8 +89,6 @@ internal class IngredientsTest {
             expect(ingredient!!.code).toBe(code)
             expect(ingredient.name).toBe(name)
             expect(ingredient).isA<UsedIngredient> { }
-
-            rollback()
         }
     }
 }

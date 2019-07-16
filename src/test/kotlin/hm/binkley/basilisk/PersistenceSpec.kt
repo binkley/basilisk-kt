@@ -19,7 +19,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 internal class PersistenceSpec {
     @Test
     fun shouldRoundTripSimple() {
-        transaction {
+        testTransaction {
             val chef = ChefRecord.new {
                 name = "CHEF BOB"
                 code = "CHEF123"
@@ -27,14 +27,12 @@ internal class PersistenceSpec {
             chef.flush()
             val chefs = ChefRecord.all()
             expect(chefs).containsExactly(chef)
-
-            rollback() // TODO: Integrate with @MicronautTest rollbacks
         }
     }
 
     @Test
     fun shouldRoundTripComplex() {
-        transaction {
+        testTransaction {
             val chef = ChefRecord.new {
                 name = "CHEF BOB"
                 code = "CHEF123"
@@ -83,14 +81,12 @@ internal class PersistenceSpec {
 
             val readBack = RecipeRecord[recipe.id]
             expect(readBack.ingredients).contains(ingredientA, ingredientB)
-
-            rollback() // TODO: Integrate with @MicronautTest rollbacks
         }
     }
 
     @Test
     fun shouldRoundTripMultiple() {
-        transaction {
+        testTransaction {
             val chef = ChefRecord.new {
                 name = "CHEF BOB"
                 code = "CHEF123"
@@ -135,14 +131,12 @@ internal class PersistenceSpec {
             legB.flush()
 
             expect(trip.legs).contains(legA, legB)
-
-            rollback()
         }
     }
 
     @Test
     fun shouldHaveLocationsPerSource() {
-        transaction {
+        testTransaction {
             val locations = transaction {
                 val locationA = LocationRecord.new {
                     name = "DALLAS"
@@ -178,14 +172,12 @@ internal class PersistenceSpec {
 
             expect(SourceRecord.findById(source.id)!!.locations.toSet())
                     .toBe(locations.toSet())
-
-            rollback()
         }
     }
 
     @Test
     fun shouldHaveLocationsPerIngredient() {
-        transaction {
+        testTransaction {
             val locations = transaction {
                 val locationA = LocationRecord.new {
                     name = "DALLAS"
@@ -233,14 +225,12 @@ internal class PersistenceSpec {
 
             expect(IngredientRecord.findById(ingredient.id)!!.locations.toSet())
                     .toBe(locations.toSet())
-
-            rollback()
         }
     }
 
     @Test
     fun shouldHaveLocationsPerRecipe() {
-        transaction {
+        testTransaction {
             val locations = transaction {
                 val locationA = LocationRecord.new {
                     name = "DALLAS"
@@ -288,8 +278,6 @@ internal class PersistenceSpec {
 
             expect(RecipeRecord.findById(recipe.id)!!.locations.toSet())
                     .toBe(locations.toSet())
-
-            rollback()
         }
     }
 }
