@@ -5,12 +5,11 @@ import ch.tutteli.atrium.verbs.expect
 import io.micronaut.test.annotation.MicronautTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.testcontainers.junit.jupiter.Testcontainers
+import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import javax.inject.Inject
 
 @MicronautTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Testcontainers
+@TestInstance(PER_CLASS)
 internal class ChefsTest {
     companion object {
         val name = "CHEF BOB"

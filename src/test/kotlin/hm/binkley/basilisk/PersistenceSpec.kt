@@ -11,11 +11,9 @@ import org.joda.time.DateTime
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
-import org.testcontainers.junit.jupiter.Testcontainers
 
 @MicronautTest
 @TestInstance(PER_CLASS)
-@Testcontainers
 internal class PersistenceSpec {
     @Test
     fun shouldRoundTripSimple() {

@@ -75,7 +75,7 @@ dependencies {
     compile "io.micronaut.configuration:micronaut-flyway"
     runtime "org.postgresql:postgresql:42.2.6"
     testCompile "org.testcontainers:junit-jupiter:${testContainersVersion}"
-    testCompile "org.testcontainers:postgresql:${testContainersVersion}"
+    testRuntime "org.testcontainers:postgresql:${testContainersVersion}"
 
     testCompile "org.junit.jupiter:junit-jupiter-api:${junit5Version}"
     testCompile "io.micronaut.test:micronaut-test-junit5"
