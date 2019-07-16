@@ -77,11 +77,12 @@ dependencies {
     testCompile "org.testcontainers:junit-jupiter:${testContainersVersion}"
     testRuntime "org.testcontainers:postgresql:${testContainersVersion}"
 
-    testCompile "org.junit.jupiter:junit-jupiter-api:${junit5Version}"
+    runtime "io.micronaut.configuration:micronaut-micrometer-core"
+
     testCompile "io.micronaut.test:micronaut-test-junit5"
+    testCompile "org.junit.jupiter:junit-jupiter-api:${junit5Version}"
     testCompile "org.jetbrains.spek:spek-api:${spekVersion}"
     testCompile "ch.tutteli.atrium:atrium-cc-en_GB-robstoll:${atriumVersion}"
-
     testRuntime "org.junit.jupiter:junit-jupiter-engine:${junit5Version}"
     testRuntime "org.jetbrains.spek:spek-junit-platform-engine:${spekVersion}"
 }
