@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @MicronautTest
 @TestInstance(PER_CLASS)
-internal class HelloControllerSpec {
+internal class HelloControllerTest {
     @Inject
     lateinit var server: EmbeddedServer
 
