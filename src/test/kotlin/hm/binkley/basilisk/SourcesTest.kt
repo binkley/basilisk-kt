@@ -11,19 +11,19 @@ import javax.inject.Inject
 @MicronautTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Testcontainers
-internal class ChefsTest {
+internal class SourcesTest {
     companion object {
-        val name = "CHEF BOB"
-        val code = "CHEF123"
+        val name = "RHUBARB"
+        val code = "SRC012"
     }
 
     @Inject
-    lateinit var chefs: Chefs
+    lateinit var sources: Sources
 
     @Test
-    fun shouldFindNoChef() {
+    fun shouldFindNoSource() {
         testTransaction {
-            val ingredient = chefs.chef(code)
+            val ingredient = sources.source(code)
 
             expect(ingredient).toBe(null)
         }
@@ -32,11 +32,11 @@ internal class ChefsTest {
     @Test
     fun shouldRoundTrip() {
         testTransaction {
-            chefs.create(name, code)
-            val chef = chefs.chef(code)
+            sources.create(name, code)
+            val source = sources.source(code)
 
-            expect(chef!!.code).toBe(code)
-            expect(chef.name).toBe(name)
+            expect(source!!.code).toBe(code)
+            expect(source.name).toBe(name)
         }
     }
 }

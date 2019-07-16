@@ -18,8 +18,13 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
         return if (null == record) null
         else chef(record)
     }
-    
+
     fun chef(record: ChefRecord) = Chef(record, publisher)
+
+    fun create(name: String, code: String) = Chef(ChefRecord.new {
+        this.name = name
+        this.code = code
+    }, publisher).save()
 }
 
 interface ChefRecordData {

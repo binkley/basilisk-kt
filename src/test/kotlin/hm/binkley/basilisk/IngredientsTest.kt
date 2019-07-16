@@ -13,12 +13,16 @@ import javax.inject.Inject
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Testcontainers
 internal class IngredientsTest {
+    companion object {
+        val name = "RHUBARB"
+        val code = "ING789"
+    }
+
     @Inject
     lateinit var ingredients: Ingredients
 
     @Test
     fun shouldFindNoIngredient() {
-        val code = "ING789"
         testTransaction {
             val ingredient = ingredients.ingredient(code)
 
@@ -28,8 +32,8 @@ internal class IngredientsTest {
 
     @Test
     fun shouldFindUnusedIngredient() {
-        val code = "ING789"
-        val name = "RHUBARB"
+        val name = name
+        val code = code
         testTransaction {
             val chef = ChefRecord.new {
                 this.name = "CHEF BOB"
@@ -38,6 +42,7 @@ internal class IngredientsTest {
             chef.flush()
             val source = SourceRecord.new {
                 this.name = name
+                this.code = "SRC012"
             }
             source.flush()
             IngredientRecord.new {
@@ -56,8 +61,8 @@ internal class IngredientsTest {
 
     @Test
     fun shouldFindUsedIngredient() {
-        val code = "ING789"
-        val name = "RHUBARB"
+        val name = name
+        val code = code
         testTransaction {
             val chef = ChefRecord.new {
                 this.name = "CHEF BOB"
@@ -66,6 +71,7 @@ internal class IngredientsTest {
             chef.flush()
             val source = SourceRecord.new {
                 this.name = name
+                this.code = "SRC012"
             }
             source.flush()
             val recipe = RecipeRecord.new {

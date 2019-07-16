@@ -46,6 +46,7 @@ internal class PersistenceSpec {
             recipe.flush()
             val sourceA = SourceRecord.new {
                 name = "RHUBARB"
+                code = "SRC0123"
             }
             sourceA.flush()
             val ingredientA = IngredientRecord.new {
@@ -57,6 +58,7 @@ internal class PersistenceSpec {
             ingredientA.flush()
             val sourceB = SourceRecord.new {
                 name = "NUTMEG"
+                code = "SRC345"
             }
             sourceB.flush()
             val ingredientB = IngredientRecord.new {
@@ -160,6 +162,7 @@ internal class PersistenceSpec {
             val source = transaction {
                 val source = SourceRecord.new {
                     name = "RHUBARB"
+                    code = "SRC012"
                 }
                 source.flush()
 
@@ -206,6 +209,7 @@ internal class PersistenceSpec {
                 chef.flush()
                 val source = SourceRecord.new {
                     name = "RHUBARB"
+                    code = "SRC012"
                 }
                 source.flush()
 
@@ -259,6 +263,7 @@ internal class PersistenceSpec {
                 chef.flush()
                 val source = SourceRecord.new {
                     name = "RHUBARB"
+                    code = "SRC012"
                 }
                 source.flush()
 

@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS recipe
 CREATE TABLE IF NOT EXISTS "source"
 (
     id     SERIAL PRIMARY KEY,
-    "name" TEXT NOT NULL
+    "name" TEXT NOT NULL,
+    code   TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS ingredient
