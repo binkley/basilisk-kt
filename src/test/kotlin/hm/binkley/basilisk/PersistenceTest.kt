@@ -225,7 +225,8 @@ internal class PersistenceTest {
                 ingredient.locations = SizedCollection(locations)
             }
 
-            expect(IngredientRecord.findById(ingredient.id)!!.locations.toSet())
+            expect(IngredientRecord.findById(
+                    ingredient.id)!!.locations.toSet())
                     .toBe(locations.toSet())
         }
     }
