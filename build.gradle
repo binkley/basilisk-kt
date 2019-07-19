@@ -80,6 +80,9 @@ dependencies {
 
     runtime "io.micronaut.configuration:micronaut-micrometer-core"
 
+    kapt "io.micronaut.configuration:micronaut-openapi"
+    compile "io.swagger.core.v3:swagger-annotations"
+
     testCompile "io.micronaut.test:micronaut-test-junit5"
     testCompile "org.junit.jupiter:junit-jupiter-api:${junit5Version}"
     testCompile "org.jetbrains.spek:spek-api:${spekVersion}"

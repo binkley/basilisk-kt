@@ -21,3 +21,8 @@ flyway:
 micronaut:
   application:
     name: basilisk-kt
+  router:
+    static-resources:
+      swagger:
+        mapping: /swagger/**
+        paths: classpath:META-INF/swagger

@@ -32,7 +32,8 @@ internal class ApplicationTest {
     fun `should be healthy`() {
         val request = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create("http://localhost:${server.port}/admin/health"))
+                .uri(URI.create(
+                        "http://localhost:${server.port}/admin/health"))
                 .build();
 
         val response = client.send(request, discarding())
@@ -61,7 +62,21 @@ internal class ApplicationTest {
     fun `should keep metrics`() {
         val request = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create("http://localhost:${server.port}/admin/metrics"))
+                .uri(URI.create(
+                        "http://localhost:${server.port}/admin/metrics"))
+                .build();
+
+        val response = client.send(request, discarding())
+
+        expect(response.statusCode()).toBe(OK.code);
+    }
+
+    @Test
+    fun `should describe API`() {
+        val request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(
+                        "http://localhost:${server.port}/swagger/basilisk-0.yml"))
                 .build();
 
         val response = client.send(request, discarding())
