@@ -26,3 +26,21 @@ micronaut:
       swagger:
         mapping: /swagger/**
         paths: classpath:META-INF/swagger
+
+swagger:
+  path: /api-docs/swagger
+  version: 3  # Latest version, let UI get improvements automatically
+  layout: StandaloneLayout
+  deepLinking: true
+  displayRequestDuration: true
+  showCommonExtensions: true
+  showExtensions: true
+  urls:
+    - name: hello-world
+      url: /api-docs/swagger/hello-world-0.1.yml
+
+tracing:
+  zipkin:
+    enabled: true
+    sampler:
+      probability: 1

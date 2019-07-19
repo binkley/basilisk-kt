@@ -29,6 +29,7 @@ mainClassName = "hm.binkley.basilisk.Application"
 ext {
     atriumVersion = "0.8.0"
     exposedVersion = "0.16.1"
+    handlebarsVersion = "4.1.2"
     jacksonVersion = "2.9.9"
     junit5Version = "5.5.0"
     kotlinVersion = "1.3.41"
@@ -82,6 +83,11 @@ dependencies {
 
     kapt "io.micronaut.configuration:micronaut-openapi"
     compile "io.swagger.core.v3:swagger-annotations"
+    compile "io.micronaut:micronaut-views"
+    runtime "com.github.jknack:handlebars:${handlebarsVersion}"
+
+    compile "io.micronaut:micronaut-tracing"
+    compile "io.opentracing.brave:brave-opentracing"
 
     testCompile "io.micronaut.test:micronaut-test-junit5"
     testCompile "org.junit.jupiter:junit-jupiter-api:${junit5Version}"
