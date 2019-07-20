@@ -16,6 +16,7 @@ plugins {
     id "se.patrikerdes.use-latest-versions" version "0.2.11"
     id "build-dashboard"
     id "com.dorongold.task-tree" version "1.4"
+    id "maven"
 }
 
 gradle.afterProject { project ->
