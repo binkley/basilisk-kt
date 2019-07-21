@@ -45,6 +45,7 @@ repositories {
     jcenter()
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     maven { url "https://dl.bintray.com/kotlin/exposed" }
+    maven { url "https://jitpack.io" }
 }
 
 dependencyManagement {
@@ -74,7 +75,8 @@ dependencies {
     kaptTest "io.micronaut:micronaut-inject-java"
 
     compile "io.micronaut.configuration:micronaut-jdbc-hikari"
-    compile "org.jetbrains.exposed:exposed:${exposedVersion}"
+    compile "com.github.JetBrains:Exposed:-SNAPSHOT"
+//    compile "org.jetbrains.exposed:exposed:${exposedVersion}"
     compile "io.micronaut.configuration:micronaut-flyway"
     runtime "org.postgresql:postgresql:42.2.6"
     testCompile "org.testcontainers:junit-jupiter:${testContainersVersion}"
@@ -147,7 +149,7 @@ wrapper {
     gradleVersion = "5.5.1"
 }
 
-defaultTasks 'build'
+defaultTasks "build"
 
 static void linkPrePush(project) {
     def link = Paths.get("${project.rootDir}", ".git", "hooks", "pre-push")

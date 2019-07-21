@@ -34,4 +34,3 @@ class SharedTestDatasourceFactory(context: ApplicationContext)
         // Do not close -- share the ephemeral database for tests
     }
 }
-
