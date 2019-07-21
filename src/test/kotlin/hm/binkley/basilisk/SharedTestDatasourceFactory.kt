@@ -25,8 +25,8 @@ class SharedTestDatasourceFactory(context: ApplicationContext)
 
     @Context
     @EachBean(DatasourceConfiguration::class)
-    override fun dataSource(configuration: DatasourceConfiguration?) =
-            dataSource(configuration!!.jdbcUrl) {
+    override fun dataSource(configuration: DatasourceConfiguration) =
+            dataSource(configuration.jdbcUrl) {
                 super.dataSource(configuration)
             }
 
