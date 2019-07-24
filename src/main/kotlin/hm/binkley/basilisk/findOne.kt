@@ -7,12 +7,12 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder
 
 fun <ID : Comparable<ID>, T : Entity<ID>> EntityClass<ID, T>.findOne(
         op: SqlExpressionBuilder.() -> Op<Boolean>): T? {
-    val found = this.find(op)
+    val found = find(op)
     return when (found.count()) {
         0 -> null
         1 -> found.first()
         else -> {
-            throw IllegalStateException()
+            throw IllegalStateException() // TODO: Better exception
         }
     }
 }

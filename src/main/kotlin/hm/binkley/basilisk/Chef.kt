@@ -15,8 +15,7 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
             ChefRepository.code eq code
         }
 
-        return if (null == record) null
-        else chef(record)
+        return record?.let { chef(it) }
     }
 
     fun chef(record: ChefRecord) = Chef(record, publisher)

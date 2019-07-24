@@ -17,9 +17,12 @@ class Ingredients(
             IngredientRepository.code eq code
         }
 
-        return if (null == record) null
-        else if (null == record.recipe) UnusedIngredient(record, chefs, publisher)
-        else UsedIngredient(record, chefs, publisher)
+        return when {
+            null == record -> null
+            null == record.recipe -> UnusedIngredient(
+                    record, chefs, publisher)
+            else -> UsedIngredient(record, chefs, publisher)
+        }
     }
 }
 
@@ -65,7 +68,8 @@ object IngredientRepository : IntIdTable("INGREDIENT") {
     val sourceRef = reference("source_id", SourceRepository)
 }
 
-class IngredientRecord(id: EntityID<Int>) : IntEntity(id), IngredientRecordData {
+class IngredientRecord(id: EntityID<Int>)
+    : IntEntity(id), IngredientRecordData {
     companion object : IntEntityClass<IngredientRecord>(IngredientRepository)
 
     override val name

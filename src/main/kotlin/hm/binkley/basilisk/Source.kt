@@ -15,8 +15,7 @@ class Sources(private val publisher: ApplicationEventPublisher) {
             SourceRepository.code eq code
         }
 
-        return if (null == record) null
-        else source(record)
+        return record?.let { source(it) }
     }
 
     fun source(record: SourceRecord) = Source(record, publisher)
