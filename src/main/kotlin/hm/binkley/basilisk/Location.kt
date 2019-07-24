@@ -18,17 +18,18 @@ class LocationRecord(id: EntityID<Int>) : IntEntity(id) {
     var code by LocationRepository.code
 
     override fun toString(): String {
-        return "${super.toString()}{id=$id, name=$name}"
+        return "${super.toString()}{id=$id, name=$name, code=$code}"
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-        val that = other as LocationRecord
-        return id == that.id && name == that.name
+        other as LocationRecord
+        return name == other.name
+                && code == other.code
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(id, name)
+        return Objects.hash(name, code)
     }
 }

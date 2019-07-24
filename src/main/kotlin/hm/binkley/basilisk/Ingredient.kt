@@ -6,6 +6,7 @@ import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
+import java.util.*
 import javax.inject.Singleton
 
 @Singleton
@@ -31,8 +32,9 @@ interface IngredientRecordData {
     val code: String
 }
 
-data class IngredientSavedEvent(val ingredient: Ingredient)
-    : ApplicationEvent(ingredient)
+// TODO: before vs after
+data class IngredientSavedEvent(val after: Ingredient)
+    : ApplicationEvent(after)
 
 sealed class Ingredient(
         private val record: IngredientRecord,
@@ -45,6 +47,23 @@ sealed class Ingredient(
         record.flush()
         publisher.publishEvent(IngredientSavedEvent(this))
         return this
+    }
+
+    override fun toString(): String {
+        return "${super.toString()}{record=$record, chef=$chef}"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Ingredient
+
+        return record == other.record
+    }
+
+    override fun hashCode(): Int {
+        return record.hashCode()
     }
 }
 
@@ -79,4 +98,22 @@ class IngredientRecord(id: EntityID<Int>)
     var recipe by RecipeRecord optionalReferencedOn IngredientRepository.recipe
     var source by SourceRecord referencedOn IngredientRepository.sourceRef
     var locations by LocationRecord via IngredientLocationsRepository
+
+    override fun toString(): String {
+        return "${super.toString()}{id=$id, code=$code, chef=$chef, recipe=$recipe, source=$source, locations=$locations}"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as IngredientRecord
+        return code == other.code
+                && recipe == other.recipe
+                && source == other.source
+                && locations == other.locations
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(code, chef, recipe, source, locations)
+    }
 }

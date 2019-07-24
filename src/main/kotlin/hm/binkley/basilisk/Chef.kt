@@ -6,6 +6,7 @@ import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
+import java.util.*
 import javax.inject.Singleton
 
 @Singleton
@@ -43,6 +44,23 @@ class Chef(
         publisher.publishEvent(ChefSavedEvent(this))
         return this
     }
+
+    override fun toString(): String {
+        return "${super.toString()}{record=$record}"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Chef
+
+        return record == other.record
+    }
+
+    override fun hashCode(): Int {
+        return record.hashCode()
+    }
 }
 
 object ChefRepository : IntIdTable("CHEF") {
@@ -55,4 +73,20 @@ class ChefRecord(id: EntityID<Int>) : IntEntity(id), ChefRecordData {
 
     override var name by ChefRepository.name
     override var code by ChefRepository.code
+
+    override fun toString(): String {
+        return "${super.toString()}{id=$id, name=$name, code=$code}"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as ChefRecord
+        return name == other.name
+                && code == other.code
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(name, code)
+    }
 }

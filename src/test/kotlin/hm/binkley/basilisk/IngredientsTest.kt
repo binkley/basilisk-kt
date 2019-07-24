@@ -1,6 +1,6 @@
 package hm.binkley.basilisk
 
-import ch.tutteli.atrium.api.cc.en_GB.hasSize
+import ch.tutteli.atrium.api.cc.en_GB.containsExactly
 import ch.tutteli.atrium.api.cc.en_GB.isA
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
@@ -20,7 +20,6 @@ class TestListener : ApplicationEventListener<IngredientSavedEvent> {
         get() = _received
 
     override fun onApplicationEvent(event: IngredientSavedEvent) {
-        println("GOT TEST EVENT! ${event}")
         _received.add(event)
     }
 }
@@ -29,8 +28,8 @@ class TestListener : ApplicationEventListener<IngredientSavedEvent> {
 @TestInstance(PER_CLASS)
 internal class IngredientsTest {
     companion object {
-        val name = "RHUBARB"
-        val code = "ING789"
+        const val name = "RHUBARB"
+        const val code = "ING789"
     }
 
     @Inject
@@ -81,41 +80,6 @@ internal class IngredientsTest {
     }
 
     @Test
-    fun shouldPublishSaveEvents() {
-        val name = name
-        val code = code
-
-        testTransaction {
-            val chef = ChefRecord.new {
-                this.name = "CHEF BOB"
-                this.code = "CHEF123"
-            }
-            chef.flush()
-            val source = SourceRecord.new {
-                this.name = name
-                this.code = "SRC012"
-            }
-            source.flush()
-            val recipe = RecipeRecord.new {
-                this.name = "TASTY PIE"
-                this.code = "REC456"
-                this.chef = chef
-            }
-            recipe.flush()
-            val record = IngredientRecord.new {
-                this.code = code
-                this.chef = chef
-                this.source = source
-                this.recipe = recipe
-            }
-
-            UnusedIngredient(record, chefs, publisher).save()
-
-            expect(listener.received).hasSize(1)
-        }
-    }
-
-    @Test
     fun shouldFindUsedIngredient() {
         val name = name
         val code = code
@@ -148,6 +112,44 @@ internal class IngredientsTest {
             expect(ingredient!!.code).toBe(code)
             expect(ingredient.name).toBe(name)
             expect(ingredient).isA<UsedIngredient> { }
+        }
+    }
+
+    @Test
+    fun shouldPublishSaveEvents() {
+        val name = name
+        val code = code
+
+        testTransaction {
+            val chef = ChefRecord.new {
+                this.name = "CHEF BOB"
+                this.code = "CHEF123"
+            }
+            chef.flush()
+            val source = SourceRecord.new {
+                this.name = name
+                this.code = "SRC012"
+            }
+            source.flush()
+            val recipe = RecipeRecord.new {
+                this.name = "TASTY PIE"
+                this.code = "REC456"
+                this.chef = chef
+            }
+            recipe.flush()
+            val record = IngredientRecord.new {
+                this.code = code
+                this.chef = chef
+                this.source = source
+                this.recipe = recipe
+            }
+            val ingredient = UnusedIngredient(
+                    record, chefs, publisher)
+
+            ingredient.save()
+
+            expect(listener.received).containsExactly(
+                    IngredientSavedEvent(ingredient))
         }
     }
 }

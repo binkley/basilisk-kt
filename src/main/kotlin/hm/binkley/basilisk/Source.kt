@@ -6,6 +6,7 @@ import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
+import java.util.*
 import javax.inject.Singleton
 
 @Singleton
@@ -43,6 +44,23 @@ class Source(
         publisher.publishEvent(SourceSavedEvent(this))
         return this
     }
+
+    override fun toString(): String {
+        return "${super.toString()}{record=$record}"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Source
+
+        return record == other.record
+    }
+
+    override fun hashCode(): Int {
+        return record.hashCode()
+    }
 }
 
 object SourceRepository : IntIdTable("SOURCE") {
@@ -56,4 +74,21 @@ class SourceRecord(id: EntityID<Int>) : IntEntity(id), SourceRecordData {
     override var name by SourceRepository.name
     override var code by SourceRepository.code
     var locations by LocationRecord via SourceLocationsRepository
+
+    override fun toString(): String {
+        return "${super.toString()}{id=$id, name=$name, code=$code}"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as SourceRecord
+        return name == other.name
+                && code == other.code
+                && locations == other.locations
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(name, code, locations)
+    }
 }
