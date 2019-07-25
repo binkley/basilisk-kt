@@ -12,6 +12,10 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 
+/**
+ * @todo Why all the nestiness?
+ * @todo Is there a nicer way to rollback each test than `testTransaction`?
+ */
 @MicronautTest
 @TestInstance(PER_CLASS)
 internal class PersistenceTest {
@@ -142,17 +146,14 @@ internal class PersistenceTest {
                     name = "DALLAS"
                     code = "DAL"
                 }
-                locationA.flush()
                 val locationB = LocationRecord.new {
                     name = "MELBOURNE"
                     code = "MEL"
                 }
-                locationB.flush()
                 val locationC = LocationRecord.new {
                     name = "TOKYO"
                     code = "TOK"
                 }
-                locationC.flush()
 
                 listOf(locationA, locationB, locationC)
             }
@@ -162,7 +163,6 @@ internal class PersistenceTest {
                     name = "RHUBARB"
                     code = "SRC012"
                 }
-                source.flush()
 
                 source
             }
@@ -184,17 +184,14 @@ internal class PersistenceTest {
                     name = "DALLAS"
                     code = "DAL"
                 }
-                locationA.flush()
                 val locationB = LocationRecord.new {
                     name = "MELBOURNE"
                     code = "MEL"
                 }
-                locationB.flush()
                 val locationC = LocationRecord.new {
                     name = "TOKYO"
                     code = "TOK"
                 }
-                locationC.flush()
 
                 listOf(locationA, locationB, locationC)
             }
@@ -204,19 +201,15 @@ internal class PersistenceTest {
                     name = "CHEF BOB"
                     code = "CHEF123"
                 }
-                chef.flush()
                 val source = SourceRecord.new {
                     name = "RHUBARB"
                     code = "SRC012"
                 }
-                source.flush()
-
                 val ingredient = IngredientRecord.new {
                     code = "ING789"
                     this.chef = chef
                     this.source = source
                 }
-                ingredient.flush()
 
                 ingredient
             }
@@ -239,17 +232,14 @@ internal class PersistenceTest {
                     name = "DALLAS"
                     code = "DAL"
                 }
-                locationA.flush()
                 val locationB = LocationRecord.new {
                     name = "MELBOURNE"
                     code = "MEL"
                 }
-                locationB.flush()
                 val locationC = LocationRecord.new {
                     name = "TOKYO"
                     code = "TOK"
                 }
-                locationC.flush()
 
                 listOf(locationA, locationB, locationC)
             }
@@ -259,19 +249,11 @@ internal class PersistenceTest {
                     name = "CHEF BOB"
                     code = "CHEF123"
                 }
-                chef.flush()
-                val source = SourceRecord.new {
-                    name = "RHUBARB"
-                    code = "SRC012"
-                }
-                source.flush()
-
                 val recipe = RecipeRecord.new {
                     name = "TASTY PIE"
                     code = "REC456"
                     this.chef = chef
                 }
-                recipe.flush()
 
                 recipe
             }

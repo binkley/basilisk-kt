@@ -29,7 +29,7 @@ mainClassName = "hm.binkley.basilisk.Application"
 
 ext {
     atriumVersion = "0.8.0"
-    exposedVersion = "0.16.1"
+    exposedVersion = "0.16.3"
     handlebarsVersion = "4.1.2"
     jacksonVersion = "2.9.9"
     junit5Version = "5.5.0"
@@ -75,8 +75,8 @@ dependencies {
     kaptTest "io.micronaut:micronaut-inject-java"
 
     compile "io.micronaut.configuration:micronaut-jdbc-hikari"
-    compile "com.github.JetBrains:Exposed:-SNAPSHOT"
-//    compile "org.jetbrains.exposed:exposed:${exposedVersion}"
+//    compile "com.github.JetBrains:Exposed:-SNAPSHOT"
+    compile "org.jetbrains.exposed:exposed:${exposedVersion}"
     compile "io.micronaut.configuration:micronaut-flyway"
     runtime "org.postgresql:postgresql:42.2.6"
     testCompile "org.testcontainers:junit-jupiter:${testContainersVersion}"
