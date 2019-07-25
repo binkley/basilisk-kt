@@ -1,0 +1,12 @@
+apply plugin: "application"
+apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: "com.gorylenko.gradle-git-properties"
+apply plugin: "com.pasam.gradle.buildinfo"
+
+shadowJar {
+    mergeServiceFiles()
+}
+
+run {
+    jvmArgs("-noverify", "-XX:TieredStopAtLevel=1", "-Dcom.sun.management.jmxremote")
+}

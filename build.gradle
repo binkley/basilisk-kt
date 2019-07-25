@@ -5,6 +5,7 @@ import static java.nio.file.Files.createSymbolicLink
 
 buildscript {
     repositories {
+        gradlePluginPortal()
         mavenCentral()
         jcenter()
         maven {
@@ -41,6 +42,35 @@ allprojects {
 }
 
 subprojects {
+    ext {
+        atriumVersion = "0.8.0"
+        exposedVersion = "0.16.3"
+        handlebarsVersion = "4.1.2"
+        jacksonVersion = "2.9.9"
+        junit5Version = "5.5.1"
+        kotlinVersion = "1.3.41"
+        logbackVersion = "1.2.3"
+        postgresVersion = "10.9"
+        spekVersion = "1.2.1"
+        testContainersVersion = "1.11.4"
+    }
+
+    buildscript {
+        repositories {
+            gradlePluginPortal()
+            mavenCentral()
+            jcenter()
+        }
+
+        dependencies {
+            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.41"
+            classpath "org.jetbrains.kotlin:kotlin-allopen:1.3.41"
+            classpath "com.github.jengelman.gradle.plugins:shadow:5.1.0"
+            classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.0.0"
+            classpath "gradle.plugin.com.pasam.gradle.buildinfo:spring-boot-build-info:0.1.3"
+        }
+    }
+
     version = "0.1"
     group = "hm.binkley"
 
@@ -55,6 +85,19 @@ subprojects {
         }
         maven {
             url "https://jitpack.io"
+        }
+    }
+
+    tasks.withType(Test) {
+        systemProperty "java.util.logging.config.file", "${project.rootDir}/config/logging.properties"
+
+        failFast = true
+
+        useJUnitPlatform()
+
+        testLogging {
+            showExceptions = true
+            showStandardStreams = true
         }
     }
 }

@@ -1,41 +1,9 @@
-plugins {
-    id "com.github.johnrengelman.shadow" version "5.1.0"
-    id "application"
-    id "org.jetbrains.kotlin.jvm" version "1.3.41"
-    id "org.jetbrains.kotlin.kapt" version "1.3.41"
-    id "org.jetbrains.kotlin.plugin.allopen" version "1.3.41"
-    id "com.gorylenko.gradle-git-properties" version "2.0.0"
-    id "com.pasam.gradle.buildinfo" version "0.1.3"
-}
-
 apply from: "${project.rootDir}/kotlin.gradle"
+apply from: "${project.rootDir}/application.gradle"
 
 mainClassName = "hm.binkley.basilisk.Application"
 
-ext {
-    atriumVersion = "0.8.0"
-    exposedVersion = "0.16.3"
-    handlebarsVersion = "4.1.2"
-    jacksonVersion = "2.9.9"
-    junit5Version = "5.5.1"
-    kotlinVersion = "1.3.41"
-    logbackVersion = "1.2.3"
-    postgresVersion = "10.9"
-    spekVersion = "1.2.1"
-    testContainersVersion = "1.11.4"
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "io.micronaut:micronaut-bom:1.2.0.BUILD-SNAPSHOT"
-    }
-}
-
 dependencies {
-    kapt "io.micronaut:micronaut-inject-java"
-
-    kapt "io.micronaut:micronaut-validation"
-
     compile "io.micronaut:micronaut-http-client"
     compile "io.micronaut.configuration:micronaut-flyway"
     compile "io.micronaut:micronaut-http-server-netty"
@@ -45,7 +13,6 @@ dependencies {
     compile "io.micronaut:micronaut-management"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}"
     runtime "ch.qos.logback:logback-classic:${logbackVersion}"
-    kaptTest "io.micronaut:micronaut-inject-java"
 
     compile "io.micronaut.configuration:micronaut-jdbc-hikari"
 //    compile "com.github.JetBrains:Exposed:-SNAPSHOT"
@@ -65,29 +32,9 @@ dependencies {
     compile "io.micronaut:micronaut-tracing"
     compile "io.opentracing.brave:brave-opentracing"
 
-    testCompile "io.micronaut.test:micronaut-test-junit5"
     testCompile "org.junit.jupiter:junit-jupiter-api:${junit5Version}"
     testCompile "org.jetbrains.spek:spek-api:${spekVersion}"
     testCompile "ch.tutteli.atrium:atrium-cc-en_GB-robstoll:${atriumVersion}"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:${junit5Version}"
     testRuntime "org.jetbrains.spek:spek-junit-platform-engine:${spekVersion}"
-}
-
-test {
-    systemProperty "java.util.logging.config.file", "${project.rootDir}/config/logging.properties"
-
-    useJUnitPlatform()
-
-    testLogging {
-        showExceptions = true
-        showStandardStreams = true
-    }
-}
-
-shadowJar {
-    mergeServiceFiles()
-}
-
-run {
-    jvmArgs("-noverify", "-XX:TieredStopAtLevel=1", "-Dcom.sun.management.jmxremote")
 }

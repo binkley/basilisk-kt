@@ -1,3 +1,22 @@
+apply plugin: "org.jetbrains.kotlin.jvm"
+apply plugin: "org.jetbrains.kotlin.kapt"
+apply plugin: "org.jetbrains.kotlin.plugin.allopen"
+
+dependencyManagement {
+    imports {
+        mavenBom "io.micronaut:micronaut-bom:1.2.0.BUILD-SNAPSHOT"
+    }
+}
+
+dependencies {
+    kapt "io.micronaut:micronaut-inject-java"
+    kapt "io.micronaut:micronaut-validation"
+
+    kaptTest "io.micronaut:micronaut-inject-java"
+
+    testCompile "io.micronaut.test:micronaut-test-junit5"
+}
+
 allOpen {
     annotation("io.micronaut.aop.Around")
 }
