@@ -12,8 +12,8 @@ import javax.inject.Inject
 @TestInstance(PER_CLASS)
 internal class ChefsTest {
     companion object {
-        val name = "CHEF BOB"
-        val code = "CHEF123"
+        const val name = "CHEF BOB"
+        const val code = "CHEF123"
     }
 
     @Inject
