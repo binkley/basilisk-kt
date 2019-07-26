@@ -68,7 +68,8 @@ object ChefRepository : IntIdTable("CHEF") {
     val code = text("code")
 }
 
-class ChefRecord(id: EntityID<Int>) : IntEntity(id), ChefRecordData {
+class ChefRecord(id: EntityID<Int>) : IntEntity(id),
+        ChefRecordData {
     companion object : IntEntityClass<ChefRecord>(ChefRepository)
 
     override var name by ChefRepository.name

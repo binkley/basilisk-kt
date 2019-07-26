@@ -1,0 +1,7 @@
+dependencies {
+    testCompile "org.junit.jupiter:junit-jupiter-api:${junit5Version}"
+    testCompile "org.jetbrains.spek:spek-api:${spekVersion}"
+    testCompile "ch.tutteli.atrium:atrium-cc-en_GB-robstoll:${atriumVersion}"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:${junit5Version}"
+    testRuntime "org.jetbrains.spek:spek-junit-platform-engine:${spekVersion}"
+}

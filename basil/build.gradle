@@ -1,10 +1,12 @@
 apply from: "${project.rootDir}/kotlin-micronaut.gradle"
 apply from: "${project.rootDir}/application.gradle"
+apply from: "${project.rootDir}/persistence.gradle"
+apply from: "${project.rootDir}/testing.gradle"
 
 mainClassName = "hm.binkley.basilisk.Application"
 
 dependencies {
-    runtime project(":db")
+    compile project(":db")
     compile project(":chef")
 
     compile "io.micronaut:micronaut-http-client"
@@ -16,7 +18,6 @@ dependencies {
     compile "io.micronaut.configuration:micronaut-jdbc-hikari"
 //    compile "com.github.JetBrains:Exposed:-SNAPSHOT"
     compile "org.jetbrains.exposed:exposed:${exposedVersion}"
-    compile "io.micronaut.configuration:micronaut-flyway"
     runtime "org.postgresql:postgresql:42.2.6"
     testCompile "org.testcontainers:junit-jupiter:${testContainersVersion}"
     testRuntime "org.testcontainers:postgresql:${testContainersVersion}"
@@ -31,10 +32,4 @@ dependencies {
 
     compile "io.micronaut:micronaut-tracing"
     compile "io.opentracing.brave:brave-opentracing"
-
-    testCompile "org.junit.jupiter:junit-jupiter-api:${junit5Version}"
-    testCompile "org.jetbrains.spek:spek-api:${spekVersion}"
-    testCompile "ch.tutteli.atrium:atrium-cc-en_GB-robstoll:${atriumVersion}"
-    testRuntime "org.junit.jupiter:junit-jupiter-engine:${junit5Version}"
-    testRuntime "org.jetbrains.spek:spek-junit-platform-engine:${spekVersion}"
 }

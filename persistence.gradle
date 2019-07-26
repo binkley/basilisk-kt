@@ -1,0 +1,9 @@
+dependencies {
+    compile "io.micronaut.configuration:micronaut-flyway"
+    compile "io.micronaut.configuration:micronaut-jdbc-hikari"
+//    compile "com.github.JetBrains:Exposed:-SNAPSHOT"
+    compile "org.jetbrains.exposed:exposed:${exposedVersion}"
+    runtime "org.postgresql:postgresql:42.2.6"
+    testCompile "org.testcontainers:junit-jupiter:${testContainersVersion}"
+    testRuntime "org.testcontainers:postgresql:${testContainersVersion}"
+}
