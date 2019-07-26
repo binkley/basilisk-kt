@@ -1,4 +1,4 @@
-apply from: "${project.rootDir}/kotlin.gradle"
+apply from: "${project.rootDir}/kotlin-micronaut.gradle"
 apply from: "${project.rootDir}/application.gradle"
 
 mainClassName = "hm.binkley.basilisk.Application"
@@ -7,15 +7,11 @@ dependencies {
     compile project(":chef")
 
     compile "io.micronaut:micronaut-http-client"
-    compile "io.micronaut.configuration:micronaut-flyway"
     compile "io.micronaut:micronaut-http-server-netty"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}"
-    compile "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
-    compile "io.micronaut:micronaut-runtime"
-    compile "io.micronaut:micronaut-management"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}"
     runtime "ch.qos.logback:logback-classic:${logbackVersion}"
 
+    compile "io.micronaut.configuration:micronaut-flyway"
     compile "io.micronaut.configuration:micronaut-jdbc-hikari"
 //    compile "com.github.JetBrains:Exposed:-SNAPSHOT"
     compile "org.jetbrains.exposed:exposed:${exposedVersion}"
@@ -24,6 +20,7 @@ dependencies {
     testCompile "org.testcontainers:junit-jupiter:${testContainersVersion}"
     testRuntime "org.testcontainers:postgresql:${testContainersVersion}"
 
+    compile "io.micronaut:micronaut-management"
     runtime "io.micronaut.configuration:micronaut-micrometer-core"
 
     kapt "io.micronaut.configuration:micronaut-openapi"
