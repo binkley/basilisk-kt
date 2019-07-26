@@ -20,13 +20,7 @@ class DatabaseSetup(dataSource: DataSource) {
 
         if (seeSchemaInStdOut) transaction {
             addLogger(StdOutSqlLogger)
-            SchemaUtils.create(
-                    LocationRepository,
-                    IngredientRepository,
-                    RecipeRepository,
-                    TripRepository,
-                    LegRepository,
-                    SourceLocationsRepository)
+            SchemaUtils.create(ChefRepository)
         }
     }
 }

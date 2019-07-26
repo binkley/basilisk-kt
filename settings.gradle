@@ -1,3 +1,4 @@
 rootProject.name = "basilisk-kt"
 
+include "chef"
 include "basil"
