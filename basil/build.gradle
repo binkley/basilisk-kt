@@ -4,6 +4,7 @@ apply from: "${project.rootDir}/application.gradle"
 mainClassName = "hm.binkley.basilisk.Application"
 
 dependencies {
+    runtime project(":db")
     compile project(":chef")
 
     compile "io.micronaut:micronaut-http-client"

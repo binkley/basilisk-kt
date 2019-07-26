@@ -4,6 +4,8 @@ apply from: "${project.rootDir}/application.gradle"
 mainClassName = "hm.binkley.basilisk.Application"
 
 dependencies {
+    runtime project(":db")
+
     compile "io.micronaut:micronaut-http-client"
     compile "io.micronaut:micronaut-http-server-netty"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}"
