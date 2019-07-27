@@ -3,6 +3,24 @@ apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: "com.gorylenko.gradle-git-properties"
 apply plugin: "com.pasam.gradle.buildinfo"
 
+dependencies {
+    compile "io.micronaut:micronaut-http-client"
+    compile "io.micronaut:micronaut-http-server-netty"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}"
+    runtime "ch.qos.logback:logback-classic:${logbackVersion}"
+
+    compile "io.micronaut:micronaut-management"
+    runtime "io.micronaut.configuration:micronaut-micrometer-core"
+
+    kapt "io.micronaut.configuration:micronaut-openapi"
+    compile "io.swagger.core.v3:swagger-annotations"
+    compile "io.micronaut:micronaut-views"
+    runtime "com.github.jknack:handlebars:${handlebarsVersion}"
+
+    compile "io.micronaut:micronaut-tracing"
+    compile "io.opentracing.brave:brave-opentracing"
+}
+
 shadowJar {
     mergeServiceFiles()
 }
