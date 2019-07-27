@@ -13,11 +13,6 @@ endpoints:
   health:
     details-visible: ANONYMOUS
 
-flyway:
-  datasources:
-    default:
-      locations: classpath:db/migration
-
 swagger:
   path: /api-docs/swagger
   version: 3  # Latest version, let UI get improvements automatically

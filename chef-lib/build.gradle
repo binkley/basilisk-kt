@@ -24,3 +24,7 @@ dependencies {
     compile "io.micronaut:micronaut-tracing"
     compile "io.opentracing.brave:brave-opentracing"
 }
+
+test {
+    systemProperty "micronaut.environments", "db"
+}
