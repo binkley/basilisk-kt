@@ -7,7 +7,7 @@ mainClassName = "hm.binkley.basilisk.Application"
 
 dependencies {
     compile project(":db")
-    compile project(":chef")
+    compile project(":chef-lib")
 
     compile "io.micronaut:micronaut-http-client"
     compile "io.micronaut:micronaut-http-server-netty"
