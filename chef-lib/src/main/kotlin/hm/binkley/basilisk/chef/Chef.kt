@@ -1,6 +1,6 @@
 package hm.binkley.basilisk.chef
 
-import hm.binkley.basilisk.findOne
+import hm.binkley.basilisk.db.findOne
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID

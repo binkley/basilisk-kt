@@ -7,12 +7,12 @@ import io.swagger.v3.oas.annotations.info.Info
 @OpenAPIDefinition(info = Info(
         title = "Basilisk",
         version = "0"))
-object Application {
+object BasiliskApplication {
     @JvmStatic
     fun main(args: Array<String>) {
         Micronaut.build()
                 .packages("kotlin.micronaut")
-                .mainClass(Application.javaClass)
+                .mainClass(BasiliskApplication.javaClass)
                 .start()
     }
 }

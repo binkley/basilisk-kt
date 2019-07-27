@@ -1,6 +1,5 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.ingredient
 
-import hm.binkley.basilisk.ingredient.IngredientRepository
 import hm.binkley.basilisk.location.LocationRepository
 import org.jetbrains.exposed.sql.Table
 

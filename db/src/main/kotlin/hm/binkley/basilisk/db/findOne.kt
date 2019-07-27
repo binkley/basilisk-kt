@@ -1,4 +1,4 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.db
 
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass

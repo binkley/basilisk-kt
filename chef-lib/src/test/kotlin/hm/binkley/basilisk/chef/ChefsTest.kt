@@ -2,7 +2,7 @@ package hm.binkley.basilisk.chef
 
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
-import hm.binkley.basilisk.testTransaction
+import hm.binkley.basilisk.db.testTransaction
 import io.micronaut.test.annotation.MicronautTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance

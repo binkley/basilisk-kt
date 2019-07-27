@@ -1,7 +1,6 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.recipe
 
 import hm.binkley.basilisk.location.LocationRepository
-import hm.binkley.basilisk.recipe.RecipeRepository
 import org.jetbrains.exposed.sql.Table
 
 object RecipeLocationsRepository : Table("RECIPE_LOCATION") {

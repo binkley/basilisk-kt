@@ -1,6 +1,5 @@
 package hm.binkley.basilisk.recipe
 
-import hm.binkley.basilisk.RecipeLocationsRepository
 import hm.binkley.basilisk.chef.ChefRecord
 import hm.binkley.basilisk.chef.ChefRepository
 import hm.binkley.basilisk.ingredient.IngredientRecord

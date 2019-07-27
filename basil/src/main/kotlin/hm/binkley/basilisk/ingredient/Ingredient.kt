@@ -1,10 +1,9 @@
 package hm.binkley.basilisk.ingredient
 
-import hm.binkley.basilisk.IngredientLocationsRepository
 import hm.binkley.basilisk.chef.ChefRecord
 import hm.binkley.basilisk.chef.ChefRepository
 import hm.binkley.basilisk.chef.Chefs
-import hm.binkley.basilisk.findOne
+import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.location.LocationRecord
 import hm.binkley.basilisk.recipe.RecipeRecord
 import hm.binkley.basilisk.recipe.RecipeRepository

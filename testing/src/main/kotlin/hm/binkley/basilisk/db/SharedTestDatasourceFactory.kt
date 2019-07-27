@@ -1,4 +1,4 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.db
 
 import io.micronaut.configuration.jdbc.hikari.DatasourceConfiguration
 import io.micronaut.configuration.jdbc.hikari.DatasourceFactory
@@ -26,7 +26,8 @@ class SharedTestDatasourceFactory(context: ApplicationContext)
     @Context
     @EachBean(DatasourceConfiguration::class)
     override fun dataSource(configuration: DatasourceConfiguration) =
-            dataSource(configuration.jdbcUrl) {
+            dataSource(
+                    configuration.jdbcUrl) {
                 super.dataSource(configuration)
             }
 

@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 @MicronautTest
 @TestInstance(PER_CLASS)
-internal class ApplicationTest {
+internal class BasiliskApplicationTest {
     @Inject
     lateinit var server: EmbeddedServer
     @Inject

@@ -1,7 +1,6 @@
 package hm.binkley.basilisk.source
 
-import hm.binkley.basilisk.SourceLocationsRepository
-import hm.binkley.basilisk.findOne
+import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.location.LocationRecord
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher

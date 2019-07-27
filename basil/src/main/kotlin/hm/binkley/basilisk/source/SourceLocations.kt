@@ -1,7 +1,6 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.source
 
 import hm.binkley.basilisk.location.LocationRepository
-import hm.binkley.basilisk.source.SourceRepository
 import org.jetbrains.exposed.sql.Table
 
 object SourceLocationsRepository : Table("SOURCE_LOCATION") {
