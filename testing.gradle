@@ -2,4 +2,5 @@ dependencies {
     testCompile "org.junit.jupiter:junit-jupiter-api:${junit5Version}"
     testCompile "ch.tutteli.atrium:atrium-cc-en_GB-robstoll:${atriumVersion}"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:${junit5Version}"
+    testRuntime "ch.qos.logback:logback-classic:${logbackVersion}"
 }
