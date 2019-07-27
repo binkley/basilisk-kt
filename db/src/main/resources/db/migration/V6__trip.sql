@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS trip
+(
+    id      SERIAL PRIMARY KEY,
+    "name"  TEXT NOT NULL,
+    chef_id INT  NOT NULL,
+    CONSTRAINT fk_trip_chef_id_id FOREIGN KEY (chef_id) REFERENCES chef (id) ON DELETE RESTRICT ON UPDATE RESTRICT
+);

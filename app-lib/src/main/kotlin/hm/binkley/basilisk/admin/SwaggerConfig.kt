@@ -1,4 +1,4 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.admin
 
 import io.micronaut.context.annotation.ConfigurationProperties
 import io.micronaut.core.annotation.Introspected

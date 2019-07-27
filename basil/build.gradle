@@ -6,6 +6,7 @@ apply from: "${project.rootDir}/testing.gradle"
 mainClassName = "hm.binkley.basilisk.Application"
 
 dependencies {
+    compile project(":app-lib")
     compile project(":db")
     compile project(":chef-lib")
     testCompile project(":testing")

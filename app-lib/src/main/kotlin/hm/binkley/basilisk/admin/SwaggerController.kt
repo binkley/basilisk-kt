@@ -1,6 +1,6 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.admin
 
-import hm.binkley.basilisk.SwaggerConfig.URIConfig
+import hm.binkley.basilisk.admin.SwaggerConfig.URIConfig
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get

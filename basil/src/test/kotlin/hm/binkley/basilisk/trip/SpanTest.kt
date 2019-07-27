@@ -1,4 +1,4 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.trip
 
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
@@ -19,7 +19,9 @@ class SpanTest {
 
     @Test
     fun shouldSortMany() {
-        val unsorted = (1..100).map { TestSpan(it, it + 1) }.shuffled()
+        val unsorted = (1..100).map {
+            TestSpan(it, it + 1)
+        }.shuffled()
 
         expect(sort(unsorted).map { it.start }).toBe((1..100).toList())
     }

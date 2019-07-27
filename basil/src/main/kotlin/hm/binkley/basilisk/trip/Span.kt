@@ -1,4 +1,4 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.trip
 
 interface Span<T> {
     val start: T

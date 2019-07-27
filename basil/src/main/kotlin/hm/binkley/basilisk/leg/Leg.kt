@@ -1,8 +1,8 @@
 package hm.binkley.basilisk.leg
 
-import hm.binkley.basilisk.Span
 import hm.binkley.basilisk.location.LocationRecord
 import hm.binkley.basilisk.location.LocationRepository
+import hm.binkley.basilisk.trip.Span
 import hm.binkley.basilisk.trip.TripRecord
 import hm.binkley.basilisk.trip.TripRepository
 import org.jetbrains.exposed.dao.EntityID
