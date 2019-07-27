@@ -1,3 +1,3 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.demo
 
 data class HelloResponse(val greeting: String)

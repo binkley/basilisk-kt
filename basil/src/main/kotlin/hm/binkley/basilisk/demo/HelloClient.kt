@@ -1,4 +1,4 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.demo
 
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.client.annotation.Client

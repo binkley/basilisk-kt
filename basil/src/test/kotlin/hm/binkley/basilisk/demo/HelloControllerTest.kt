@@ -1,4 +1,4 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.demo
 
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
@@ -28,6 +28,7 @@ internal class HelloControllerTest {
                 POST("/hello", HelloRequest("World")),
                 HelloResponse::class.java)
 
-        expect(body).toBe(HelloResponse("Hello, World!"))
+        expect(body).toBe(
+                HelloResponse("Hello, World!"))
     }
 }
