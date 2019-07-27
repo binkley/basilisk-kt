@@ -4,6 +4,13 @@ import ch.tutteli.atrium.api.cc.en_GB.contains
 import ch.tutteli.atrium.api.cc.en_GB.containsExactly
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
+import hm.binkley.basilisk.chef.ChefRecord
+import hm.binkley.basilisk.ingredient.IngredientRecord
+import hm.binkley.basilisk.leg.LegRecord
+import hm.binkley.basilisk.location.LocationRecord
+import hm.binkley.basilisk.recipe.RecipeRecord
+import hm.binkley.basilisk.source.SourceRecord
+import hm.binkley.basilisk.trip.TripRecord
 import io.micronaut.test.annotation.MicronautTest
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction

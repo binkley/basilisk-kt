@@ -1,5 +1,6 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.chef
 
+import hm.binkley.basilisk.findOne
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
@@ -19,12 +20,14 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
         return record?.let { chef(it) }
     }
 
-    fun chef(record: ChefRecord) = Chef(record, publisher)
+    fun chef(record: ChefRecord) =
+            Chef(record, publisher)
 
-    fun create(name: String, code: String) = Chef(ChefRecord.new {
-        this.name = name
-        this.code = code
-    }, publisher).save()
+    fun create(name: String, code: String) = Chef(
+            ChefRecord.new {
+                this.name = name
+                this.code = code
+            }, publisher).save()
 }
 
 interface ChefRecordData {
@@ -70,7 +73,8 @@ object ChefRepository : IntIdTable("CHEF") {
 
 class ChefRecord(id: EntityID<Int>) : IntEntity(id),
         ChefRecordData {
-    companion object : IntEntityClass<ChefRecord>(ChefRepository)
+    companion object : IntEntityClass<ChefRecord>(
+            ChefRepository)
 
     override var name by ChefRepository.name
     override var code by ChefRepository.code

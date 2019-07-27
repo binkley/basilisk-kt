@@ -1,5 +1,11 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.recipe
 
+import hm.binkley.basilisk.RecipeLocationsRepository
+import hm.binkley.basilisk.chef.ChefRecord
+import hm.binkley.basilisk.chef.ChefRepository
+import hm.binkley.basilisk.ingredient.IngredientRecord
+import hm.binkley.basilisk.ingredient.IngredientRepository
+import hm.binkley.basilisk.location.LocationRecord
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -13,7 +19,8 @@ object RecipeRepository : IntIdTable("RECIPE") {
 }
 
 class RecipeRecord(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<RecipeRecord>(RecipeRepository)
+    companion object : IntEntityClass<RecipeRecord>(
+            RecipeRepository)
 
     var name by RecipeRepository.name
     var code by RecipeRepository.code

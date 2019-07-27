@@ -1,5 +1,15 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.ingredient
 
+import hm.binkley.basilisk.IngredientLocationsRepository
+import hm.binkley.basilisk.chef.ChefRecord
+import hm.binkley.basilisk.chef.ChefRepository
+import hm.binkley.basilisk.chef.Chefs
+import hm.binkley.basilisk.findOne
+import hm.binkley.basilisk.location.LocationRecord
+import hm.binkley.basilisk.recipe.RecipeRecord
+import hm.binkley.basilisk.recipe.RecipeRepository
+import hm.binkley.basilisk.source.SourceRecord
+import hm.binkley.basilisk.source.SourceRepository
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
@@ -22,7 +32,8 @@ class Ingredients(
             null == record -> null
             null == record.recipe -> UnusedIngredient(
                     record, chefs, publisher)
-            else -> UsedIngredient(record, chefs, publisher)
+            else -> UsedIngredient(record,
+                    chefs, publisher)
         }
     }
 }
@@ -45,7 +56,8 @@ sealed class Ingredient(
 
     fun save(): Ingredient {
         record.flush()
-        publisher.publishEvent(IngredientSavedEvent(this))
+        publisher.publishEvent(
+                IngredientSavedEvent(this))
         return this
     }
 
@@ -82,14 +94,18 @@ class UsedIngredient(
 object IngredientRepository : IntIdTable("INGREDIENT") {
     val code = text("code")
     val chef = reference("chef_id", ChefRepository)
-    val recipe = reference("recipe_id", RecipeRepository).nullable()
+    val recipe = reference("recipe_id",
+            RecipeRepository).nullable()
     // TODO: What to do about "source" hiding parent class member?
-    val sourceRef = reference("source_id", SourceRepository)
+    val sourceRef = reference("source_id",
+            SourceRepository)
 }
 
 class IngredientRecord(id: EntityID<Int>)
-    : IntEntity(id), IngredientRecordData {
-    companion object : IntEntityClass<IngredientRecord>(IngredientRepository)
+    : IntEntity(id),
+        IngredientRecordData {
+    companion object : IntEntityClass<IngredientRecord>(
+            IngredientRepository)
 
     override val name
         get() = source.name

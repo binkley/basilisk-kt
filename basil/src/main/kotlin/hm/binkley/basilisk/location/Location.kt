@@ -1,4 +1,4 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.location
 
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
@@ -12,7 +12,8 @@ object LocationRepository : IntIdTable("LOCATION") {
 }
 
 class LocationRecord(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<LocationRecord>(LocationRepository)
+    companion object : IntEntityClass<LocationRecord>(
+            LocationRepository)
 
     var name by LocationRepository.name
     var code by LocationRepository.code

@@ -1,5 +1,8 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.source
 
+import hm.binkley.basilisk.SourceLocationsRepository
+import hm.binkley.basilisk.findOne
+import hm.binkley.basilisk.location.LocationRecord
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
@@ -19,12 +22,14 @@ class Sources(private val publisher: ApplicationEventPublisher) {
         return record?.let { source(it) }
     }
 
-    fun source(record: SourceRecord) = Source(record, publisher)
+    fun source(record: SourceRecord) =
+            Source(record, publisher)
 
-    fun create(name: String, code: String) = Source(SourceRecord.new {
-        this.name = name
-        this.code = code
-    }, publisher).save()
+    fun create(name: String, code: String) = Source(
+            SourceRecord.new {
+                this.name = name
+                this.code = code
+            }, publisher).save()
 }
 
 interface SourceRecordData {
@@ -41,7 +46,8 @@ class Source(
     : SourceRecordData by record {
     fun save(): Source {
         record.flush()
-        publisher.publishEvent(SourceSavedEvent(this))
+        publisher.publishEvent(
+                SourceSavedEvent(this))
         return this
     }
 
@@ -68,8 +74,10 @@ object SourceRepository : IntIdTable("SOURCE") {
     val code = text("code")
 }
 
-class SourceRecord(id: EntityID<Int>) : IntEntity(id), SourceRecordData {
-    companion object : IntEntityClass<SourceRecord>(SourceRepository)
+class SourceRecord(id: EntityID<Int>) : IntEntity(id),
+        SourceRecordData {
+    companion object : IntEntityClass<SourceRecord>(
+            SourceRepository)
 
     override var name by SourceRepository.name
     override var code by SourceRepository.code

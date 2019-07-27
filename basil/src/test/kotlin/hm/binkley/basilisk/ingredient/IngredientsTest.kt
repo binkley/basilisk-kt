@@ -1,9 +1,14 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.ingredient
 
 import ch.tutteli.atrium.api.cc.en_GB.containsExactly
 import ch.tutteli.atrium.api.cc.en_GB.isA
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
+import hm.binkley.basilisk.chef.ChefRecord
+import hm.binkley.basilisk.chef.Chefs
+import hm.binkley.basilisk.recipe.RecipeRecord
+import hm.binkley.basilisk.source.SourceRecord
+import hm.binkley.basilisk.testTransaction
 import io.micronaut.context.event.ApplicationEventListener
 import io.micronaut.context.event.ApplicationEventPublisher
 import io.micronaut.test.annotation.MicronautTest
@@ -44,7 +49,8 @@ internal class IngredientsTest {
     @Test
     fun shouldFindNoIngredient() {
         testTransaction {
-            val ingredient = ingredients.ingredient(code)
+            val ingredient = ingredients.ingredient(
+                    code)
 
             expect(ingredient).toBe(null)
         }
@@ -52,8 +58,10 @@ internal class IngredientsTest {
 
     @Test
     fun shouldFindUnusedIngredient() {
-        val name = name
-        val code = code
+        val name =
+                name
+        val code =
+                code
         testTransaction {
             val chef = ChefRecord.new {
                 this.name = "CHEF BOB"
@@ -81,8 +89,10 @@ internal class IngredientsTest {
 
     @Test
     fun shouldFindUsedIngredient() {
-        val name = name
-        val code = code
+        val name =
+                name
+        val code =
+                code
         testTransaction {
             val chef = ChefRecord.new {
                 this.name = "CHEF BOB"
@@ -117,8 +127,10 @@ internal class IngredientsTest {
 
     @Test
     fun shouldPublishSaveEvents() {
-        val name = name
-        val code = code
+        val name =
+                name
+        val code =
+                code
 
         testTransaction {
             val chef = ChefRecord.new {
@@ -149,7 +161,8 @@ internal class IngredientsTest {
             ingredient.save()
 
             expect(listener.received).containsExactly(
-                    IngredientSavedEvent(ingredient))
+                    IngredientSavedEvent(
+                            ingredient))
         }
     }
 }
