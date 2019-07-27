@@ -1,4 +1,15 @@
+plugins {
+    id "org.flywaydb.flyway" version "6.0.0-beta2"
+}
+
 apply plugin: "java-library"
 apply from: "${project.rootDir}/kotlin-micronaut.gradle"
 apply from: "${project.rootDir}/persistence.gradle"
 apply from: "${project.rootDir}/testing.gradle"
+
+flyway {
+    url = "jdbc:postgresql://localhost:5432/basilisk"
+    user = "basilisk"
+    password = ""
+    schemas = ["basilisk"]
+}
