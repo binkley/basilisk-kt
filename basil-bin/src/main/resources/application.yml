@@ -7,13 +7,6 @@ endpoints:
     details-visible: ANONYMOUS
 
 swagger:
-  path: /api-docs/swagger
-  version: 3  # Latest version, let UI get improvements automatically
-  layout: StandaloneLayout
-  deepLinking: true
-  displayRequestDuration: true
-  showCommonExtensions: true
-  showExtensions: true
   urls:
     - name: basilisk
       url: /api-docs/swagger/basilisk-0.yml

@@ -3,7 +3,7 @@ apply from: "${project.rootDir}/application.gradle"
 apply from: "${project.rootDir}/persistence.gradle"
 apply from: "${project.rootDir}/testing.gradle"
 
-mainClassName = "hm.binkley.basilisk.Application"
+mainClassName = "hm.binkley.basilisk.BasiliskApplication"
 
 dependencies {
     compile project(":app-lib")
@@ -13,9 +13,9 @@ dependencies {
 }
 
 test {
-    systemProperty "micronaut.environments", "db"
+    systemProperty "micronaut.environments", "app,db"
 }
 
 run {
-    systemProperty "micronaut.environments", "db"
+    systemProperty "micronaut.environments", "app,db"
 }

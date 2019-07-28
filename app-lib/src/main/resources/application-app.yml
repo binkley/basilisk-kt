@@ -1,0 +1,8 @@
+swagger:
+  path: /api-docs/swagger
+  version: 3  # Latest version, let UI get improvements automatically
+  layout: StandaloneLayout
+  deepLinking: true
+  displayRequestDuration: true
+  showCommonExtensions: true
+  showExtensions: true
