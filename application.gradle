@@ -3,6 +3,11 @@ apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: "com.gorylenko.gradle-git-properties"
 apply plugin: "com.pasam.gradle.buildinfo"
 
+dependencies {
+    // Annotation procs need to be applied, not inherited
+    kapt "io.micronaut.configuration:micronaut-openapi"
+}
+
 shadowJar {
     mergeServiceFiles()
 }

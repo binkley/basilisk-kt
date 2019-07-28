@@ -76,7 +76,20 @@ internal class BasiliskApplicationTest {
         val request = HttpRequest.newBuilder()
                 .GET()
                 .uri(URI.create(
-                        "http://localhost:${server.port}/swagger/basilisk-0.yml"))
+                        "http://localhost:${server.port}/api-docs/swagger/basilisk-0.yml"))
+                .build();
+
+        val response = client.send(request, discarding())
+
+        expect(response.statusCode()).toBe(OK.code);
+    }
+
+    @Test
+    fun `should let user interact with API`() {
+        val request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(
+                        "http://localhost:${server.port}/swagger"))
                 .build();
 
         val response = client.send(request, discarding())
