@@ -45,8 +45,7 @@ class Source(
     : SourceRecordData by record {
     fun save(): Source {
         record.flush()
-        publisher.publishEvent(
-                SourceSavedEvent(this))
+        publisher.publishEvent(SourceSavedEvent(this))
         return this
     }
 
@@ -75,8 +74,7 @@ object SourceRepository : IntIdTable("SOURCE") {
 
 class SourceRecord(id: EntityID<Int>) : IntEntity(id),
         SourceRecordData {
-    companion object : IntEntityClass<SourceRecord>(
-            SourceRepository)
+    companion object : IntEntityClass<SourceRecord>(SourceRepository)
 
     override var name by SourceRepository.name
     override var code by SourceRepository.code

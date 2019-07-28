@@ -16,8 +16,7 @@ object TripRepository : IntIdTable("TRIP") {
 
 class TripRecord(id: EntityID<Int>) : IntEntity(id),
         Span<LegRecord> {
-    companion object : IntEntityClass<TripRecord>(
-            TripRepository)
+    companion object : IntEntityClass<TripRecord>(TripRepository)
 
     var name by TripRepository.name
     var chef by ChefRecord referencedOn TripRepository.chef

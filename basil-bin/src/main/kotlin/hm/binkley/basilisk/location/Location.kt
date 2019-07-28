@@ -12,8 +12,7 @@ object LocationRepository : IntIdTable("LOCATION") {
 }
 
 class LocationRecord(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<LocationRecord>(
-            LocationRepository)
+    companion object : IntEntityClass<LocationRecord>(LocationRepository)
 
     var name by LocationRepository.name
     var code by LocationRepository.code

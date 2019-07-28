@@ -18,8 +18,7 @@ object RecipeRepository : IntIdTable("RECIPE") {
 }
 
 class RecipeRecord(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<RecipeRecord>(
-            RecipeRepository)
+    companion object : IntEntityClass<RecipeRecord>(RecipeRepository)
 
     var name by RecipeRepository.name
     var code by RecipeRepository.code

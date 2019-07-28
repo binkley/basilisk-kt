@@ -96,15 +96,13 @@ object IngredientRepository : IntIdTable("INGREDIENT") {
     val recipe = reference("recipe_id",
             RecipeRepository).nullable()
     // TODO: What to do about "source" hiding parent class member?
-    val sourceRef = reference("source_id",
-            SourceRepository)
+    val sourceRef = reference("source_id", SourceRepository)
 }
 
 class IngredientRecord(id: EntityID<Int>)
     : IntEntity(id),
         IngredientRecordData {
-    companion object : IntEntityClass<IngredientRecord>(
-            IngredientRepository)
+    companion object : IntEntityClass<IngredientRecord>(IngredientRepository)
 
     override val name
         get() = source.name

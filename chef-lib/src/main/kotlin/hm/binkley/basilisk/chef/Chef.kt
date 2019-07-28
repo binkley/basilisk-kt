@@ -73,8 +73,7 @@ object ChefRepository : IntIdTable("CHEF") {
 
 class ChefRecord(id: EntityID<Int>) : IntEntity(id),
         ChefRecordData {
-    companion object : IntEntityClass<ChefRecord>(
-            ChefRepository)
+    companion object : IntEntityClass<ChefRecord>(ChefRepository)
 
     override var name by ChefRepository.name
     override var code by ChefRepository.code
