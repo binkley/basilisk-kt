@@ -29,16 +29,29 @@ internal class BasiliskApplicationTest {
     private val client = newHttpClient()
 
     @Test
+    fun `should be reachable`() {
+        val request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(
+                        "http://localhost:${server.port}/admin/ping"))
+                .build()
+
+        val response = client.send(request, discarding())
+
+        expect(response.statusCode()).toBe(OK.code)
+    }
+
+    @Test
     fun `should be healthy`() {
         val request = HttpRequest.newBuilder()
                 .GET()
                 .uri(URI.create(
                         "http://localhost:${server.port}/admin/health"))
-                .build();
+                .build()
 
         val response = client.send(request, discarding())
 
-        expect(response.statusCode()).toBe(OK.code);
+        expect(response.statusCode()).toBe(OK.code)
     }
 
     @Test
@@ -46,11 +59,11 @@ internal class BasiliskApplicationTest {
         val request = HttpRequest.newBuilder()
                 .GET()
                 .uri(URI.create("http://localhost:${server.port}/admin/info"))
-                .build();
+                .build()
 
         val response = client.send(request, BodyHandlers.ofByteArray())
 
-        expect(response.statusCode()).toBe(OK.code);
+        expect(response.statusCode()).toBe(OK.code)
 
         // TODO: Parsing fails on null nodes -- check this is true
         objectMapper.readValue<Info>(response.body())
@@ -64,11 +77,11 @@ internal class BasiliskApplicationTest {
                 .GET()
                 .uri(URI.create(
                         "http://localhost:${server.port}/admin/metrics"))
-                .build();
+                .build()
 
         val response = client.send(request, discarding())
 
-        expect(response.statusCode()).toBe(OK.code);
+        expect(response.statusCode()).toBe(OK.code)
     }
 
     @Test
@@ -77,11 +90,11 @@ internal class BasiliskApplicationTest {
                 .GET()
                 .uri(URI.create(
                         "http://localhost:${server.port}/api-docs/swagger/basilisk-0.yml"))
-                .build();
+                .build()
 
         val response = client.send(request, discarding())
 
-        expect(response.statusCode()).toBe(OK.code);
+        expect(response.statusCode()).toBe(OK.code)
     }
 
     @Test
@@ -90,10 +103,10 @@ internal class BasiliskApplicationTest {
                 .GET()
                 .uri(URI.create(
                         "http://localhost:${server.port}/swagger"))
-                .build();
+                .build()
 
         val response = client.send(request, discarding())
 
-        expect(response.statusCode()).toBe(OK.code);
+        expect(response.statusCode()).toBe(OK.code)
     }
 }
