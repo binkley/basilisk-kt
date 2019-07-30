@@ -1,10 +1,3 @@
-datasources:
-  default:
-    url: jdbc:postgresql://localhost:5432/basilisk?user=basilisk
-    username: basilisk
-    password: ""
-    driver-class-name: org.postgresql.Driver
-
 flyway:
   datasources:
     default:
