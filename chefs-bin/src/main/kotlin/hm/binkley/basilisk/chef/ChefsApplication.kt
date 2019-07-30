@@ -1,18 +1,18 @@
-package hm.binkley.basilisk
+package hm.binkley.basilisk.chef
 
 import io.micronaut.runtime.Micronaut
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Info
 
 @OpenAPIDefinition(info = Info(
-        title = "Basilisk",
+        title = "Chefs",
         version = "0"))
-object BasiliskApplication {
+object ChefsApplication {
     @JvmStatic
     fun main(args: Array<String>) {
         Micronaut.build()
                 .packages("hm.binkley.basilisk")
-                .mainClass(BasiliskApplication.javaClass)
+                .mainClass(ChefsApplication.javaClass)
                 .start()
     }
 }

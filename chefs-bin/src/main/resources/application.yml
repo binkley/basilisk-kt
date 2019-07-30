@@ -1,0 +1,19 @@
+# Duplicate for each bin, until
+# https://github.com/micronaut-projects/micronaut-core/issues/517 resolved
+datasources:
+  default:
+    url: jdbc:postgresql://localhost:5432/basilisk?user=basilisk
+    username: basilisk
+    password: ""
+    driver-class-name: org.postgresql.Driver
+
+swagger:
+  urls:
+    - name: basilisk
+      url: /api-docs/swagger/chefs-0.yml
+
+micronaut:
+  application:
+    name: chefs
+    instance: ${random.uuid}
+    version: 0
