@@ -17,3 +17,5 @@ micronaut:
     name: chefs
     instance: ${random.uuid}
     version: 0
+  server:
+    port: 7372

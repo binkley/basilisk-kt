@@ -17,3 +17,5 @@ micronaut:
     name: basilisk-kt
     instance: ${random.uuid}
     version: 0
+  server:
+    port: 7371

@@ -15,4 +15,11 @@ services:
       - basilisk-db
     image: basilisk
     ports:
-      - 8080:8080
+      - 7371:7371
+
+  chefs-service:
+    depends_on:
+      - basilisk-db
+    image: chefs
+    ports:
+      - 7372:7372
