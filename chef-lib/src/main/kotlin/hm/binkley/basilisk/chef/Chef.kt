@@ -28,6 +28,10 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
                 this.name = name
                 this.code = code
             }, publisher).save()
+
+    fun all() = ChefRecord.all().map {
+        chef(it)
+    }
 }
 
 interface ChefRecordData {
