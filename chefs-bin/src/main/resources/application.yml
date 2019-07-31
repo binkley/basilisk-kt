@@ -1,17 +1,3 @@
-# Duplicate for each bin, until
-# https://github.com/micronaut-projects/micronaut-core/issues/517 resolved
-datasources:
-  default:
-    url: jdbc:postgresql://localhost:5432/basilisk?user=basilisk
-    username: basilisk
-    password: ""
-    driver-class-name: org.postgresql.Driver
-
-swagger:
-  urls:
-    - name: basilisk
-      url: /api-docs/swagger/chefs-0.yml
-
 micronaut:
   application:
     name: chefs
@@ -19,3 +5,12 @@ micronaut:
     version: 0
   server:
     port: 7372
+
+# Duplicate for each bin, until
+# https://github.com/micronaut-projects/micronaut-core/issues/517 resolved
+datasources:
+  default:
+    url: jdbc:postgresql://localhost:5432/${micronaut.application.name}
+    username: basilisk
+    password: ""
+    driver-class-name: org.postgresql.Driver
