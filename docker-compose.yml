@@ -2,24 +2,8 @@ version: '3.1'
 
 services:
   basilisk-db:
-    environment:
-      - POSTGRES_USER=basilisk
     image: postgres:10.9-alpine
     ports:
       - 5432:5432
     volumes:
       - ./initdb:/docker-entrypoint-initdb.d
-
-  basilisk-service:
-    depends_on:
-      - basilisk-db
-    image: basilisk
-    ports:
-      - 7371:7371
-
-  chefs-service:
-    depends_on:
-      - basilisk-db
-    image: chefs
-    ports:
-      - 7372:7372
