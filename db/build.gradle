@@ -11,5 +11,5 @@ flyway {
     url = "jdbc:postgresql://localhost:5432/basilisk"
     user = "basilisk"
     password = ""
-    schemas = ["basilisk"]
+    schemas = ["basil", "chefs"]
 }

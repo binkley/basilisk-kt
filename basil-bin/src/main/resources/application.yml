@@ -1,6 +1,6 @@
 micronaut:
   application:
-    name: basilisk
+    name: basil
     instance: ${random.uuid}
     version: 0
   server:
@@ -10,7 +10,7 @@ micronaut:
 # https://github.com/micronaut-projects/micronaut-core/issues/517 resolved
 datasources:
   default:
-    url: jdbc:postgresql://localhost:5432/basilisk?currentSchema=basilisk
+    url: jdbc:postgresql://localhost:5432/basilisk?currentSchema=basil
     username: basilisk
     password: ""
     driver-class-name: org.postgresql.Driver
