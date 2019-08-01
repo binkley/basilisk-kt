@@ -8,6 +8,7 @@ import hm.binkley.basilisk.chef.ChefRecord
 import hm.binkley.basilisk.chef.Chefs
 import hm.binkley.basilisk.db.testTransaction
 import hm.binkley.basilisk.recipe.RecipeRecord
+import hm.binkley.basilisk.recipe.RecipeStatus.PLANNING
 import hm.binkley.basilisk.source.SourceRecord
 import io.micronaut.context.event.ApplicationEventListener
 import io.micronaut.context.event.ApplicationEventPublisher
@@ -58,10 +59,9 @@ internal class IngredientsTest {
 
     @Test
     fun shouldFindUnusedIngredient() {
-        val name =
-                name
-        val code =
-                code
+        val name = name
+        val code = code
+
         testTransaction {
             val chef = ChefRecord.new {
                 this.name = "CHEF BOB"
@@ -89,10 +89,9 @@ internal class IngredientsTest {
 
     @Test
     fun shouldFindUsedIngredient() {
-        val name =
-                name
-        val code =
-                code
+        val name = name
+        val code = code
+
         testTransaction {
             val chef = ChefRecord.new {
                 this.name = "CHEF BOB"
@@ -108,6 +107,7 @@ internal class IngredientsTest {
                 this.name = "TASTY PIE"
                 this.code = "REC456"
                 this.chef = chef
+                status = PLANNING
             }
             recipe.flush()
             IngredientRecord.new {
@@ -127,10 +127,8 @@ internal class IngredientsTest {
 
     @Test
     fun shouldPublishSaveEvents() {
-        val name =
-                name
-        val code =
-                code
+        val name = name
+        val code = code
 
         testTransaction {
             val chef = ChefRecord.new {
@@ -147,6 +145,7 @@ internal class IngredientsTest {
                 this.name = "TASTY PIE"
                 this.code = "REC456"
                 this.chef = chef
+                status = PLANNING
             }
             recipe.flush()
             val record = IngredientRecord.new {

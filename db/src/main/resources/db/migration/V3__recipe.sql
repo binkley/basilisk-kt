@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS recipe
     "name"  TEXT NOT NULL,
     code    TEXT NOT NULL UNIQUE,
     chef_id INT  NOT NULL,
+    status  TEXT NOT NULL,
     CONSTRAINT fk_recipe_chef_id_id FOREIGN KEY (chef_id) REFERENCES chef (id) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
 

@@ -10,6 +10,7 @@ import hm.binkley.basilisk.ingredient.IngredientRecord
 import hm.binkley.basilisk.leg.LegRecord
 import hm.binkley.basilisk.location.LocationRecord
 import hm.binkley.basilisk.recipe.RecipeRecord
+import hm.binkley.basilisk.recipe.RecipeStatus.PLANNING
 import hm.binkley.basilisk.source.SourceRecord
 import hm.binkley.basilisk.trip.TripRecord
 import io.micronaut.test.annotation.MicronautTest
@@ -52,6 +53,7 @@ internal class PersistenceTest {
                 name = "TASTY STEW"
                 code = "REC456"
                 this.chef = chef
+                status = PLANNING
             }
             recipe.flush()
             val sourceA = SourceRecord.new {
@@ -261,6 +263,7 @@ internal class PersistenceTest {
                     name = "TASTY PIE"
                     code = "REC456"
                     this.chef = chef
+                    status = PLANNING
                 }
 
                 recipe

@@ -11,10 +11,22 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
 import java.util.*
 
+enum class RecipeStatus {
+    PLANNING, PREPARING, SERVED;
+
+    companion object {
+        fun maxLength() = values().map {
+            it.name.length
+        }.max() ?: 0
+    }
+}
+
 object RecipeRepository : IntIdTable("RECIPE") {
     val name = text("name")
     val code = text("code")
     val chef = reference("chef_id", ChefRepository)
+    val status = enumerationByName("status", RecipeStatus.maxLength(),
+            RecipeStatus::class)
 }
 
 class RecipeRecord(id: EntityID<Int>) : IntEntity(id) {
@@ -23,6 +35,7 @@ class RecipeRecord(id: EntityID<Int>) : IntEntity(id) {
     var name by RecipeRepository.name
     var code by RecipeRepository.code
     var chef by ChefRecord referencedOn RecipeRepository.chef
+    var status by RecipeRepository.status
     val ingredients by IngredientRecord optionalReferrersOn IngredientRepository.recipe
     var locations by LocationRecord via RecipeLocationsRepository
 
