@@ -90,14 +90,6 @@ function -ready-or-die() {
   done
 }
 
-function -dump-http-requests() {
-  local port=$1
-  while true; do
-    # This assumes BESS is okay with all requests produce 200
-    echo -e "HTTP/1.0 200 OK\r\nContent-Length: 0\r\n"
-  done | netcal -l -p $port localhost # Mac netcat is finicky
-}
-
 echo "Resetting docker ..."
 docker-compose down -v >"$tmpdir/docker" 2>&1
 
