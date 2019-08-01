@@ -21,16 +21,20 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
     }
 
     fun chef(record: ChefRecord) =
-            Chef(record, publisher)
+            Chef(record, this)
 
     fun create(name: String, code: String) = Chef(
             ChefRecord.new {
                 this.name = name
                 this.code = code
-            }, publisher).save()
+            }, this).save()
 
     fun all() = ChefRecord.all().map {
         chef(it)
+    }
+
+    internal fun notifySaved(chef: Chef) {
+        publisher.publishEvent(ChefSavedEvent(chef))
     }
 }
 
@@ -44,11 +48,11 @@ data class ChefSavedEvent(val chef: Chef)
 
 class Chef(
         private val record: ChefRecord,
-        private val publisher: ApplicationEventPublisher)
+        private val factory: Chefs)
     : ChefRecordData by record {
     fun save(): Chef {
         record.flush()
-        publisher.publishEvent(ChefSavedEvent(this))
+        factory.notifySaved(this)
         return this
     }
 

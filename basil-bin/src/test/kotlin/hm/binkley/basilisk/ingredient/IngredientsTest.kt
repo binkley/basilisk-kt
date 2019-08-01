@@ -5,13 +5,11 @@ import ch.tutteli.atrium.api.cc.en_GB.isA
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.chef.ChefRecord
-import hm.binkley.basilisk.chef.Chefs
 import hm.binkley.basilisk.db.testTransaction
 import hm.binkley.basilisk.recipe.RecipeRecord
 import hm.binkley.basilisk.recipe.RecipeStatus.PLANNING
 import hm.binkley.basilisk.source.SourceRecord
 import io.micronaut.context.event.ApplicationEventListener
-import io.micronaut.context.event.ApplicationEventPublisher
 import io.micronaut.test.annotation.MicronautTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -40,10 +38,6 @@ internal class IngredientsTest {
 
     @Inject
     lateinit var ingredients: Ingredients
-    @Inject
-    lateinit var chefs: Chefs
-    @Inject
-    lateinit var publisher: ApplicationEventPublisher
     @Inject
     lateinit var listener: TestListener
 
@@ -154,8 +148,7 @@ internal class IngredientsTest {
                 this.source = source
                 this.recipe = recipe
             }
-            val ingredient = UnusedIngredient(
-                    record, chefs, publisher)
+            val ingredient = UnusedIngredient(record, ingredients)
 
             ingredient.save()
 

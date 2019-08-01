@@ -29,15 +29,19 @@ class Ingredients(
 
         return when {
             null == record -> null
-            null == record.recipe -> UnusedIngredient(
-                    record, chefs, publisher)
-            else -> UsedIngredient(record,
-                    chefs, publisher)
+            null == record.recipe -> UnusedIngredient(record, this)
+            else -> UsedIngredient(record, this)
         }
     }
+
+    internal fun notifySaved(ingredient: Ingredient) {
+        publisher.publishEvent(IngredientSavedEvent(ingredient))
+    }
+
+    internal fun chefFor(chefRecord: ChefRecord) = chefs.chef(chefRecord)
 }
 
-interface IngredientRecordData {
+interface IngredientDetails {
     val name: String
     val code: String
 }
@@ -48,15 +52,13 @@ data class IngredientSavedEvent(val after: Ingredient)
 
 sealed class Ingredient(
         private val record: IngredientRecord,
-        chefs: Chefs,
-        private val publisher: ApplicationEventPublisher)
-    : IngredientRecordData by record {
-    val chef = chefs.chef(record.chef)
+        private val factory: Ingredients)
+    : IngredientDetails by record {
+    val chef = factory.chefFor(record.chef)
 
     fun save(): Ingredient {
         record.flush()
-        publisher.publishEvent(
-                IngredientSavedEvent(this))
+        factory.notifySaved(this)
         return this
     }
 
@@ -80,15 +82,13 @@ sealed class Ingredient(
 
 class UnusedIngredient(
         record: IngredientRecord,
-        chefs: Chefs,
-        publisher: ApplicationEventPublisher)
-    : Ingredient(record, chefs, publisher)
+        factory: Ingredients)
+    : Ingredient(record, factory)
 
 class UsedIngredient(
         record: IngredientRecord,
-        chefs: Chefs,
-        publisher: ApplicationEventPublisher)
-    : Ingredient(record, chefs, publisher)
+        factory: Ingredients)
+    : Ingredient(record, factory)
 
 object IngredientRepository : IntIdTable("INGREDIENT") {
     val code = text("code")
@@ -101,7 +101,7 @@ object IngredientRepository : IntIdTable("INGREDIENT") {
 
 class IngredientRecord(id: EntityID<Int>)
     : IntEntity(id),
-        IngredientRecordData {
+        IngredientDetails {
     companion object : IntEntityClass<IngredientRecord>(IngredientRepository)
 
     override val name

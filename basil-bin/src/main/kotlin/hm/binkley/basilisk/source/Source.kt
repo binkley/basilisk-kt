@@ -1,51 +1,64 @@
 package hm.binkley.basilisk.source
 
 import hm.binkley.basilisk.db.findOne
+import hm.binkley.basilisk.location.Location
 import hm.binkley.basilisk.location.LocationRecord
+import hm.binkley.basilisk.location.Locations
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
+import org.jetbrains.exposed.sql.SizedIterable
+import org.jetbrains.exposed.sql.mapLazy
 import java.util.*
 import javax.inject.Singleton
 
 @Singleton
-class Sources(private val publisher: ApplicationEventPublisher) {
-    fun source(code: String): Source? {
-        val record = SourceRecord.findOne {
-            SourceRepository.code eq code
-        }
-
-        return record?.let { source(it) }
+class Sources(
+        private val locations: Locations,
+        private val publisher: ApplicationEventPublisher) {
+    fun source(code: String) = SourceRecord.findOne {
+        SourceRepository.code eq code
+    }?.let {
+        source(it)
     }
 
-    fun source(record: SourceRecord) =
-            Source(record, publisher)
+    fun source(record: SourceRecord) = Source(record, this)
 
-    fun create(name: String, code: String) = Source(
-            SourceRecord.new {
-                this.name = name
-                this.code = code
-            }, publisher).save()
+    fun create(name: String, code: String) = Source(SourceRecord.new {
+        this.name = name
+        this.code = code
+    }, this).save()
+
+    internal fun notifySaved(source: Source) {
+        publisher.publishEvent(SourceSavedEvent(source))
+    }
+
+    internal fun locationFor(locationRecord: LocationRecord) =
+            locations.location(locationRecord)
 }
 
-interface SourceRecordData {
+interface SourceDetails {
     val name: String
     val code: String
 }
 
-data class SourceSavedEvent(val source: Source)
-    : ApplicationEvent(source)
+data class SourceSavedEvent(val source: Source) : ApplicationEvent(source)
 
 class Source(
         private val record: SourceRecord,
-        private val publisher: ApplicationEventPublisher)
-    : SourceRecordData by record {
+        private val factory: Sources)
+    : SourceDetails by record {
+    val locations: SizedIterable<Location>
+        get() = record.locations.mapLazy {
+            factory.locationFor(it)
+        }
+
     fun save(): Source {
         record.flush()
-        publisher.publishEvent(SourceSavedEvent(this))
+        factory.notifySaved(this)
         return this
     }
 
@@ -73,7 +86,7 @@ object SourceRepository : IntIdTable("SOURCE") {
 }
 
 class SourceRecord(id: EntityID<Int>) : IntEntity(id),
-        SourceRecordData {
+        SourceDetails {
     companion object : IntEntityClass<SourceRecord>(SourceRepository)
 
     override var name by SourceRepository.name
