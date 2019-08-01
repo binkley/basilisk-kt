@@ -153,8 +153,7 @@ internal class IngredientsTest {
             ingredient.save()
 
             expect(listener.received).containsExactly(
-                    IngredientSavedEvent(
-                            ingredient))
+                    IngredientSavedEvent(ingredient))
         }
     }
 }
