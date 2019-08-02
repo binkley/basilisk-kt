@@ -4,29 +4,18 @@ import ch.tutteli.atrium.api.cc.en_GB.containsExactly
 import ch.tutteli.atrium.api.cc.en_GB.isA
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
+import hm.binkley.basilisk.TestListener
 import hm.binkley.basilisk.chef.ChefRecord
 import hm.binkley.basilisk.db.testTransaction
 import hm.binkley.basilisk.recipe.RecipeRecord
 import hm.binkley.basilisk.recipe.RecipeStatus.PLANNING
 import hm.binkley.basilisk.source.SourceRecord
-import io.micronaut.context.event.ApplicationEventListener
 import io.micronaut.test.annotation.MicronautTest
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import javax.inject.Inject
-import javax.inject.Singleton
-
-@Singleton // TODO: How to make this 'object', not 'class'?
-internal class TestListener : ApplicationEventListener<IngredientSavedEvent> {
-    private val _received = mutableListOf<IngredientSavedEvent>()
-    val received
-        get() = _received
-
-    override fun onApplicationEvent(event: IngredientSavedEvent) {
-        _received.add(event)
-    }
-}
 
 @MicronautTest
 @TestInstance(PER_CLASS)
@@ -39,7 +28,12 @@ internal class IngredientsTest {
     @Inject
     lateinit var ingredients: Ingredients
     @Inject
-    lateinit var listener: TestListener
+    lateinit var listener: TestListener<IngredientSavedEvent>
+
+    @AfterEach
+    fun tearDown() {
+        listener.reset()
+    }
 
     @Test
     fun shouldFindNoIngredient() {
