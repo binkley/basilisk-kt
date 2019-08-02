@@ -28,6 +28,9 @@ class Locations(private val publisher: ApplicationEventPublisher) {
     fun notifySaved(location: Location) {
         publisher.publishEvent(LocationSavedEvent(location))
     }
+
+    override fun toString() =
+            "${super.toString()}{publisher=$publisher}"
 }
 
 object LocationRepository : IntIdTable("LOCATION") {
@@ -40,8 +43,7 @@ interface LocationDetails {
     val code: String
 }
 
-data class LocationSavedEvent(val location: Location)
-    : ApplicationEvent(location)
+data class LocationSavedEvent(val after: Location) : ApplicationEvent(after)
 
 class Location(
         private val record: LocationRecord,
@@ -54,9 +56,7 @@ class Location(
         return this
     }
 
-    override fun toString(): String {
-        return "${super.toString()}{record=$record}"
-    }
+    override fun toString() = "${super.toString()}{record=$record}"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -67,9 +67,7 @@ class Location(
         return record == other.record
     }
 
-    override fun hashCode(): Int {
-        return record.hashCode()
-    }
+    override fun hashCode() = record.hashCode()
 }
 
 class LocationRecord(id: EntityID<Int>) : IntEntity(id),
@@ -79,9 +77,8 @@ class LocationRecord(id: EntityID<Int>) : IntEntity(id),
     override var name by LocationRepository.name
     override var code by LocationRepository.code
 
-    override fun toString(): String {
-        return "${super.toString()}{id=$id, name=$name, code=$code}"
-    }
+    override fun toString() =
+            "${super.toString()}{id=$id, name=$name, code=$code}"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -91,7 +88,5 @@ class LocationRecord(id: EntityID<Int>) : IntEntity(id),
                 && code == other.code
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(name, code)
-    }
+    override fun hashCode() = Objects.hash(name, code)
 }

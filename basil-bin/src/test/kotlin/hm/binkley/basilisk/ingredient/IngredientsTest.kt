@@ -18,7 +18,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton // TODO: How to make this 'object', not 'class'?
-class TestListener : ApplicationEventListener<IngredientSavedEvent> {
+internal class TestListener : ApplicationEventListener<IngredientSavedEvent> {
     private val _received = mutableListOf<IngredientSavedEvent>()
     val received
         get() = _received
@@ -73,9 +73,9 @@ internal class IngredientsTest {
                 this.source = source
             }.flush()
 
-            val ingredient = ingredients.ingredient(code)
+            val ingredient = ingredients.ingredient(code)!!
 
-            expect(ingredient!!.code).toBe(code)
+            expect(ingredient.code).toBe(code)
             expect(ingredient.name).toBe(name)
             expect(ingredient).isA<UnusedIngredient> { }
         }
@@ -111,9 +111,9 @@ internal class IngredientsTest {
                 this.recipe = recipe
             }.flush()
 
-            val ingredient = ingredients.ingredient(code)
+            val ingredient = ingredients.ingredient(code)!!
 
-            expect(ingredient!!.code).toBe(code)
+            expect(ingredient.code).toBe(code)
             expect(ingredient.name).toBe(name)
             expect(ingredient).isA<UsedIngredient> { }
         }

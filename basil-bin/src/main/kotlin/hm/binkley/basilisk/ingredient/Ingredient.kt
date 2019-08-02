@@ -39,6 +39,9 @@ class Ingredients(
     }
 
     internal fun chefFor(chefRecord: ChefRecord) = chefs.chef(chefRecord)
+
+    override fun toString() =
+            "${super.toString()}{chefs=$chefs, publisher=$publisher}"
 }
 
 interface IngredientDetails {
@@ -47,8 +50,8 @@ interface IngredientDetails {
 }
 
 // TODO: before vs after
-data class IngredientSavedEvent(val after: Ingredient)
-    : ApplicationEvent(after)
+data class IngredientSavedEvent(val after: Ingredient) : ApplicationEvent(
+        after)
 
 sealed class Ingredient(
         private val record: IngredientRecord,
@@ -62,9 +65,8 @@ sealed class Ingredient(
         return this
     }
 
-    override fun toString(): String {
-        return "${super.toString()}{record=$record, chef=$chef}"
-    }
+    override fun toString() =
+            "${super.toString()}{record=$record, chef=$chef}"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -75,9 +77,7 @@ sealed class Ingredient(
         return record == other.record
     }
 
-    override fun hashCode(): Int {
-        return record.hashCode()
-    }
+    override fun hashCode() = record.hashCode()
 }
 
 class UnusedIngredient(
@@ -112,9 +112,8 @@ class IngredientRecord(id: EntityID<Int>)
     var source by SourceRecord referencedOn IngredientRepository.sourceRef
     var locations by LocationRecord via IngredientLocationsRepository
 
-    override fun toString(): String {
-        return "${super.toString()}{id=$id, code=$code, chef=$chef, recipe=$recipe, source=$source, locations=$locations}"
-    }
+    override fun toString() =
+            "${super.toString()}{id=$id, code=$code, chef=$chef, recipe=$recipe, source=$source, locations=$locations}"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -126,7 +125,6 @@ class IngredientRecord(id: EntityID<Int>)
                 && locations == other.locations
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(code, chef, recipe, source, locations)
-    }
+    override fun hashCode() =
+            Objects.hash(code, chef, recipe, source, locations)
 }

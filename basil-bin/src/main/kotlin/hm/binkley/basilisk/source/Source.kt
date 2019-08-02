@@ -38,6 +38,9 @@ class Sources(
 
     internal fun locationFor(locationRecord: LocationRecord) =
             locations.location(locationRecord)
+
+    override fun toString() =
+            "${super.toString()}{locations=$locations, publisher=$publisher}"
 }
 
 interface SourceDetails {
@@ -45,7 +48,7 @@ interface SourceDetails {
     val code: String
 }
 
-data class SourceSavedEvent(val source: Source) : ApplicationEvent(source)
+data class SourceSavedEvent(val after: Source) : ApplicationEvent(after)
 
 class Source(
         private val record: SourceRecord,
@@ -62,9 +65,7 @@ class Source(
         return this
     }
 
-    override fun toString(): String {
-        return "${super.toString()}{record=$record}"
-    }
+    override fun toString() = "${super.toString()}{record=$record}"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -75,9 +76,7 @@ class Source(
         return record == other.record
     }
 
-    override fun hashCode(): Int {
-        return record.hashCode()
-    }
+    override fun hashCode() = record.hashCode()
 }
 
 object SourceRepository : IntIdTable("SOURCE") {
@@ -93,9 +92,8 @@ class SourceRecord(id: EntityID<Int>) : IntEntity(id),
     override var code by SourceRepository.code
     var locations by LocationRecord via SourceLocationsRepository
 
-    override fun toString(): String {
-        return "${super.toString()}{id=$id, name=$name, code=$code}"
-    }
+    override fun toString() =
+            "${super.toString()}{id=$id, name=$name, code=$code}"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -106,7 +104,5 @@ class SourceRecord(id: EntityID<Int>) : IntEntity(id),
                 && locations == other.locations
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(name, code, locations)
-    }
+    override fun hashCode() = Objects.hash(name, code, locations)
 }
