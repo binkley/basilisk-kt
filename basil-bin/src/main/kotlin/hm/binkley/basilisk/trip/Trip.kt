@@ -22,7 +22,18 @@ class TripRecord(id: EntityID<Int>) : IntEntity(id),
     var chef by ChefRecord referencedOn TripRepository.chef
     private val _legs by LegRecord referrersOn LegRepository.trip
     // TODO: What is right here?  Memoized or live?
-    val legs: Iterable<LegRecord> by lazy { sort(_legs).first }
+    val legs: Iterable<LegRecord> by lazy {
+        // TODO: Bleh.  Use Kotlin stdlib instead of everything by hand
+        val (sorted, _) = sort(_legs)
+        val iter = sorted.iterator()
+        check(iter.hasNext()) { "BUG" }
+        val legs = iter.next()
+        val titer = legs.iterator()
+        check(titer.hasNext()) { "BUG" }
+        titer.next()
+        check(!titer.hasNext()) { "Disconnected legs" }
+        legs
+    }
     override val start
         get() = legs.first()
     override val end

@@ -1,7 +1,12 @@
 package hm.binkley.basilisk.trip
 
+import ch.tutteli.atrium.api.cc.en_GB.contains
+import ch.tutteli.atrium.api.cc.en_GB.hasSize
+import ch.tutteli.atrium.api.cc.en_GB.inAnyOrder
 import ch.tutteli.atrium.api.cc.en_GB.isLessOrEquals
+import ch.tutteli.atrium.api.cc.en_GB.only
 import ch.tutteli.atrium.api.cc.en_GB.toBe
+import ch.tutteli.atrium.api.cc.en_GB.values
 import ch.tutteli.atrium.verbs.expect
 import org.junit.jupiter.api.Test
 
@@ -10,7 +15,7 @@ class SpanTest {
     fun shouldSort0() {
         val (sorted, loops) = sort(listOf<TestSpan>())
 
-        expect(sorted).toBe(listOf())
+        expect(sorted).toBe(listOf(listOf()))
         expect(loops).toBe(0)
     }
 
@@ -20,7 +25,7 @@ class SpanTest {
 
         val (sorted, loops) = sort(listOf(one))
 
-        expect(sorted).toBe(listOf(one))
+        expect(sorted).toBe(listOf(listOf(one)))
         expect(loops).toBe(0)
     }
 
@@ -30,11 +35,30 @@ class SpanTest {
             TestSpan(it, it + 1)
         }.shuffled()
 
-        val (sorted, loops) = sort(unsorted)
+        val (iter, loops) = sort(unsorted)
+        val spans = iter.toList()
+
+        expect(spans).hasSize(1)
+
+        val sorted = spans.first()
 
         expect(sorted.map { it.start }).toBe((1..100).toList())
         // TODO: The actual expectation is approximate with random input
         expect(loops).isLessOrEquals(2000)
+    }
+
+    @Test
+    fun shouldHandleBrokenSpans() {
+        // No predictable ordering when spans are broken
+        val a = TestSpan(0, 1)
+        val b = TestSpan(2, 3)
+        val unsorted = listOf(a, b)
+
+        val (iter, loops) = sort(unsorted)
+        val spans = iter.toList()
+
+        expect(spans).hasSize(2)
+        expect(spans).contains.inAnyOrder.only.values(listOf(a), listOf(b))
     }
 
     data class TestSpan(override val start: Int, override val end: Int)

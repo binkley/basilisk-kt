@@ -5,7 +5,8 @@ interface Span<T> {
     val end: T
 }
 
-fun <T, S : Span<T>> sort(unsorted: Iterable<S>): Pair<Iterable<S>, Int> {
+fun <T, S : Span<T>> sort(
+        unsorted: Iterable<S>): Pair<Iterable<Iterable<S>>, Int> {
     class SpanList<T, S : Span<T>>(private val backing: MutableList<S>)
         : MutableList<S> by backing,
             Span<T> {
@@ -21,28 +22,28 @@ fun <T, S : Span<T>> sort(unsorted: Iterable<S>): Pair<Iterable<S>, Int> {
         override fun toString() = backing.toString()
     }
 
-    val toSort = unsorted.map { SpanList(it) }.toMutableList()
-    when (toSort.size) {
-        0, 1 -> return Pair(unsorted, 0)
+    val sorted = unsorted.map { SpanList(it) }.toMutableList()
+    when (sorted.size) {
+        0, 1 -> return Pair(listOf(unsorted), 0)
     }
 
     // TODO: A better algorithm -- check Knuth
     var loops = 0
     var i = 0
-    top@ while (i < toSort.size) {
+    top@ while (i < sorted.size) {
         ++loops
-        val curr = toSort[i]
+        val curr = sorted[i]
         var j = 0
-        while (j < toSort.size) {
+        while (j < sorted.size) {
             ++loops
-            val sub = toSort[j]
+            val sub = sorted[j]
             if (curr.end == sub.start) {
                 curr.addAll(sub)
-                toSort.removeAt(j)
+                sorted.removeAt(j)
                 continue
             } else if (curr.start == sub.end) {
                 sub.addAll(curr)
-                toSort.removeAt(i)
+                sorted.removeAt(i)
                 continue@top
             }
             ++j
@@ -50,5 +51,5 @@ fun <T, S : Span<T>> sort(unsorted: Iterable<S>): Pair<Iterable<S>, Int> {
         ++i
     }
 
-    return Pair(toSort[0], loops)
+    return Pair(sorted, loops)
 }
