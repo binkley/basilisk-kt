@@ -5,7 +5,6 @@ import ch.tutteli.atrium.verbs.expect
 import io.micronaut.http.HttpRequest.POST
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
-import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.test.annotation.MicronautTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -15,9 +14,6 @@ import javax.inject.Inject
 @MicronautTest
 @TestInstance(PER_CLASS)
 internal class HelloControllerTest {
-    @Inject
-    lateinit var server: EmbeddedServer
-
     @Inject
     @field:Client("/")
     lateinit var client: HttpClient

@@ -12,8 +12,4 @@ class ChefsController(private val chefs: Chefs) {
             ChefResource(it)
         }
     }
-
-    data class ChefResource(val name: String, val code: String) {
-        constructor(chef: Chef) : this(chef.name, chef.code)
-    }
 }
