@@ -13,20 +13,20 @@ import org.junit.jupiter.api.Test
 class SpanTest {
     @Test
     fun shouldSort0() {
-        val (sorted, loops) = sort(listOf<TestSpan>())
+        val (sorted, cost) = sort(listOf<TestSpan>())
 
         expect(sorted).toBe(listOf(listOf()))
-        expect(loops).toBe(0)
+        expect(cost).toBe(0)
     }
 
     @Test
     fun shouldSort1() {
         val one = TestSpan(1, 2)
 
-        val (sorted, loops) = sort(listOf(one))
+        val (sorted, cost) = sort(listOf(one))
 
         expect(sorted).toBe(listOf(listOf(one)))
-        expect(loops).toBe(0)
+        expect(cost).toBe(0)
     }
 
     @Test
@@ -35,7 +35,7 @@ class SpanTest {
             TestSpan(it, it + 1)
         }.shuffled()
 
-        val (iter, loops) = sort(unsorted)
+        val (iter, cost) = sort(unsorted)
         val spans = iter.toList()
 
         expect(spans).hasSize(1)
@@ -44,7 +44,7 @@ class SpanTest {
 
         expect(sorted.map { it.start }).toBe((1..100).toList())
         // TODO: The actual expectation is approximate with random input
-        expect(loops).isLessOrEquals(2000)
+        expect(cost).isLessOrEquals(2000)
     }
 
     @Test
@@ -54,7 +54,7 @@ class SpanTest {
         val b = TestSpan(2, 3)
         val unsorted = listOf(a, b)
 
-        val (iter, loops) = sort(unsorted)
+        val (iter, _) = sort(unsorted)
         val spans = iter.toList()
 
         expect(spans).hasSize(2)

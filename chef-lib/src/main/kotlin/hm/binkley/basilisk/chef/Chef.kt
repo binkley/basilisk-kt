@@ -84,9 +84,6 @@ class ChefRecord(id: EntityID<Int>) : IntEntity(id),
     override var name by ChefRepository.name
     override var code by ChefRepository.code
 
-    override fun toString() =
-            "${super.toString()}{id=$id, name=$name, code=$code}"
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -96,4 +93,7 @@ class ChefRecord(id: EntityID<Int>) : IntEntity(id),
     }
 
     override fun hashCode() = Objects.hash(name, code)
+
+    override fun toString() =
+            "${super.toString()}{id=$id, name=$name, code=$code}"
 }

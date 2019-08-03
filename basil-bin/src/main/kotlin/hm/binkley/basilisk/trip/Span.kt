@@ -28,21 +28,21 @@ fun <T, S : Span<T>> sort(
     }
 
     // TODO: A better algorithm -- check Knuth
-    var loops = 0
+    var cost = 0
     var i = 0
     top@ while (i < sorted.size) {
-        ++loops
+        ++cost
         val curr = sorted[i]
         var j = 0
         while (j < sorted.size) {
-            ++loops
-            val sub = sorted[j]
-            if (curr.end == sub.start) {
-                curr.addAll(sub)
+            ++cost
+            val next = sorted[j]
+            if (curr.end == next.start) {
+                curr.addAll(next)
                 sorted.removeAt(j)
                 continue
-            } else if (curr.start == sub.end) {
-                sub.addAll(curr)
+            } else if (curr.start == next.end) {
+                next.addAll(curr)
                 sorted.removeAt(i)
                 continue@top
             }
@@ -51,5 +51,5 @@ fun <T, S : Span<T>> sort(
         ++i
     }
 
-    return Pair(sorted, loops)
+    return Pair(sorted, cost)
 }

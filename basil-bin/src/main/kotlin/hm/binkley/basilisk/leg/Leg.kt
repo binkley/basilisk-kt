@@ -9,6 +9,7 @@ import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
+import java.util.*
 
 object LegRepository : IntIdTable("LEG") {
     val trip = reference("trip_id", TripRepository)
@@ -27,4 +28,21 @@ class LegRecord(id: EntityID<Int>) : IntEntity(id),
     var startAt by LegRepository.startAt
     override var end by LocationRecord referencedOn LegRepository.end
     var endAt by LegRepository.endAt
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as LegRecord
+        return trip.id == other.trip.id
+                && start.id == other.start.id
+                && startAt == other.startAt
+                && end.id == other.end.id
+                && endAt == other.endAt
+    }
+
+    override fun hashCode() =
+            Objects.hash(trip.id, start.id, startAt, end.id, endAt)
+
+    override fun toString() =
+            "${super.toString()}{id=$id, trip_id=${trip.id}, start=${start.code}, startAt=$startAt, end=${end.code}, endAt=$endAt}"
 }
