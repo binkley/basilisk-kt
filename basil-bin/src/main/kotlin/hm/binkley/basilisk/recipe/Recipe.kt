@@ -29,7 +29,7 @@ class Recipes(
         recipe(it)
     }
 
-    fun recipe(record: RecipeRecord) = Recipe(record, this)
+    internal fun recipe(record: RecipeRecord) = Recipe(record, this)
 
     fun create(name: String, code: String) = Recipe(RecipeRecord.new {
         this.name = name

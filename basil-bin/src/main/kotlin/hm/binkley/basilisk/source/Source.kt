@@ -25,7 +25,7 @@ class Sources(
         source(it)
     }
 
-    fun source(record: SourceRecord) = Source(record, this)
+    internal fun source(record: SourceRecord) = Source(record, this)
 
     fun create(name: String, code: String) = Source(SourceRecord.new {
         this.name = name

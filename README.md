@@ -7,14 +7,14 @@
 # Basilisk
 
 Demonstrate Kotlin, Micronaut, Kotlin Exposed, JUnit 5, Atrium,
-Testcontainers, Docker, et al
+Testcontainers, Docker, et al.
 
 * [Building and running](#building-and-running)
 * [Model](#model)
 * [Features](#features)
 * [Feedback](#feedback)
 
-(Still to be written:)
+(Yet to be written:)
 
 * [Production](#production)
 * [Development](#development)
@@ -27,8 +27,8 @@ Testcontainers, Docker, et al
 $ ./gradlew clean build
 ```
 
-On Git push, the build is first run before actual pushing.  If the build
-fails, the push does not complete.
+On Git push, first runs the build before actual pushing.  If the build fails,
+the push does not complete.
 
 The simplest way to run:
 
@@ -43,7 +43,8 @@ $ ./run-basilisk
 - Starts project programs
 - Tails program logs
 
-Use `^C` (SIGINT) to interrupt.  All background processes are stopped.
+Use `^C` (SIGINT) to interrupt.  Stops all processes backgrounded in the
+script.
 
 <img src="https://www.featurepics.com/StockImage/20070125/yellow-rose-of-texas-stock-image-200039.jpg" alt="Yellow Rose of Texas" width="25%" align="right"/>
 
@@ -100,13 +101,13 @@ You can reach some conclusions from all this information:
 
 - A recipe is not really tied to a chef, and it its "own thing"
 - Some recipes can only be made in some locations, and may depend on season
-- Ingredients may be restricted to a location, but many are simply waiting to
-  be used
+- Ingredients may be restricted by location; many are simply waiting to be
+  used
 - Unused ingredients are waste, and cost your bottom line
 - Location and season are important, but not the "root" of the picture
 - Likewise, chefs are not the "root" of the picture, but move around, and
   prepare many, varying meals
-- Recipes seem important, and really your concern is pleasing guests
+- Recipes seem important, and really your concern is in pleasing guests
 
 ### Implementing
 
@@ -117,11 +118,11 @@ You can reach some conclusions from all this information:
   ingredients can also belong to a recipe as well, as your "meal planners"
   schedule stock for each location and season
 * [`Sources`](basil-bin/src/main/kotlin/hm/binkley/basilisk/source/Source.kt)
-  defines ingredients, in a similar fashion to classes in Java define
-  instances; it is its own aggregate root
+  defines ingredients, similar to classes in Java defining instances; a source
+  is its own aggregate root
 * [`Chefs`](chef-lib/src/main/kotlin/hm/binkley/basilisk/chef/Chef.kt)
-  is important, but _not_ an aggregate root.  You move chefs around your
-  locations over time, but the recipes are tied more to ingredients, and
+  are important, but they are _not_ aggregate roots.  You move chefs around
+  your locations over time, but the recipes are tied more to ingredients, and
   possibly restricted by location and season.  Note: Chefs run as a separate
   service
 * [`Locations`](basil-bin/src/main/kotlin/hm/binkley/basilisk/location/Location.kt)
@@ -133,7 +134,7 @@ You can reach some conclusions from all this information:
   are individual segments between two locations within a trip.  Legs are
   wholly owned by trips
 
-### Sort of a picture (if you turn the page sideways and squint)
+### A kind of picture (if you turn the page sideways and squint)
 
 These are the most basic aggregates, what is most important in pleasing your
 guests and helping the "meal planners":

@@ -77,7 +77,8 @@ function -ready-or-die() {
 
   # This is convoluted, but gets the script to use the exit code (`$?`) of the job on error
   while ! grep "$ready_text" "$out_file" >/dev/null; do
-    # `kill -0 <pid>` is neat: Check the process is running, do not delilver real signal
+    # `kill -0 <pid>` is neat: Check that the process is running, but do not
+    # actually delivery a signal
     kill -0 $bgpid 2>/dev/null || {
       # Meaning ... wait for fake signal to be delivered
       wait $bgpid || {

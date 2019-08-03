@@ -22,9 +22,7 @@ class TripRecord(id: EntityID<Int>) : IntEntity(id),
     var chef by ChefRecord referencedOn TripRepository.chef
     private val _legs by LegRecord referrersOn LegRepository.trip
     // TODO: What is right here?  Memoized or live?
-    val legs: Iterable<LegRecord> by lazy {
-        sort(_legs)
-    }
+    val legs: Iterable<LegRecord> by lazy { sort(_legs).first }
     override val start
         get() = legs.first()
     override val end
