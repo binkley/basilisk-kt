@@ -56,8 +56,8 @@ internal class ChefsTest {
         val code = code
 
         testTransaction {
-            val firstSnapshot = ChefSnapshot(name, code)
-            val secondSnapshot = ChefSnapshot("CHEF ROBERT", code)
+            val firstSnapshot = ChefResource(name, code)
+            val secondSnapshot = ChefResource("CHEF ROBERT", code)
 
             val chef = chefs.new(firstSnapshot.name, firstSnapshot.code)
 

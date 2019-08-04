@@ -35,7 +35,7 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
         chef(it)
     }
 
-    internal fun notifySaved(before: ChefRecordData?, after: MutableChef?) {
+    internal fun notifySaved(before: ChefResource?, after: MutableChef?) {
         publisher.publishEvent(ChefSavedEvent(before, after))
     }
 
@@ -48,17 +48,13 @@ interface ChefRecordData {
     val code: String
 }
 
-data class ChefSnapshot(
-        override val name: String,
-        override val code: String) : ChefRecordData
-
 interface MutableChefRecordData {
     var name: String
     var code: String
 }
 
 data class ChefSavedEvent(
-        val before: ChefRecordData?,
+        val before: ChefResource?,
         val after: MutableChef?) : ApplicationEvent(after ?: before)
 
 class Chef(
@@ -82,7 +78,7 @@ class Chef(
 }
 
 class MutableChef(
-        private val snapshot: ChefRecordData?,
+        private val snapshot: ChefResource?,
         private val record: ChefRecord,
         private val factory: Chefs) : MutableChefRecordData by record {
     fun save(): MutableChef {
@@ -124,7 +120,7 @@ class ChefRecord(id: EntityID<Int>) : IntEntity(id),
     override var name by ChefRepository.name
     override var code by ChefRepository.code
 
-    fun snapshot() = ChefSnapshot(name, code)
+    fun snapshot() = ChefResource(name, code)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
