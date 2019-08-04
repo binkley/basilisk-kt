@@ -111,26 +111,26 @@ You can reach some conclusions from all this information:
 
 ### Implementing
 
-* [`Recipes`](basil-bin/src/main/kotlin/hm/binkley/basilisk/recipe/Recipe.kt)
+* [`Recipes`](basil-bin/src/main/kotlin/hm/binkley/basilisk/recipe/Recipes.kt)
   is an aggregate root
-* [`Ingredients`](basil-bin/src/main/kotlin/hm/binkley/basilisk/ingredient/Ingredient.kt)
+* [`Ingredients`](basil-bin/src/main/kotlin/hm/binkley/basilisk/ingredient/Ingredients.kt)
   is a kind of root as well, in that unused ingredients are important, but
   ingredients can also belong to a recipe as well, as your "meal planners"
   schedule stock for each location and season
-* [`Sources`](basil-bin/src/main/kotlin/hm/binkley/basilisk/source/Source.kt)
+* [`Sources`](basil-bin/src/main/kotlin/hm/binkley/basilisk/source/Sources.kt)
   defines ingredients, similar to classes in Java defining instances; a source
   is its own aggregate root
-* [`Chefs`](chef-lib/src/main/kotlin/hm/binkley/basilisk/chef/Chef.kt)
+* [`Chefs`](chef-lib/src/main/kotlin/hm/binkley/basilisk/chef/Chefs.kt)
   are important, but they are _not_ aggregate roots.  You move chefs around
   your locations over time, but the recipes are tied more to ingredients, and
   possibly restricted by location and season.  Note: Chefs run as a separate
   service
-* [`Locations`](basil-bin/src/main/kotlin/hm/binkley/basilisk/location/Location.kt)
+* [`Locations`](location-lib/src/main/kotlin/hm/binkley/basilisk/location/Locations.kt)
   restricts what ingredients are available at a location (eg, _The Dallas
   Yellow Rose_)
-* [`Trips`](basil-bin/src/main/kotlin/hm/binkley/basilisk/trip/Trip.kt)
+* [`Trips`](basil-bin/src/main/kotlin/hm/binkley/basilisk/trip/Trips.kt)
   are future tours planned for our celebrated chefs
-* [`Legs`](basil-bin/src/main/kotlin/hm/binkley/basilisk/leg/Leg.kt)
+* [`Legs`](basil-bin/src/main/kotlin/hm/binkley/basilisk/leg/Legs.kt)
   are individual segments between two locations within a trip.  Legs are
   wholly owned by trips
 
