@@ -32,6 +32,9 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
     /** For implementors of other record types having a reference. */
     fun from(record: ChefRecord) = Chef(record, this)
 
+    /** For implementors of other record types having a reference. */
+    fun toRecord(chef: Chef) = chef.record
+
     internal fun notifySaved(
             before: ChefResource?,
             after: ChefRecord?) {
@@ -55,7 +58,7 @@ data class ChefSavedEvent(
         val after: Chef?) : ApplicationEvent(after ?: before)
 
 class Chef internal constructor(
-        private val record: ChefRecord,
+        internal val record: ChefRecord,
         private val factory: Chefs)
     : ChefDetails by record {
     fun update(block: MutableChef.() -> Unit) =
