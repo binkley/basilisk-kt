@@ -1,5 +1,5 @@
 profile: service
-defaultPackage: kotlin.micronaut
+defaultPackage: hm.binkley.basilisk
 ---
-testFramework: spek
+testFramework: junit5
 sourceLanguage: kotlin
