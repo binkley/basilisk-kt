@@ -33,7 +33,7 @@ internal class ChefsTest {
     @Test
     fun shouldFindNoChef() {
         testTransaction {
-            val ingredient = chefs.chef(code)
+            val ingredient = chefs.byCode(code)
 
             expect(ingredient).toBe(null)
         }
@@ -43,7 +43,7 @@ internal class ChefsTest {
     fun shouldRoundTrip() {
         testTransaction {
             chefs.new(name, code)
-            val chef = chefs.chef(code)!!
+            val chef = chefs.byCode(code)!!
 
             expect(chef.code).toBe(code)
             expect(chef.name).toBe(name)

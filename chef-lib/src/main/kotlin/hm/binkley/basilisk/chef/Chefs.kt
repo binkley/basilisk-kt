@@ -12,12 +12,12 @@ import javax.inject.Singleton
 
 @Singleton
 class Chefs(private val publisher: ApplicationEventPublisher) {
-    fun chef(code: String): Chef? {
+    fun byCode(code: String): Chef? {
         val record = ChefRecord.findOne {
             ChefRepository.code eq code
         }
 
-        return record?.let { chef(it) }
+        return record?.let { from(it) }
     }
 
     fun new(name: String, code: String) = Chef(ChefRecord.new {
@@ -28,11 +28,11 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
     }
 
     fun all() = ChefRecord.all().map {
-        chef(it)
+        from(it)
     }
 
     /** For implementors of other record types having a reference. */
-    fun chef(record: ChefRecord) = Chef(record, this)
+    fun from(record: ChefRecord) = Chef(record, this)
 
     internal fun notifySaved(
             before: ChefResource?,

@@ -12,12 +12,12 @@ import javax.inject.Singleton
 
 @Singleton
 class Locations(private val publisher: ApplicationEventPublisher) {
-    fun location(code: String): Location? {
+    fun byCode(code: String): Location? {
         val record = LocationRecord.findOne {
             LocationRepository.code eq code
         }
 
-        return record?.let { location(it) }
+        return record?.let { from(it) }
     }
 
     fun new(name: String, code: String) = Location(LocationRecord.new {
@@ -28,11 +28,11 @@ class Locations(private val publisher: ApplicationEventPublisher) {
     }
 
     fun all() = LocationRecord.all().map {
-        location(it)
+        from(it)
     }
 
     /** For implementors of other record types having a reference. */
-    fun location(record: LocationRecord) = Location(record, this)
+    fun from(record: LocationRecord) = Location(record, this)
 
     internal fun notifySaved(
             before: LocationResource?,

@@ -38,7 +38,7 @@ class Ingredients(
         publisher.publishEvent(IngredientSavedEvent(ingredient))
     }
 
-    internal fun chefFor(chefRecord: ChefRecord) = chefs.chef(chefRecord)
+    internal fun chefFor(chefRecord: ChefRecord) = chefs.from(chefRecord)
 
     override fun toString() =
             "${super.toString()}{chefs=$chefs, publisher=$publisher}"

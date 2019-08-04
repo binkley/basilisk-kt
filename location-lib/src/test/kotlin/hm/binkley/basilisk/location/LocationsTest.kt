@@ -33,7 +33,7 @@ internal class LocationsTest {
     @Test
     fun shouldFindNoLocation() {
         testTransaction {
-            val ingredient = locations.location(code)
+            val ingredient = locations.byCode(code)
 
             expect(ingredient).toBe(null)
         }
@@ -43,7 +43,7 @@ internal class LocationsTest {
     fun shouldRoundTrip() {
         testTransaction {
             locations.new(name, code)
-            val location = locations.location(code)!!
+            val location = locations.byCode(code)!!
 
             expect(location.code).toBe(code)
             expect(location.name).toBe(name)
@@ -56,7 +56,8 @@ internal class LocationsTest {
             val firstSnapshot = LocationResource(name, code)
             val secondSnapshot = LocationResource("LOCATION ROBERT", code)
 
-            val location = locations.new(firstSnapshot.name, firstSnapshot.code)
+            val location = locations.new(
+                    firstSnapshot.name, firstSnapshot.code)
 
             expect(listener.received).containsExactly(LocationSavedEvent(
                     null, location.mutable(null)))

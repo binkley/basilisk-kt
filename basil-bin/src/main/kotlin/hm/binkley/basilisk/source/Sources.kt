@@ -37,7 +37,7 @@ class Sources(
     }
 
     internal fun locationFor(locationRecord: LocationRecord) =
-            locations.location(locationRecord)
+            locations.from(locationRecord)
 
     override fun toString() =
             "${super.toString()}{locations=$locations, publisher=$publisher}"
