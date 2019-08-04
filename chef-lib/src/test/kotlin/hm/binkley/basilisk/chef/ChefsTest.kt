@@ -42,7 +42,7 @@ internal class ChefsTest {
     @Test
     fun shouldRoundTrip() {
         testTransaction {
-            chefs.create(name, code)
+            chefs.new(name, code)
             val chef = chefs.chef(code)!!
 
             expect(chef.code).toBe(code)
@@ -56,16 +56,27 @@ internal class ChefsTest {
         val code = code
 
         testTransaction {
-            val record = ChefRecord.new {
-                this.name = name
-                this.code = code
-            }
-            val chef = Chef(record, chefs)
+            val firstSnapshot = ChefSnapshot(name, code)
+            val secondSnapshot = ChefSnapshot("CHEF ROBERT", code)
 
-            chef.save()
+            val chef = chefs.new(firstSnapshot.name, firstSnapshot.code)
 
             expect(listener.received).containsExactly(
-                    ChefSavedEvent(chef))
+                    ChefSavedEvent(null, chef.mutable()))
+            listener.reset()
+
+            chef.mutable().apply {
+                this.name = secondSnapshot.name
+            }.save()
+
+            expect(listener.received).containsExactly(
+                    ChefSavedEvent(firstSnapshot, chef.mutable()))
+            listener.reset()
+
+            chef.mutable().delete()
+
+            expect(listener.received).containsExactly(
+                    ChefSavedEvent(secondSnapshot, null))
         }
     }
 }
