@@ -38,7 +38,11 @@ class Sources(
                 save()
             }
 
-    internal fun from(record: SourceRecord) = Source(record, this)
+    /** For implementors of other record types having a reference. */
+    fun from(record: SourceRecord) = Source(record, this)
+
+    /** For implementors of other record types having a reference. */
+    fun toRecord(source: Source) = source.record
 
     internal fun notifySaved(
             before: SourceResource?,
@@ -69,7 +73,7 @@ data class SourceSavedEvent(
         val after: Source?) : ApplicationEvent(after ?: before)
 
 class Source internal constructor(
-        private val record: SourceRecord,
+        internal val record: SourceRecord,
         private val factory: Sources)
     : SourceDetails by record {
     val locations: SizedIterable<Location>

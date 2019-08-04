@@ -111,13 +111,13 @@ You can reach some conclusions from all this information:
 
 ### Implementing
 
-* [`Recipes`](basil-bin/src/main/kotlin/hm/binkley/basilisk/recipe/Recipes.kt)
+* [`Recipes`](recipe-lib/src/main/kotlin/hm/binkley/basilisk/recipe/Recipes.kt)
   is an aggregate root
-* [`Ingredients`](basil-bin/src/main/kotlin/hm/binkley/basilisk/ingredient/Ingredients.kt)
+* [`Ingredients`](recipe-lib/src/main/kotlin/hm/binkley/basilisk/ingredient/Ingredients.kt)
   is a kind of root as well, in that unused ingredients are important, but
   ingredients can also belong to a recipe as well, as your "meal planners"
   schedule stock for each location and season
-* [`Sources`](basil-bin/src/main/kotlin/hm/binkley/basilisk/source/Sources.kt)
+* [`Sources`](source-lib/src/main/kotlin/hm/binkley/basilisk/source/Sources.kt)
   defines ingredients, similar to classes in Java defining instances; a source
   is its own aggregate root
 * [`Chefs`](chef-lib/src/main/kotlin/hm/binkley/basilisk/chef/Chefs.kt)

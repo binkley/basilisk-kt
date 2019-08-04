@@ -49,7 +49,8 @@ class Recipes(
                 save()
             }
 
-    internal fun from(record: RecipeRecord) = Recipe(record, this)
+    /** For implementors of other record types having a reference. */
+    fun from(record: RecipeRecord) = Recipe(record, this)
 
     internal fun notifySaved(
             before: RecipeResource?,
