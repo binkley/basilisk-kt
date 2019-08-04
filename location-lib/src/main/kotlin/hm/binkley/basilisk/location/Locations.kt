@@ -12,12 +12,10 @@ import javax.inject.Singleton
 
 @Singleton
 class Locations(private val publisher: ApplicationEventPublisher) {
-    fun byCode(code: String): Location? {
-        val record = LocationRecord.findOne {
-            LocationRepository.code eq code
-        }
-
-        return record?.let { from(it) }
+    fun byCode(code: String) = LocationRecord.findOne {
+        LocationRepository.code eq code
+    }?.let {
+        from(it)
     }
 
     fun new(name: String, code: String) = from(LocationRecord.new {

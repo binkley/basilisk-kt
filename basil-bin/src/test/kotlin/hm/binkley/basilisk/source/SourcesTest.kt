@@ -33,17 +33,17 @@ internal class SourcesTest {
     @Test
     fun shouldFindNoSource() {
         testTransaction {
-            val source = sources.source(code)
+            val ingredient = sources.byCode(code)
 
-            expect(source).toBe(null)
+            expect(ingredient).toBe(null)
         }
     }
 
     @Test
     fun shouldRoundTrip() {
         testTransaction {
-            sources.create(name, code)
-            val source = sources.source(code)!!
+            sources.new(name, code)
+            val source = sources.byCode(code)!!
 
             expect(source.code).toBe(code)
             expect(source.name).toBe(name)
@@ -52,20 +52,31 @@ internal class SourcesTest {
 
     @Test
     fun shouldPublishSaveEvents() {
-        val name = name
-        val code = code
-
         testTransaction {
-            val record = SourceRecord.new {
-                this.name = name
-                this.code = code
+            val firstSnapshot = SourceResource(name, code, listOf())
+            val secondSnapshot = SourceResource("LIME", code, listOf())
+
+            val source = sources.new(firstSnapshot.name, firstSnapshot.code)
+
+            expect(listener.received).containsExactly(SourceSavedEvent(
+                    null, source))
+            listener.reset()
+
+            source.update {
+                this.name = secondSnapshot.name
+                save()
             }
-            val source = Source(record, sources)
 
-            source.save()
+            expect(listener.received).containsExactly(SourceSavedEvent(
+                    firstSnapshot, source))
+            listener.reset()
 
-            expect(listener.received).containsExactly(
-                    SourceSavedEvent(source))
+            source.update {
+                delete()
+            }
+
+            expect(listener.received).containsExactly(SourceSavedEvent(
+                    secondSnapshot, null))
         }
     }
 }

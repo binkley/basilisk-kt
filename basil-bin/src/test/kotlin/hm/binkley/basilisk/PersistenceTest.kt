@@ -277,4 +277,46 @@ internal class PersistenceTest {
                     .toBe(locations.toSet())
         }
     }
+
+    @Test
+    fun `should update locations`() {
+        testTransaction {
+            val locations = transaction {
+                val locationA = LocationRecord.new {
+                    name = "DALLAS"
+                    code = "DAL"
+                }
+                val locationB = LocationRecord.new {
+                    name = "MELBOURNE"
+                    code = "MEL"
+                }
+                val locationC = LocationRecord.new {
+                    name = "TOKYO"
+                    code = "TOK"
+                }
+
+                listOf(locationA, locationB, locationC)
+            }
+
+            val source = transaction {
+                val source = SourceRecord.new {
+                    name = "RHUBARB"
+                    code = "SRC012"
+                }
+
+                source
+            }
+
+            transaction {
+                source.locations = SizedCollection(locations)
+            }
+
+            transaction {
+                source.locations = SizedCollection(locations.drop(1))
+            }
+
+            expect(SourceRecord.findById(source.id)!!.locations.toSet())
+                    .toBe(locations.drop(1).toSet())
+        }
+    }
 }

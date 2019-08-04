@@ -12,12 +12,10 @@ import javax.inject.Singleton
 
 @Singleton
 class Chefs(private val publisher: ApplicationEventPublisher) {
-    fun byCode(code: String): Chef? {
-        val record = ChefRecord.findOne {
-            ChefRepository.code eq code
-        }
-
-        return record?.let { from(it) }
+    fun byCode(code: String) = ChefRecord.findOne {
+        ChefRepository.code eq code
+    }?.let {
+        from(it)
     }
 
     fun new(name: String, code: String) = from(ChefRecord.new {
