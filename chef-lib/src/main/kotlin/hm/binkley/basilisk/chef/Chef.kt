@@ -22,14 +22,10 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
 
     fun chef(record: ChefRecord) = Chef(record, this)
 
-    fun new(name: String, code: String): Chef {
-        val record = ChefRecord.new {
-            this.name = name
-            this.code = code
-        }
-        MutableChef(null, record, this).save()
-        return Chef(record, this)
-    }
+    fun new(name: String, code: String) = Chef(ChefRecord.new {
+        this.name = name
+        this.code = code
+    }, this).mutable(null).save().immutable()
 
     fun all() = ChefRecord.all().map {
         chef(it)
@@ -38,17 +34,14 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
     internal fun notifySaved(before: ChefResource?, after: MutableChef?) {
         publisher.publishEvent(ChefSavedEvent(before, after))
     }
-
-    override fun toString() =
-            "${super.toString()}{publisher=$publisher}"
 }
 
-interface ChefRecordData {
+interface ChefDetails {
     val name: String
     val code: String
 }
 
-interface MutableChefRecordData {
+interface MutableChefDetails {
     var name: String
     var code: String
 }
@@ -60,15 +53,16 @@ data class ChefSavedEvent(
 class Chef(
         private val record: ChefRecord,
         private val factory: Chefs)
-    : ChefRecordData by record {
-    fun mutable() = MutableChef(record.snapshot(), record, factory)
+    : ChefDetails by record {
+    fun mutable() = mutable(ChefResource(this))
+
+    internal fun mutable(snapshot: ChefResource?) =
+            MutableChef(snapshot, record, factory)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-
         other as Chef
-
         return record == other.record
     }
 
@@ -80,31 +74,31 @@ class Chef(
 class MutableChef(
         private val snapshot: ChefResource?,
         private val record: ChefRecord,
-        private val factory: Chefs) : MutableChefRecordData by record {
-    fun save(): MutableChef {
+        private val factory: Chefs) : MutableChefDetails by record {
+    fun immutable() = factory.chef(record)
+
+    fun save() = apply {
         record.flush() // TODO: Aggressively flush, or wait for txn to end?
         factory.notifySaved(snapshot, this)
-        return this
     }
 
     fun delete() {
-        // TODO: Detect if edited, and not saved, then deleted
-        record.delete()
+        record.delete() // TODO: Detect if edited, and not saved, then deleted
         factory.notifySaved(snapshot, null)
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-
         other as MutableChef
-
-        return record == other.record
+        return snapshot == other.snapshot
+                && record == other.record
     }
 
-    override fun hashCode() = record.hashCode()
+    override fun hashCode() = Objects.hash(snapshot, record)
 
-    override fun toString() = "${super.toString()}{record=$record}"
+    override fun toString() =
+            "${super.toString()}{snapshot=$snapshot, record=$record}"
 }
 
 object ChefRepository : IntIdTable("CHEF") {
@@ -113,14 +107,12 @@ object ChefRepository : IntIdTable("CHEF") {
 }
 
 class ChefRecord(id: EntityID<Int>) : IntEntity(id),
-        ChefRecordData,
-        MutableChefRecordData {
+        ChefDetails,
+        MutableChefDetails {
     companion object : IntEntityClass<ChefRecord>(ChefRepository)
 
     override var name by ChefRepository.name
     override var code by ChefRepository.code
-
-    fun snapshot() = ChefResource(name, code)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

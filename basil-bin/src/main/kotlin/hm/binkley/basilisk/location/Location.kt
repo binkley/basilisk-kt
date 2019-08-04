@@ -12,30 +12,29 @@ import javax.inject.Singleton
 
 @Singleton
 class Locations(private val publisher: ApplicationEventPublisher) {
-    fun location(code: String) = LocationRecord.findOne {
-        LocationRepository.code eq code
-    }?.let {
-        location(it)
+    fun location(code: String): Location? {
+        val record = LocationRecord.findOne {
+            LocationRepository.code eq code
+        }
+
+        return record?.let { location(it) }
     }
 
     fun location(record: LocationRecord) = Location(record, this)
 
-    fun create(name: String, code: String) = Location(LocationRecord.new {
+    fun new(name: String, code: String) = Location(LocationRecord.new {
         this.name = name
         this.code = code
-    }, this).save()
+    }, this).mutable(null).save().immutable()
 
-    fun notifySaved(location: Location) {
-        publisher.publishEvent(LocationSavedEvent(location))
+    fun all() = LocationRecord.all().map {
+        location(it)
     }
 
-    override fun toString() =
-            "${super.toString()}{publisher=$publisher}"
-}
-
-object LocationRepository : IntIdTable("LOCATION") {
-    val name = text("name")
-    val code = text("code")
+    internal fun notifySaved(before: LocationResource?,
+                             after: MutableLocation?) {
+        publisher.publishEvent(LocationSavedEvent(before, after))
+    }
 }
 
 interface LocationDetails {
@@ -43,42 +42,78 @@ interface LocationDetails {
     val code: String
 }
 
-data class LocationSavedEvent(val after: Location) : ApplicationEvent(after)
+interface MutableLocationDetails {
+    var name: String
+    var code: String
+}
+
+data class LocationSavedEvent(
+        val before: LocationResource?,
+        val after: MutableLocation?) : ApplicationEvent(after ?: before)
 
 class Location(
         private val record: LocationRecord,
         private val factory: Locations)
     : LocationDetails by record {
+    fun mutable() = mutable(LocationResource(this))
 
-    fun save(): Location {
-        record.flush()
-        factory.notifySaved(this)
-        return this
-    }
-
-    override fun toString() = "${super.toString()}{record=$record}"
+    internal fun mutable(snapshot: LocationResource?) =
+            MutableLocation(snapshot, record, factory)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-
         other as Location
-
         return record == other.record
     }
 
     override fun hashCode() = record.hashCode()
+
+    override fun toString() = "${super.toString()}{record=$record}"
+}
+
+class MutableLocation(
+        private val snapshot: LocationResource?,
+        private val record: LocationRecord,
+        private val factory: Locations) : MutableLocationDetails by record {
+    fun immutable() = factory.location(record)
+
+    fun save() = apply {
+        record.flush() // TODO: Aggressively flush, or wait for txn to end?
+        factory.notifySaved(snapshot, this)
+    }
+
+    fun delete() {
+        record.delete() // TODO: Detect if edited, and not saved, then deleted
+        factory.notifySaved(snapshot, null)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as MutableLocation
+        return snapshot == other.snapshot
+                && record == other.record
+    }
+
+    override fun hashCode() = Objects.hash(snapshot, record)
+
+    override fun toString() =
+            "${super.toString()}{snapshot=$snapshot, record=$record}"
+}
+
+object LocationRepository : IntIdTable("LOCATION") {
+    val name = text("name")
+    val code = text("code")
 }
 
 class LocationRecord(id: EntityID<Int>) : IntEntity(id),
-        LocationDetails {
+        LocationDetails,
+        MutableLocationDetails {
     companion object : IntEntityClass<LocationRecord>(LocationRepository)
 
     override var name by LocationRepository.name
     override var code by LocationRepository.code
-
-    override fun toString() =
-            "${super.toString()}{id=$id, name=$name, code=$code}"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -89,4 +124,7 @@ class LocationRecord(id: EntityID<Int>) : IntEntity(id),
     }
 
     override fun hashCode() = Objects.hash(name, code)
+
+    override fun toString() =
+            "${super.toString()}{id=$id, name=$name, code=$code}"
 }
