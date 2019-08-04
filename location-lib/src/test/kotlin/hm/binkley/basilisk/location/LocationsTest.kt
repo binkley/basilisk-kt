@@ -16,8 +16,8 @@ import javax.inject.Inject
 @TestInstance(PER_CLASS)
 internal class LocationsTest {
     companion object {
-        const val name = "The Dallas Yellow Rose"
-        const val code = "DAL"
+        const val name = "LOCATION BOB"
+        const val code = "LOCATION123"
     }
 
     @Inject
@@ -54,10 +54,9 @@ internal class LocationsTest {
     fun shouldPublishSaveEvents() {
         testTransaction {
             val firstSnapshot = LocationResource(name, code)
-            val secondSnapshot = LocationResource("New Location", code)
+            val secondSnapshot = LocationResource("LOCATION ROBERT", code)
 
-            val location = locations.new(
-                    firstSnapshot.name, firstSnapshot.code)
+            val location = locations.new(firstSnapshot.name, firstSnapshot.code)
 
             expect(listener.received).containsExactly(LocationSavedEvent(
                     null, location.mutable(null)))
