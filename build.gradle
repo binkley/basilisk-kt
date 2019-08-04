@@ -32,7 +32,7 @@ plugins {
     id "build-dashboard"
 
     id "com.github.ben-manes.versions" version "0.21.0"
-    id "se.patrikerdes.use-latest-versions" version "0.2.11"
+    id "se.patrikerdes.use-latest-versions" version "0.2.12"
     id "com.dorongold.task-tree" version "1.4"
 
     id "io.spring.dependency-management" version "1.0.8.RELEASE"
@@ -59,7 +59,7 @@ subprojects {
         logbackVersion = "1.2.3"
         micronautVersion = "1.2.0.RC2"
         postgresVersion = "10.9"
-        testContainersVersion = "1.11.4"
+        testContainersVersion = "1.12.0"
     }
 
     buildscript {
