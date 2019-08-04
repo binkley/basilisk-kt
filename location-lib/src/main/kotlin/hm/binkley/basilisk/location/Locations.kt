@@ -20,10 +20,10 @@ class Locations(private val publisher: ApplicationEventPublisher) {
         return record?.let { from(it) }
     }
 
-    fun new(name: String, code: String) = Location(LocationRecord.new {
+    fun new(name: String, code: String) = from(LocationRecord.new {
         this.name = name
         this.code = code
-    }, this).update(null) {
+    }).update(null) {
         save()
     }
 

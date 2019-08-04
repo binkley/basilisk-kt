@@ -20,10 +20,10 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
         return record?.let { from(it) }
     }
 
-    fun new(name: String, code: String) = Chef(ChefRecord.new {
+    fun new(name: String, code: String) = from(ChefRecord.new {
         this.name = name
         this.code = code
-    }, this).update(null) {
+    }).update(null) {
         save()
     }
 
