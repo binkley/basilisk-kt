@@ -60,7 +60,7 @@ internal class LocationsTest {
                     firstSnapshot.name, firstSnapshot.code)
 
             expect(listener.received).containsExactly(LocationSavedEvent(
-                    null, location.mutable(null)))
+                    null, location))
             listener.reset()
 
             location.update {
@@ -69,7 +69,7 @@ internal class LocationsTest {
             }
 
             expect(listener.received).containsExactly(LocationSavedEvent(
-                    firstSnapshot, location.mutable(firstSnapshot)))
+                    firstSnapshot, location))
             listener.reset()
 
             location.update {

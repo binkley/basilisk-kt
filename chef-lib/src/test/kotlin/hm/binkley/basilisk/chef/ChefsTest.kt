@@ -59,7 +59,7 @@ internal class ChefsTest {
             val chef = chefs.new(firstSnapshot.name, firstSnapshot.code)
 
             expect(listener.received).containsExactly(ChefSavedEvent(
-                    null, chef.mutable(null)))
+                    null, chef))
             listener.reset()
 
             chef.update {
@@ -68,7 +68,7 @@ internal class ChefsTest {
             }
 
             expect(listener.received).containsExactly(ChefSavedEvent(
-                    firstSnapshot, chef.mutable(firstSnapshot)))
+                    firstSnapshot, chef))
             listener.reset()
 
             chef.update {

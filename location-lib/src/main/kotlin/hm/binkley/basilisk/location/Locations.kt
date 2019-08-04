@@ -36,8 +36,9 @@ class Locations(private val publisher: ApplicationEventPublisher) {
 
     internal fun notifySaved(
             before: LocationResource?,
-            after: MutableLocation?) {
-        publisher.publishEvent(LocationSavedEvent(before, after))
+            after: LocationRecord?) {
+        publisher.publishEvent(LocationSavedEvent(
+                before, after?.let { from(it) }))
     }
 }
 
@@ -53,7 +54,7 @@ interface MutableLocationDetails {
 
 data class LocationSavedEvent(
         val before: LocationResource?,
-        val after: MutableLocation?) : ApplicationEvent(after ?: before)
+        val after: Location?) : ApplicationEvent(after ?: before)
 
 class Location internal constructor(
         private val record: LocationRecord,
@@ -65,11 +66,8 @@ class Location internal constructor(
     internal inline fun update(
             snapshot: LocationResource?,
             block: MutableLocation.() -> Unit) = apply {
-        mutable(snapshot).block()
+        MutableLocation(snapshot, record, factory).block()
     }
-
-    internal fun mutable(snapshot: LocationResource?) =
-            MutableLocation(snapshot, record, factory)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -89,7 +87,7 @@ class MutableLocation internal constructor(
         private val factory: Locations) : MutableLocationDetails by record {
     fun save() = apply {
         record.flush() // TODO: Aggressively flush, or wait for txn to end?
-        factory.notifySaved(snapshot, this)
+        factory.notifySaved(snapshot, record)
     }
 
     fun delete() {

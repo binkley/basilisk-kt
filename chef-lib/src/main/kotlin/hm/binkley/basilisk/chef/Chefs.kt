@@ -36,8 +36,9 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
 
     internal fun notifySaved(
             before: ChefResource?,
-            after: MutableChef?) {
-        publisher.publishEvent(ChefSavedEvent(before, after))
+            after: ChefRecord?) {
+        publisher.publishEvent(ChefSavedEvent(
+                before, after?.let { from(it) }))
     }
 }
 
@@ -53,7 +54,7 @@ interface MutableChefDetails {
 
 data class ChefSavedEvent(
         val before: ChefResource?,
-        val after: MutableChef?) : ApplicationEvent(after ?: before)
+        val after: Chef?) : ApplicationEvent(after ?: before)
 
 class Chef internal constructor(
         private val record: ChefRecord,
@@ -65,11 +66,8 @@ class Chef internal constructor(
     internal inline fun update(
             snapshot: ChefResource?,
             block: MutableChef.() -> Unit) = apply {
-        mutable(snapshot).block()
+        MutableChef(snapshot, record, factory).block()
     }
-
-    internal fun mutable(snapshot: ChefResource?) =
-            MutableChef(snapshot, record, factory)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -89,7 +87,7 @@ class MutableChef internal constructor(
         private val factory: Chefs) : MutableChefDetails by record {
     fun save() = apply {
         record.flush() // TODO: Aggressively flush, or wait for txn to end?
-        factory.notifySaved(snapshot, this)
+        factory.notifySaved(snapshot, record)
     }
 
     fun delete() {
