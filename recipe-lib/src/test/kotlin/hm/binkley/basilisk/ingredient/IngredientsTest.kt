@@ -38,7 +38,7 @@ internal class IngredientsTest {
     @Test
     fun shouldFindNoIngredient() {
         testTransaction {
-            val ingredient = ingredients.ingredient(
+            val ingredient = ingredients.byCode(
                     code)
 
             expect(ingredient).toBe(null)
@@ -67,7 +67,7 @@ internal class IngredientsTest {
                 this.source = source
             }.flush()
 
-            val ingredient = ingredients.ingredient(code)!!
+            val ingredient = ingredients.byCode(code)!!
 
             expect(ingredient.code).toBe(code)
             expect(ingredient.name).toBe(name)
@@ -105,7 +105,7 @@ internal class IngredientsTest {
                 this.recipe = recipe
             }.flush()
 
-            val ingredient = ingredients.ingredient(code)!!
+            val ingredient = ingredients.byCode(code)!!
 
             expect(ingredient.code).toBe(code)
             expect(ingredient.name).toBe(name)

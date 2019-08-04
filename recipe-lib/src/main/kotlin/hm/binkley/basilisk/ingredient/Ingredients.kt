@@ -22,7 +22,7 @@ import javax.inject.Singleton
 class Ingredients(
         private val chefs: Chefs,
         private val publisher: ApplicationEventPublisher) {
-    fun ingredient(code: String): Ingredient? {
+    fun byCode(code: String): Ingredient? {
         val record = IngredientRecord.findOne {
             IngredientRepository.code eq code
         }
@@ -39,14 +39,16 @@ class Ingredients(
     }
 
     internal fun chefFor(chefRecord: ChefRecord) = chefs.from(chefRecord)
-
-    override fun toString() =
-            "${super.toString()}{chefs=$chefs, publisher=$publisher}"
 }
 
 interface IngredientDetails {
     val name: String
     val code: String
+}
+
+interface MutableIngredientDetails {
+    val name: String // Not editable -- comes from Source
+    var code: String
 }
 
 // TODO: before vs after
@@ -65,27 +67,25 @@ sealed class Ingredient(
         return this
     }
 
-    override fun toString() =
-            "${super.toString()}{record=$record, chef=$chef}"
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-
         other as Ingredient
-
         return record == other.record
     }
 
     override fun hashCode() = record.hashCode()
+
+    override fun toString() =
+            "${super.toString()}{record=$record, chef=$chef}"
 }
 
-class UnusedIngredient(
+class UnusedIngredient internal constructor(
         record: IngredientRecord,
         factory: Ingredients)
     : Ingredient(record, factory)
 
-class UsedIngredient(
+class UsedIngredient internal constructor(
         record: IngredientRecord,
         factory: Ingredients)
     : Ingredient(record, factory)
@@ -101,7 +101,8 @@ object IngredientRepository : IntIdTable("INGREDIENT") {
 
 class IngredientRecord(id: EntityID<Int>)
     : IntEntity(id),
-        IngredientDetails {
+        IngredientDetails,
+        MutableIngredientDetails {
     companion object : IntEntityClass<IngredientRecord>(IngredientRepository)
 
     override val name
@@ -112,14 +113,12 @@ class IngredientRecord(id: EntityID<Int>)
     var source by SourceRecord referencedOn IngredientRepository.sourceRef
     var locations by LocationRecord via IngredientLocationsRepository
 
-    override fun toString() =
-            "${super.toString()}{id=$id, code=$code, chef=$chef, recipe=$recipe, source=$source, locations=$locations}"
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
         other as IngredientRecord
         return code == other.code
+                && chef == other.chef
                 && recipe == other.recipe
                 && source == other.source
                 && locations == other.locations
@@ -127,4 +126,7 @@ class IngredientRecord(id: EntityID<Int>)
 
     override fun hashCode() =
             Objects.hash(code, chef, recipe, source, locations)
+
+    override fun toString() =
+            "${super.toString()}{id=$id, code=$code, chef=$chef, recipe=$recipe, source=$source, locations=$locations}"
 }
