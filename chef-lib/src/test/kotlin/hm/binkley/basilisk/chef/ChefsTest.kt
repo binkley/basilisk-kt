@@ -52,9 +52,6 @@ internal class ChefsTest {
 
     @Test
     fun shouldPublishSaveEvents() {
-        val name = name
-        val code = code
-
         testTransaction {
             val firstSnapshot = ChefResource(name, code)
             val secondSnapshot = ChefResource("CHEF ROBERT", code)
@@ -65,15 +62,18 @@ internal class ChefsTest {
                     null, chef.mutable(null)))
             listener.reset()
 
-            chef.mutable().apply {
+            chef.update {
                 this.name = secondSnapshot.name
-            }.save()
+                save()
+            }
 
             expect(listener.received).containsExactly(ChefSavedEvent(
                     firstSnapshot, chef.mutable(firstSnapshot)))
             listener.reset()
 
-            chef.mutable().delete()
+            chef.update {
+                delete()
+            }
 
             expect(listener.received).containsExactly(ChefSavedEvent(
                     secondSnapshot, null))

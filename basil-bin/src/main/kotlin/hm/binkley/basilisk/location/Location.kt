@@ -20,19 +20,23 @@ class Locations(private val publisher: ApplicationEventPublisher) {
         return record?.let { location(it) }
     }
 
-    fun location(record: LocationRecord) = Location(record, this)
-
     fun new(name: String, code: String) = Location(LocationRecord.new {
         this.name = name
         this.code = code
-    }, this).mutable(null).save().immutable()
+    }, this).update(null) {
+        save()
+    }
 
     fun all() = LocationRecord.all().map {
         location(it)
     }
 
-    internal fun notifySaved(before: LocationResource?,
-                             after: MutableLocation?) {
+    /** For implementors of other record types having a reference. */
+    fun location(record: LocationRecord) = Location(record, this)
+
+    internal fun notifySaved(
+            before: LocationResource?,
+            after: MutableLocation?) {
         publisher.publishEvent(LocationSavedEvent(before, after))
     }
 }
@@ -51,11 +55,18 @@ data class LocationSavedEvent(
         val before: LocationResource?,
         val after: MutableLocation?) : ApplicationEvent(after ?: before)
 
-class Location(
+class Location internal constructor(
         private val record: LocationRecord,
         private val factory: Locations)
     : LocationDetails by record {
-    fun mutable() = mutable(LocationResource(this))
+    fun update(block: MutableLocation.() -> Unit) =
+            update(LocationResource(this), block)
+
+    internal inline fun update(
+            snapshot: LocationResource?,
+            block: MutableLocation.() -> Unit) = apply {
+        mutable(snapshot).block()
+    }
 
     internal fun mutable(snapshot: LocationResource?) =
             MutableLocation(snapshot, record, factory)
@@ -72,12 +83,10 @@ class Location(
     override fun toString() = "${super.toString()}{record=$record}"
 }
 
-class MutableLocation(
+class MutableLocation internal constructor(
         private val snapshot: LocationResource?,
         private val record: LocationRecord,
         private val factory: Locations) : MutableLocationDetails by record {
-    fun immutable() = factory.location(record)
-
     fun save() = apply {
         record.flush() // TODO: Aggressively flush, or wait for txn to end?
         factory.notifySaved(snapshot, this)

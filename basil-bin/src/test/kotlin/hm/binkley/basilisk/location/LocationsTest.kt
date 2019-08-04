@@ -52,9 +52,6 @@ internal class LocationsTest {
 
     @Test
     fun shouldPublishSaveEvents() {
-        val name = name
-        val code = code
-
         testTransaction {
             val firstSnapshot = LocationResource(name, code)
             val secondSnapshot = LocationResource("New Location", code)
@@ -66,15 +63,18 @@ internal class LocationsTest {
                     null, location.mutable(null)))
             listener.reset()
 
-            location.mutable().apply {
+            location.update {
                 this.name = secondSnapshot.name
-            }.save()
+                save()
+            }
 
             expect(listener.received).containsExactly(LocationSavedEvent(
                     firstSnapshot, location.mutable(firstSnapshot)))
             listener.reset()
 
-            location.mutable().delete()
+            location.update {
+                delete()
+            }
 
             expect(listener.received).containsExactly(LocationSavedEvent(
                     secondSnapshot, null))

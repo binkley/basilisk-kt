@@ -20,18 +20,23 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
         return record?.let { chef(it) }
     }
 
-    fun chef(record: ChefRecord) = Chef(record, this)
-
     fun new(name: String, code: String) = Chef(ChefRecord.new {
         this.name = name
         this.code = code
-    }, this).mutable(null).save().immutable()
+    }, this).update(null) {
+        save()
+    }
 
     fun all() = ChefRecord.all().map {
         chef(it)
     }
 
-    internal fun notifySaved(before: ChefResource?, after: MutableChef?) {
+    /** For implementors of other record types having a reference. */
+    fun chef(record: ChefRecord) = Chef(record, this)
+
+    internal fun notifySaved(
+            before: ChefResource?,
+            after: MutableChef?) {
         publisher.publishEvent(ChefSavedEvent(before, after))
     }
 }
@@ -50,11 +55,18 @@ data class ChefSavedEvent(
         val before: ChefResource?,
         val after: MutableChef?) : ApplicationEvent(after ?: before)
 
-class Chef(
+class Chef internal constructor(
         private val record: ChefRecord,
         private val factory: Chefs)
     : ChefDetails by record {
-    fun mutable() = mutable(ChefResource(this))
+    fun update(block: MutableChef.() -> Unit) =
+            update(ChefResource(this), block)
+
+    internal inline fun update(
+            snapshot: ChefResource?,
+            block: MutableChef.() -> Unit) = apply {
+        mutable(snapshot).block()
+    }
 
     internal fun mutable(snapshot: ChefResource?) =
             MutableChef(snapshot, record, factory)
@@ -71,12 +83,10 @@ class Chef(
     override fun toString() = "${super.toString()}{record=$record}"
 }
 
-class MutableChef(
+class MutableChef internal constructor(
         private val snapshot: ChefResource?,
         private val record: ChefRecord,
         private val factory: Chefs) : MutableChefDetails by record {
-    fun immutable() = factory.chef(record)
-
     fun save() = apply {
         record.flush() // TODO: Aggressively flush, or wait for txn to end?
         factory.notifySaved(snapshot, this)
