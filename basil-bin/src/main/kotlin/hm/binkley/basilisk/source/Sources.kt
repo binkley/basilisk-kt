@@ -10,7 +10,9 @@ import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
+import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.SizedIterable
+import org.jetbrains.exposed.sql.emptySized
 import org.jetbrains.exposed.sql.mapLazy
 import java.util.*
 import javax.inject.Singleton
@@ -25,12 +27,16 @@ class Sources(
         from(it)
     }
 
-    fun new(name: String, code: String) = from(SourceRecord.new {
-        this.name = name
-        this.code = code
-    }).update(null) {
-        save()
-    }
+    fun new(name: String, code: String,
+            locations: MutableList<Location> = mutableListOf()) =
+            from(SourceRecord.new {
+                this.name = name
+                this.code = code
+            }).update(null) {
+                // Exposed wants the record complete before adding relationships
+                this.locations = locations
+                save()
+            }
 
     internal fun from(record: SourceRecord) = Source(record, this)
 
@@ -43,6 +49,9 @@ class Sources(
 
     internal fun locationFor(locationRecord: LocationRecord) =
             locations.from(locationRecord)
+
+    internal fun recordFor(location: Location) =
+            locations.toRecord(location)
 }
 
 interface SourceDetails {
@@ -91,17 +100,62 @@ class Source internal constructor(
     override fun toString() = "${super.toString()}{record=$record}"
 }
 
+private class ListLike<T>(
+        field: SizedIterable<T>,
+        private val updateWith: (ListLike<T>) -> Unit)
+    : AbstractMutableList<T>() {
+    private val backing = field.toMutableList()
+
+    private fun update() = updateWith(this)
+
+    override val size: Int
+        get() = backing.size
+
+    override fun add(index: Int, element: T) {
+        backing.add(index, element)
+        update()
+    }
+
+    override fun get(index: Int) = backing.get(index)
+
+    override fun removeAt(index: Int): T {
+        val removeAt = backing.removeAt(index)
+        update()
+        return removeAt
+    }
+
+    override fun set(index: Int, element: T): T {
+        val set = backing.set(index, element)
+        update()
+        return set
+    }
+}
+
 class MutableSource internal constructor(
         private val snapshot: SourceResource?,
         private val record: SourceRecord,
         private val factory: Sources) : MutableSourceDetails by record {
+    var locations: MutableList<Location>
+        get() {
+            val update = ListLike(record.locations.forUpdate().mapLazy {
+                factory.locationFor(it)
+            }, { update -> locations = update })
+            locations = update // Glue changes of list back to record
+            return update
+        }
+        set(update) {
+            record.locations = SizedCollection(update.map {
+                factory.recordFor(it)
+            })
+        }
+
     fun save() = apply {
         record.flush() // TODO: Aggressively flush, or wait for txn to end?
         factory.notifySaved(snapshot, record)
     }
 
     fun delete() {
-        record.delete() // TODO: Detect if edited, and not saved, then deleted
+        record.delete() // TODO: Detect if edited, not saved, then deleted
         factory.notifySaved(snapshot, null)
     }
 
@@ -133,8 +187,10 @@ class SourceRecord(id: EntityID<Int>) : IntEntity(id),
     override var code by SourceRepository.code
     var locations by LocationRecord via SourceLocationsRepository
 
-    override fun toString() =
-            "${super.toString()}{id=$id, name=$name, code=$code}"
+    override fun delete() {
+        locations = emptySized()
+        super.delete()
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -146,4 +202,7 @@ class SourceRecord(id: EntityID<Int>) : IntEntity(id),
     }
 
     override fun hashCode() = Objects.hash(name, code, locations)
+
+    override fun toString() =
+            "${super.toString()}{id=$id, name=$name, code=$code, locations=$locations}"
 }

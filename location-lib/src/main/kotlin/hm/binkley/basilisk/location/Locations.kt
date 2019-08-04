@@ -32,6 +32,9 @@ class Locations(private val publisher: ApplicationEventPublisher) {
     /** For implementors of other record types having a reference. */
     fun from(record: LocationRecord) = Location(record, this)
 
+    /** For implementors of other record types having a reference. */
+    fun toRecord(location: Location) = location.record
+
     internal fun notifySaved(
             before: LocationResource?,
             after: LocationRecord?) {
@@ -55,7 +58,7 @@ data class LocationSavedEvent(
         val after: Location?) : ApplicationEvent(after ?: before)
 
 class Location internal constructor(
-        private val record: LocationRecord,
+        internal val record: LocationRecord,
         private val factory: Locations)
     : LocationDetails by record {
     fun update(block: MutableLocation.() -> Unit) =

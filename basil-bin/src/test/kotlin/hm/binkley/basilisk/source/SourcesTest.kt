@@ -5,6 +5,8 @@ import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.TestListener
 import hm.binkley.basilisk.db.testTransaction
+import hm.binkley.basilisk.location.LocationResource
+import hm.binkley.basilisk.location.Locations
 import io.micronaut.test.annotation.MicronautTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -22,6 +24,8 @@ internal class SourcesTest {
 
     @Inject
     lateinit var sources: Sources
+    @Inject
+    lateinit var locations: Locations
     @Inject
     lateinit var listener: TestListener<SourceSavedEvent>
 
@@ -52,11 +56,23 @@ internal class SourcesTest {
 
     @Test
     fun shouldPublishSaveEvents() {
-        testTransaction {
-            val firstSnapshot = SourceResource(name, code, listOf())
-            val secondSnapshot = SourceResource("LIME", code, listOf())
+        val locationName = "The Dallas Yellow Rose"
+        val locationCode = "DAL"
 
-            val source = sources.new(firstSnapshot.name, firstSnapshot.code)
+        testTransaction {
+            val location = locations.new(locationName, locationCode)
+            listener.reset()
+
+            val firstSnapshot = SourceResource(
+                    name, code, listOf(LocationResource(location)))
+            val secondSnapshot = SourceResource(
+                    "LIME", code, listOf())
+            val thirdSnapshot = SourceResource(
+                    "LIME", code, listOf(LocationResource(location)))
+
+            val source = sources.new(
+                    firstSnapshot.name, firstSnapshot.code,
+                    mutableListOf(location))
 
             expect(listener.received).containsExactly(SourceSavedEvent(
                     null, source))
@@ -64,6 +80,7 @@ internal class SourcesTest {
 
             source.update {
                 this.name = secondSnapshot.name
+                this.locations.clear()
                 save()
             }
 
@@ -72,11 +89,20 @@ internal class SourcesTest {
             listener.reset()
 
             source.update {
+                this.locations = mutableListOf(location) // Change our minds
+                save()
+            }
+
+            expect(listener.received).containsExactly(SourceSavedEvent(
+                    secondSnapshot, source))
+            listener.reset()
+
+            source.update {
                 delete()
             }
 
             expect(listener.received).containsExactly(SourceSavedEvent(
-                    secondSnapshot, null))
+                    thirdSnapshot, null))
         }
     }
 }
