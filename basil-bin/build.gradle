@@ -12,6 +12,8 @@ dependencies {
     // TODO: May need to share an abstract notion of "chef"
     compile project(":chef-lib")
     compile project(":location-lib")
+    compile project(":source-lib")
+    compile project(":recipe-lib")
 
     testCompile project(":testing")
 }
