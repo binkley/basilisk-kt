@@ -52,10 +52,9 @@ class Ingredients(
             }
 
     /** For implementors of other record types having a reference. */
-    fun from(record: IngredientRecord) = when {
-        null == record.recipe -> UnusedIngredient(record, this)
-        else -> UsedIngredient(record, this)
-    }
+    fun from(record: IngredientRecord) =
+            if (null == record.recipe) UnusedIngredient(record, this)
+            else UsedIngredient(record, this)
 
     internal fun notifySaved(
             before: IngredientResource?,
