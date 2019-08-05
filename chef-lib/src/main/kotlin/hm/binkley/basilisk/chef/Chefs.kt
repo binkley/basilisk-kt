@@ -12,18 +12,24 @@ import javax.inject.Singleton
 
 @Singleton
 class Chefs(private val publisher: ApplicationEventPublisher) {
+    companion object {
+        const val FIT = "FIT"
+    }
+
     fun byCode(code: String) = ChefRecord.findOne {
         ChefRepository.code eq code
     }?.let {
         from(it)
     }
 
-    fun new(name: String, code: String) = from(ChefRecord.new {
-        this.name = name
-        this.code = code
-    }).update(null) {
-        save()
-    }
+    fun new(name: String, code: String, health: String = FIT) =
+            from(ChefRecord.new {
+                this.name = name
+                this.code = code
+                this.health = health
+            }).update(null) {
+                save()
+            }
 
     fun all() = ChefRecord.all().map {
         from(it)
@@ -46,11 +52,13 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
 interface ChefDetails {
     val name: String
     val code: String
+    val health: String
 }
 
 interface MutableChefDetails {
     var name: String
     var code: String
+    var health: String
 }
 
 data class ChefSavedEvent(
@@ -113,6 +121,7 @@ class MutableChef internal constructor(
 object ChefRepository : IntIdTable("CHEF") {
     val name = text("name")
     val code = text("code")
+    val health = text("health")
 }
 
 class ChefRecord(id: EntityID<Int>) : IntEntity(id),
@@ -122,6 +131,7 @@ class ChefRecord(id: EntityID<Int>) : IntEntity(id),
 
     override var name by ChefRepository.name
     override var code by ChefRepository.code
+    override var health by ChefRepository.health
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -129,10 +139,11 @@ class ChefRecord(id: EntityID<Int>) : IntEntity(id),
         other as ChefRecord
         return name == other.name
                 && code == other.code
+                && health == other.health
     }
 
-    override fun hashCode() = Objects.hash(name, code)
+    override fun hashCode() = Objects.hash(name, code, health)
 
     override fun toString() =
-            "${super.toString()}{id=$id, name=$name, code=$code}"
+            "${super.toString()}{id=$id, name=$name, code=$code, health=$health}"
 }

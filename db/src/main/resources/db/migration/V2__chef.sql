@@ -2,5 +2,6 @@ CREATE TABLE IF NOT EXISTS chef
 (
     id     SERIAL PRIMARY KEY,
     "name" TEXT NOT NULL,
-    code   TEXT NOT NULL UNIQUE
+    code   TEXT NOT NULL UNIQUE,
+    health TEXT NOT NULL
 );

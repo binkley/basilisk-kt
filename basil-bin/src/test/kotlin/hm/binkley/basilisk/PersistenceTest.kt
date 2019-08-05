@@ -5,6 +5,7 @@ import ch.tutteli.atrium.api.cc.en_GB.containsExactly
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.chef.ChefRecord
+import hm.binkley.basilisk.chef.Chefs.Companion.FIT
 import hm.binkley.basilisk.db.testTransaction
 import hm.binkley.basilisk.ingredient.IngredientRecord
 import hm.binkley.basilisk.leg.LegRecord
@@ -34,6 +35,7 @@ internal class PersistenceTest {
             val chef = ChefRecord.new {
                 name = "CHEF BOB"
                 code = "CHEF123"
+                health = FIT
             }
             chef.flush()
             val chefs = ChefRecord.all()
@@ -47,6 +49,7 @@ internal class PersistenceTest {
             val chef = ChefRecord.new {
                 name = "CHEF BOB"
                 code = "CHEF123"
+                health = FIT
             }
             chef.flush()
             val recipe = RecipeRecord.new {
@@ -104,6 +107,7 @@ internal class PersistenceTest {
             val chef = ChefRecord.new {
                 name = "CHEF BOB"
                 code = "CHEF123"
+                health = FIT
             }
             chef.flush()
             val trip = TripRecord.new {
@@ -210,6 +214,7 @@ internal class PersistenceTest {
                 val chef = ChefRecord.new {
                     name = "CHEF BOB"
                     code = "CHEF123"
+                    health = FIT
                 }
                 val source = SourceRecord.new {
                     name = "RHUBARB"
@@ -258,6 +263,7 @@ internal class PersistenceTest {
                 val chef = ChefRecord.new {
                     name = "CHEF BOB"
                     code = "CHEF123"
+                    health = FIT
                 }
                 val recipe = RecipeRecord.new {
                     name = "TASTY PIE"

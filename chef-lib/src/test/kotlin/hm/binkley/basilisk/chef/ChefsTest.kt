@@ -4,6 +4,7 @@ import ch.tutteli.atrium.api.cc.en_GB.containsExactly
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.TestListener
+import hm.binkley.basilisk.chef.Chefs.Companion.FIT
 import hm.binkley.basilisk.db.testTransaction
 import io.micronaut.test.annotation.MicronautTest
 import org.junit.jupiter.api.AfterEach
@@ -53,10 +54,12 @@ internal class ChefsTest {
     @Test
     fun shouldPublishSaveEvents() {
         testTransaction {
-            val firstSnapshot = ChefResource(name, code)
-            val secondSnapshot = ChefResource("CHEF ROBERT", code)
+            val firstSnapshot = ChefResource(name, code, FIT)
+            val secondSnapshot = ChefResource("CHEF ROBERT", code, "OUT")
 
-            val chef = chefs.new(firstSnapshot.name, firstSnapshot.code)
+            val chef = chefs.new(
+                    firstSnapshot.name, firstSnapshot.code,
+                    firstSnapshot.health)
 
             expect(listener.received).containsExactly(ChefSavedEvent(
                     null, chef))
@@ -64,6 +67,7 @@ internal class ChefsTest {
 
             chef.update {
                 this.name = secondSnapshot.name
+                this.health = secondSnapshot.health
                 save()
             }
 

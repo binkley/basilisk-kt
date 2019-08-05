@@ -2,6 +2,7 @@ package hm.binkley.basilisk.chef
 
 import ch.tutteli.atrium.api.cc.en_GB.containsExactly
 import ch.tutteli.atrium.verbs.expect
+import hm.binkley.basilisk.chef.Chefs.Companion.FIT
 import hm.binkley.basilisk.db.testTransaction
 import io.micronaut.test.annotation.MicronautTest
 import org.junit.jupiter.api.Test
@@ -21,6 +22,7 @@ internal class ChefsPersistenceTest {
             val chef = ChefRecord.new {
                 name = "CHEF BOB"
                 code = "CHEF123"
+                health = FIT
             }
             chef.flush()
 
