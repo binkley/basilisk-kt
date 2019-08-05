@@ -100,6 +100,7 @@ sealed class Ingredient(
         private val record: IngredientRecord,
         private val factory: Ingredients)
     : IngredientDetails by record {
+    val source = factory.sourceFor(record.source)
     val chef = factory.chefFor(record.chef)
     val locations: SizedIterable<Location>
         get() = record.locations.notForUpdate().mapLazy {
@@ -142,6 +143,8 @@ class MutableIngredient internal constructor(
         private val snapshot: IngredientResource?,
         private val record: IngredientRecord,
         private val factory: Ingredients) : MutableIngredientDetails by record {
+    // Source is immutable
+    val source = factory.sourceFor(record.source)
     var chef: Chef
         get() = factory.chefFor(record.chef)
         set(update) {
