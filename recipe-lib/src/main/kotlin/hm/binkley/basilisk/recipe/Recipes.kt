@@ -41,7 +41,7 @@ class Recipes(
             from(RecipeRecord.new {
                 this.name = name
                 this.code = code
-                this.chef = recordFor(chef)
+                this.chef = toRecord(chef)
                 this.status = PLANNING
             }).update(null) {
                 // Exposed wants the record complete before adding relationships
@@ -59,16 +59,16 @@ class Recipes(
                 before, after?.let { from(it) }))
     }
 
-    internal fun chefFor(chefRecord: ChefRecord) =
+    internal fun chefFrom(chefRecord: ChefRecord) =
             chefs.from(chefRecord)
 
-    internal fun recordFor(chef: Chef) =
+    internal fun toRecord(chef: Chef) =
             chefs.toRecord(chef)
 
-    internal fun locationFor(locationRecord: LocationRecord) =
+    internal fun locationFrom(locationRecord: LocationRecord) =
             locations.from(locationRecord)
 
-    internal fun recordFor(location: Location) =
+    internal fun toRecord(location: Location) =
             locations.toRecord(location)
 }
 
@@ -102,10 +102,10 @@ class Recipe internal constructor(
         private val record: RecipeRecord,
         private val factory: Recipes)
     : RecipeDetails by record {
-    val chef = factory.chefFor(record.chef)
+    val chef = factory.chefFrom(record.chef)
     val locations: SizedIterable<Location>
         get() = record.locations.notForUpdate().mapLazy {
-            factory.locationFor(it)
+            factory.locationFrom(it)
         }
 
     fun update(block: MutableRecipe.() -> Unit) =
@@ -136,22 +136,22 @@ class MutableRecipe internal constructor(
         private val record: RecipeRecord,
         private val factory: Recipes) : MutableRecipeDetails by record {
     var chef: Chef
-        get() = factory.chefFor(record.chef)
+        get() = factory.chefFrom(record.chef)
         set(update) {
-            record.chef = factory.recordFor(update)
+            record.chef = factory.toRecord(update)
         }
     var locations: MutableList<Location>
         get() {
             val update = ListLike(
                     record.locations.forUpdate().mapLazy {
-                        factory.locationFor(it)
+                        factory.locationFrom(it)
                     }, { update -> locations = update })
             locations = update // Glue changes of list back to record
             return update
         }
         set(update) {
             record.locations = SizedCollection(update.map {
-                factory.recordFor(it)
+                factory.toRecord(it)
             })
         }
 

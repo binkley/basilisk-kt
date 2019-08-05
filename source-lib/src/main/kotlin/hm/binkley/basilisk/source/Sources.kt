@@ -51,10 +51,10 @@ class Sources(
                 before, after?.let { from(it) }))
     }
 
-    internal fun locationFor(locationRecord: LocationRecord) =
+    internal fun locationFrom(locationRecord: LocationRecord) =
             locations.from(locationRecord)
 
-    internal fun recordFor(location: Location) =
+    internal fun toRecord(location: Location) =
             locations.toRecord(location)
 }
 
@@ -78,7 +78,7 @@ class Source internal constructor(
     : SourceDetails by record {
     val locations: SizedIterable<Location>
         get() = record.locations.notForUpdate().mapLazy {
-            factory.locationFor(it)
+            factory.locationFrom(it)
         }
 
     fun update(block: MutableSource.() -> Unit) =
@@ -142,14 +142,14 @@ class MutableSource internal constructor(
     var locations: MutableList<Location>
         get() {
             val update = ListLike(record.locations.forUpdate().mapLazy {
-                factory.locationFor(it)
+                factory.locationFrom(it)
             }, { update -> locations = update })
             locations = update // Glue changes of list back to record
             return update
         }
         set(update) {
             record.locations = SizedCollection(update.map {
-                factory.recordFor(it)
+                factory.toRecord(it)
             })
         }
 

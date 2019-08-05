@@ -42,9 +42,9 @@ class Ingredients(
     fun new(source: Source, code: String, chef: Chef,
             locations: MutableList<Location> = mutableListOf()) =
             from(IngredientRecord.new {
-                this.source = recordFor(source)
+                this.source = toRecord(source)
                 this.code = code
-                this.chef = recordFor(chef)
+                this.chef = toRecord(chef)
             }).update(null) {
                 // Exposed wants the record complete before adding relationships
                 this.locations = locations
@@ -64,21 +64,21 @@ class Ingredients(
                 before, after?.let { from(it) }))
     }
 
-    internal fun sourceFor(sourceRecord: SourceRecord) =
+    internal fun sourceFrom(sourceRecord: SourceRecord) =
             sources.from(sourceRecord)
 
-    internal fun recordFor(source: Source) = sources.toRecord(source)
+    internal fun toRecord(source: Source) = sources.toRecord(source)
 
-    internal fun chefFor(chefRecord: ChefRecord) =
+    internal fun chefFrom(chefRecord: ChefRecord) =
             chefs.from(chefRecord)
 
-    internal fun recordFor(chef: Chef) =
+    internal fun toRecord(chef: Chef) =
             chefs.toRecord(chef)
 
-    internal fun locationFor(locationRecord: LocationRecord) =
+    internal fun locationFrom(locationRecord: LocationRecord) =
             locations.from(locationRecord)
 
-    internal fun recordFor(location: Location) =
+    internal fun toRecord(location: Location) =
             locations.toRecord(location)
 }
 
@@ -100,11 +100,11 @@ sealed class Ingredient(
         private val record: IngredientRecord,
         private val factory: Ingredients)
     : IngredientDetails by record {
-    val source = factory.sourceFor(record.source)
-    val chef = factory.chefFor(record.chef)
+    val source = factory.sourceFrom(record.source)
+    val chef = factory.chefFrom(record.chef)
     val locations: SizedIterable<Location>
         get() = record.locations.notForUpdate().mapLazy {
-            factory.locationFor(it)
+            factory.locationFrom(it)
         }
 
     fun update(block: MutableIngredient.() -> Unit) =
@@ -144,24 +144,24 @@ class MutableIngredient internal constructor(
         private val record: IngredientRecord,
         private val factory: Ingredients) : MutableIngredientDetails by record {
     // Source is immutable
-    val source = factory.sourceFor(record.source)
+    val source = factory.sourceFrom(record.source)
     var chef: Chef
-        get() = factory.chefFor(record.chef)
+        get() = factory.chefFrom(record.chef)
         set(update) {
-            record.chef = factory.recordFor(update)
+            record.chef = factory.toRecord(update)
         }
     var locations: MutableList<Location>
         get() {
             val update = ListLike(
                     record.locations.forUpdate().mapLazy {
-                        factory.locationFor(it)
+                        factory.locationFrom(it)
                     }, { update -> locations = update })
             locations = update // Glue changes of list back to record
             return update
         }
         set(update) {
             record.locations = SizedCollection(update.map {
-                factory.recordFor(it)
+                factory.toRecord(it)
             })
         }
 
