@@ -27,6 +27,7 @@ allOpen {
 
 compileKotlin {
     kotlinOptions {
+        freeCompilerArgs += "-progressive"
         jvmTarget = "1.8"
         javaParameters = true
     }
@@ -34,6 +35,7 @@ compileKotlin {
 
 compileTestKotlin {
     kotlinOptions {
+        freeCompilerArgs += "-progressive"
         jvmTarget = "1.8"
         javaParameters = true
     }
