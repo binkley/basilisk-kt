@@ -52,6 +52,9 @@ class Recipes(
     /** For implementors of other record types having a reference. */
     fun from(record: RecipeRecord) = Recipe(record, this)
 
+    /** For implementors of other record types having a reference. */
+    fun toRecord(recipe: Recipe) = recipe.record
+
     internal fun notifySaved(
             before: RecipeResource?,
             after: RecipeRecord?) {
@@ -99,7 +102,7 @@ data class RecipeSavedEvent(
         val after: Recipe?) : ApplicationEvent(after ?: before)
 
 class Recipe internal constructor(
-        private val record: RecipeRecord,
+        internal val record: RecipeRecord,
         private val factory: Recipes)
     : RecipeDetails by record {
     val chef = factory.chefFrom(record.chef)

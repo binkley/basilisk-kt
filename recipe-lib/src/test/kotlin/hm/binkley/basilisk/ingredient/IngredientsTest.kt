@@ -146,14 +146,17 @@ internal class IngredientsTest {
             val firstSnapshot = IngredientResource(
                     SourceResource(source),
                     code, ChefResource(chef),
+                    null,
                     listOf(LocationResource(location)))
             val secondSnapshot = IngredientResource(
                     SourceResource(source),
                     code, ChefResource(chef),
+                    null,
                     listOf())
 
             val ingredient = ingredients.new(
                     source, firstSnapshot.code, chef,
+                    null,
                     mutableListOf(location))
 
             expect(listener.received).containsExactly(IngredientSavedEvent(

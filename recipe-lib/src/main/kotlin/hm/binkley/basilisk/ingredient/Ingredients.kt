@@ -9,8 +9,10 @@ import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.location.Location
 import hm.binkley.basilisk.location.LocationRecord
 import hm.binkley.basilisk.location.Locations
+import hm.binkley.basilisk.recipe.Recipe
 import hm.binkley.basilisk.recipe.RecipeRecord
 import hm.binkley.basilisk.recipe.RecipeRepository
+import hm.binkley.basilisk.recipe.Recipes
 import hm.binkley.basilisk.source.Source
 import hm.binkley.basilisk.source.SourceRecord
 import hm.binkley.basilisk.source.SourceRepository
@@ -31,6 +33,7 @@ import javax.inject.Singleton
 class Ingredients(
         private val sources: Sources,
         private val chefs: Chefs,
+        private val recipes: Recipes,
         private val locations: Locations,
         private val publisher: ApplicationEventPublisher) {
     fun byCode(code: String) = IngredientRecord.findOne {
@@ -40,11 +43,13 @@ class Ingredients(
     }
 
     fun new(source: Source, code: String, chef: Chef,
+            recipe: Recipe?,
             locations: MutableList<Location> = mutableListOf()) =
             from(IngredientRecord.new {
                 this.source = toRecord(source)
                 this.code = code
                 this.chef = toRecord(chef)
+                this.recipe = recipe?.let { toRecord(recipe) }
             }).update(null) {
                 // Exposed wants the record complete before adding relationships
                 this.locations = locations
@@ -74,6 +79,12 @@ class Ingredients(
     internal fun toRecord(chef: Chef) =
             chefs.toRecord(chef)
 
+    internal fun recipeFrom(recipeRecord: RecipeRecord) =
+            recipes.from(recipeRecord)
+
+    internal fun toRecord(recipe: Recipe) =
+            recipes.toRecord(recipe)
+
     internal fun locationFrom(locationRecord: LocationRecord) =
             locations.from(locationRecord)
 
@@ -101,6 +112,11 @@ sealed class Ingredient(
     : IngredientDetails by record {
     val source = factory.sourceFrom(record.source)
     val chef = factory.chefFrom(record.chef)
+    val recipe: Recipe?
+        get() {
+            val recipeRecord = record.recipe
+            return recipeRecord?.let { factory.recipeFrom(recipeRecord) }
+        }
     val locations: SizedIterable<Location>
         get() = record.locations.notForUpdate().mapLazy {
             factory.locationFrom(it)
@@ -148,6 +164,14 @@ class MutableIngredient internal constructor(
         get() = factory.chefFrom(record.chef)
         set(update) {
             record.chef = factory.toRecord(update)
+        }
+    var recipe: Recipe?
+        get() {
+            val recipeRecord = record.recipe
+            return recipeRecord?.let { factory.recipeFrom(recipeRecord) }
+        }
+        set(update) {
+            record.recipe = update?.let { factory.toRecord(update) }
         }
     var locations: MutableList<Location>
         get() {
