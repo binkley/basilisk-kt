@@ -42,18 +42,38 @@ class Ingredients(
         from(it)
     }
 
-    fun new(source: Source, code: String, chef: Chef,
-            recipe: Recipe?,
-            locations: MutableList<Location> = mutableListOf()) =
-            from(IngredientRecord.new {
+    private fun <I : Ingredient<*>> new(source: Source, code: String,
+                                        chef: Chef,
+                                        locations: MutableList<Location> = mutableListOf(),
+                                        block: (IngredientRecord, Ingredients) -> I) =
+            block(IngredientRecord.new {
                 this.source = toRecord(source)
                 this.code = code
                 this.chef = toRecord(chef)
-                this.recipe = recipe?.let { toRecord(recipe) }
-            }).update(null) {
-                // Exposed wants the record complete before adding relationships
+            }, this).update(null) {
                 this.locations = locations
                 save()
+            }
+
+    fun newUnused(source: Source, code: String, chef: Chef,
+                  locations: MutableList<Location> = mutableListOf()) =
+            new(source, code, chef, locations) { record, factory ->
+                record.recipe = null // Explicit, even if redundant
+                UsedIngredient(record, factory)
+            }
+
+    fun newUnused(source: Source, code: String, chef: Chef, recipe: Recipe,
+                  locations: MutableList<Location> = mutableListOf()) =
+            new(source, code, chef, locations) { record, factory ->
+                record.recipe = factory.toRecord(recipe)
+                UsedIngredient(record, factory)
+            }
+
+    fun newAny(source: Source, code: String, chef: Chef, recipe: Recipe?,
+               locations: MutableList<Location> = mutableListOf()) =
+            new(source, code, chef, locations) { record, factory ->
+                record.recipe = recipe?.let { factory.toRecord(recipe) }
+                factory.from(record)
             }
 
     /** For implementors of other record types having a reference. */
@@ -104,9 +124,9 @@ interface MutableIngredientDetails {
 
 data class IngredientSavedEvent(
         val before: IngredientResource?,
-        val after: Ingredient?) : ApplicationEvent(after ?: before)
+        val after: Ingredient<*>?) : ApplicationEvent(after ?: before)
 
-sealed class Ingredient(
+sealed class Ingredient<I : Ingredient<I>>(
         private val record: IngredientRecord,
         private val factory: Ingredients)
     : IngredientDetails by record {
@@ -134,7 +154,7 @@ sealed class Ingredient(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-        other as Ingredient
+        other as Ingredient<*>
         return record == other.record
     }
 
@@ -147,24 +167,21 @@ sealed class Ingredient(
 class UnusedIngredient internal constructor(
         record: IngredientRecord,
         factory: Ingredients)
-    : Ingredient(record, factory)
+    : Ingredient<UnusedIngredient>(record, factory)
 
 class UsedIngredient internal constructor(
         record: IngredientRecord,
         factory: Ingredients)
-    : Ingredient(record, factory)
+    : Ingredient<UsedIngredient>(record, factory)
 
 class MutableIngredient internal constructor(
         private val snapshot: IngredientResource?,
         private val record: IngredientRecord,
         private val factory: Ingredients) : MutableIngredientDetails by record {
-    // Source is immutable
-    val source = factory.sourceFrom(record.source)
-    var chef: Chef
+    val source: Source // Immutable on creation
+        get() = factory.sourceFrom(record.source)
+    val chef: Chef // Immutable on creation
         get() = factory.chefFrom(record.chef)
-        set(update) {
-            record.chef = factory.toRecord(update)
-        }
     var recipe: Recipe?
         get() {
             val recipeRecord = record.recipe

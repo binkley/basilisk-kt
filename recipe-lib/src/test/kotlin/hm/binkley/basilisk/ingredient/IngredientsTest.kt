@@ -154,9 +154,8 @@ internal class IngredientsTest {
                     null,
                     listOf())
 
-            val ingredient = ingredients.new(
+            val ingredient = ingredients.newUnused(
                     source, firstSnapshot.code, chef,
-                    null,
                     mutableListOf(location))
 
             expect(listener.received).containsExactly(IngredientSavedEvent(
