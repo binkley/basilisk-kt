@@ -1,6 +1,8 @@
 dependencies {
+    // So we can add functions that call expect, to be imported
+    compile "ch.tutteli.atrium:atrium-cc-en_GB-robstoll:${atriumVersion}"
+
     testCompile "org.junit.jupiter:junit-jupiter-api:${junit5Version}"
-    testCompile "ch.tutteli.atrium:atrium-cc-en_GB-robstoll:${atriumVersion}"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:${junit5Version}"
     testRuntime "ch.qos.logback:logback-classic:${logbackVersion}"
 }

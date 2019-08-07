@@ -13,7 +13,9 @@ import hm.binkley.basilisk.db.testTransaction
 import hm.binkley.basilisk.location.LocationResource
 import hm.binkley.basilisk.location.Locations
 import hm.binkley.basilisk.recipe.RecipeRecord
+import hm.binkley.basilisk.recipe.RecipeResource
 import hm.binkley.basilisk.recipe.RecipeStatus.PLANNING
+import hm.binkley.basilisk.recipe.Recipes
 import hm.binkley.basilisk.source.SourceRecord
 import hm.binkley.basilisk.source.SourceResource
 import hm.binkley.basilisk.source.Sources
@@ -38,6 +40,8 @@ internal class IngredientsTest {
     lateinit var locations: Locations
     @Inject
     lateinit var chefs: Chefs
+    @Inject
+    lateinit var recipes: Recipes
     @Inject
     lateinit var ingredients: Ingredients
     @Inject
@@ -140,6 +144,7 @@ internal class IngredientsTest {
         testTransaction {
             val source = sources.new(sourceName, sourceCode)
             val chef = chefs.new(chefName, chefCode)
+            val recipe = recipes.new("TASTY PIE", "REC456", chef)
             val location = locations.new(locationName, locationCode)
             listener.reset()
 
@@ -149,33 +154,46 @@ internal class IngredientsTest {
                     null,
                     listOf(LocationResource(location)))
             val secondSnapshot = IngredientResource(
-                    SourceResource(source),
-                    code, ChefResource(chef),
+                    firstSnapshot.source,
+                    firstSnapshot.code, firstSnapshot.chef,
                     null,
                     listOf())
+            val thirdSnapshot = IngredientResource(
+                    secondSnapshot.source,
+                    secondSnapshot.code, secondSnapshot.chef,
+                    RecipeResource(recipe),
+                    secondSnapshot.locations)
 
             val ingredient = ingredients.newUnused(
                     source, firstSnapshot.code, chef,
                     mutableListOf(location))
 
-            expect(listener.received).containsExactly(IngredientSavedEvent(
+            listener.expect.containsExactly(IngredientSavedEvent(
                     null, ingredient))
-            listener.reset()
 
             ingredient.update {
                 this.locations.clear()
                 save()
             }
 
-            expect(listener.received).containsExactly(IngredientSavedEvent(
+            listener.expect.containsExactly(IngredientSavedEvent(
                     firstSnapshot, ingredient))
-            listener.reset()
+
+            val usedIngredient = ingredient.use(recipe)
+
+            listener.expect.containsExactly(IngredientSavedEvent(
+                    secondSnapshot, usedIngredient))
+
+            val unusedIngredient = usedIngredient.unuse()
+
+            listener.expect.containsExactly(IngredientSavedEvent(
+                    thirdSnapshot, unusedIngredient))
 
             ingredient.update {
                 delete()
             }
 
-            expect(listener.received).containsExactly(IngredientSavedEvent(
+            listener.expect.containsExactly(IngredientSavedEvent(
                     secondSnapshot, null))
         }
     }

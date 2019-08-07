@@ -61,9 +61,8 @@ internal class ChefsTest {
                     firstSnapshot.name, firstSnapshot.code,
                     firstSnapshot.health)
 
-            expect(listener.received).containsExactly(ChefSavedEvent(
+            listener.expect.containsExactly(ChefSavedEvent(
                     null, chef))
-            listener.reset()
 
             chef.update {
                 this.name = secondSnapshot.name
@@ -71,15 +70,14 @@ internal class ChefsTest {
                 save()
             }
 
-            expect(listener.received).containsExactly(ChefSavedEvent(
+            listener.expect.containsExactly(ChefSavedEvent(
                     firstSnapshot, chef))
-            listener.reset()
 
             chef.update {
                 delete()
             }
 
-            expect(listener.received).containsExactly(ChefSavedEvent(
+            listener.expect.containsExactly(ChefSavedEvent(
                     secondSnapshot, null))
         }
     }

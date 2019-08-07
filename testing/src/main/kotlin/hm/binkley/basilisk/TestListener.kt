@@ -1,18 +1,25 @@
 package hm.binkley.basilisk
 
+import ch.tutteli.atrium.creating.ReportingAssertionPlant
+import ch.tutteli.atrium.verbs.expect
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventListener
 import javax.inject.Singleton
 
 @Singleton
 class TestListener<E : ApplicationEvent> : ApplicationEventListener<E> {
-    private val _received = mutableListOf<E>()
+    private val received = mutableListOf<E>()
 
-    val received: List<E> = _received
-
-    fun reset() = _received.clear()
+    fun reset() {
+        received.clear()
+    }
 
     override fun onApplicationEvent(event: E) {
-        _received.add(event)
+        received.add(event)
     }
+
+    val expect: ReportingAssertionPlant<List<E>>
+        get() = expect(received.toList()).also {
+            reset()
+        }
 }

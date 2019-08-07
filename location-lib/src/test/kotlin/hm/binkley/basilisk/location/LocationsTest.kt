@@ -59,24 +59,22 @@ internal class LocationsTest {
             val location = locations.new(
                     firstSnapshot.name, firstSnapshot.code)
 
-            expect(listener.received).containsExactly(LocationSavedEvent(
+            listener.expect.containsExactly(LocationSavedEvent(
                     null, location))
-            listener.reset()
 
             location.update {
                 this.name = secondSnapshot.name
                 save()
             }
 
-            expect(listener.received).containsExactly(LocationSavedEvent(
+            listener.expect.containsExactly(LocationSavedEvent(
                     firstSnapshot, location))
-            listener.reset()
 
             location.update {
                 delete()
             }
 
-            expect(listener.received).containsExactly(LocationSavedEvent(
+            listener.expect.containsExactly(LocationSavedEvent(
                     secondSnapshot, null))
         }
     }

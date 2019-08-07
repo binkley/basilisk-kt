@@ -74,9 +74,8 @@ internal class SourcesTest {
                     firstSnapshot.name, firstSnapshot.code,
                     mutableListOf(location))
 
-            expect(listener.received).containsExactly(SourceSavedEvent(
+            listener.expect.containsExactly(SourceSavedEvent(
                     null, source))
-            listener.reset()
 
             source.update {
                 this.name = secondSnapshot.name
@@ -84,24 +83,22 @@ internal class SourcesTest {
                 save()
             }
 
-            expect(listener.received).containsExactly(SourceSavedEvent(
+            listener.expect.containsExactly(SourceSavedEvent(
                     firstSnapshot, source))
-            listener.reset()
 
             source.update {
                 this.locations = mutableListOf(location) // Change our minds
                 save()
             }
 
-            expect(listener.received).containsExactly(SourceSavedEvent(
+            listener.expect.containsExactly(SourceSavedEvent(
                     secondSnapshot, source))
-            listener.reset()
 
             source.update {
                 delete()
             }
 
-            expect(listener.received).containsExactly(SourceSavedEvent(
+            listener.expect.containsExactly(SourceSavedEvent(
                     thirdSnapshot, null))
         }
     }
