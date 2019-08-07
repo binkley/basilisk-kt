@@ -45,19 +45,15 @@ class Ingredients(
     private fun <I : Ingredient<*>> new(
             source: Source, code: String, chef: Chef,
             locations: MutableList<Location> = mutableListOf(),
-            block: (IngredientRecord, Ingredients) -> I): I {
-        val new = block(IngredientRecord.new {
-            this.source = toRecord(source)
-            this.code = code
-            this.chef = toRecord(chef)
-        }, this)
-        // TODO: Why does not "update" inlined return I?
-        val x = new.update(null) {
-            this.locations = locations
-            save()
-        }
-        return new
-    }
+            block: (IngredientRecord, Ingredients) -> I) =
+            block(IngredientRecord.new {
+                this.source = toRecord(source)
+                this.code = code
+                this.chef = toRecord(chef)
+            }, this).update(null) {
+                this.locations = locations
+                save()
+            } as I
 
     fun newUnused(source: Source, code: String, chef: Chef,
                   locations: MutableList<Location> = mutableListOf()) =
@@ -131,11 +127,13 @@ data class IngredientSavedEvent(
         val after: Ingredient<*>?) : ApplicationEvent(after ?: before)
 
 sealed class Ingredient<I : Ingredient<I>>(
-        protected val record: IngredientRecord,
-        protected val factory: Ingredients)
+        internal val record: IngredientRecord,
+        internal val factory: Ingredients)
     : IngredientDetails by record {
-    val source = factory.sourceFrom(record.source)
-    val chef = factory.chefFrom(record.chef)
+    val source
+        get() = factory.sourceFrom(record.source)
+    val chef
+        get() = factory.chefFrom(record.chef)
     val recipe: Recipe?
         get() {
             val recipeRecord = record.recipe
@@ -146,14 +144,14 @@ sealed class Ingredient<I : Ingredient<I>>(
             factory.locationFrom(it)
         }
 
-    fun update(block: MutableIngredient.() -> Unit) =
+    fun update(block: MutableIngredient.() -> Unit): I =
             update(IngredientResource(this), block)
 
-    internal inline fun update(
+    internal fun update(
             snapshot: IngredientResource?,
-            block: MutableIngredient.() -> Unit): I = let {
+            block: MutableIngredient.() -> Unit): I {
         MutableIngredient(snapshot, record, factory).block()
-        it as I
+        return this as I
     }
 
     override fun equals(other: Any?): Boolean {
