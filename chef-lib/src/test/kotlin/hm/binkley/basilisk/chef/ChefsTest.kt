@@ -61,7 +61,7 @@ internal class ChefsTest {
                     firstSnapshot.name, firstSnapshot.code,
                     firstSnapshot.health)
 
-            listener.expect.containsExactly(ChefSavedEvent(
+            listener.expectNext.containsExactly(ChefSavedEvent(
                     null, chef))
 
             chef.update {
@@ -70,14 +70,14 @@ internal class ChefsTest {
                 save()
             }
 
-            listener.expect.containsExactly(ChefSavedEvent(
+            listener.expectNext.containsExactly(ChefSavedEvent(
                     firstSnapshot, chef))
 
             chef.update {
                 delete()
             }
 
-            listener.expect.containsExactly(ChefSavedEvent(
+            listener.expectNext.containsExactly(ChefSavedEvent(
                     secondSnapshot, null))
         }
     }

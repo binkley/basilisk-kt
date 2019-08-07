@@ -18,7 +18,7 @@ class TestListener<E : ApplicationEvent> : ApplicationEventListener<E> {
         received.add(event)
     }
 
-    val expect: ReportingAssertionPlant<List<E>>
+    val expectNext: ReportingAssertionPlant<List<E>>
         get() = expect(received.toList()).also {
             reset()
         }

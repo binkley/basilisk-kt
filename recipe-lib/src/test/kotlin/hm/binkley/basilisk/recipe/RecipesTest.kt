@@ -91,7 +91,7 @@ internal class RecipesTest {
                     firstSnapshot.name, firstSnapshot.code, chef,
                     mutableListOf(location))
 
-            listener.expect.containsExactly(RecipeSavedEvent(
+            listener.expectNext.containsExactly(RecipeSavedEvent(
                     null, recipe))
 
             recipe.update {
@@ -100,7 +100,7 @@ internal class RecipesTest {
                 save()
             }
 
-            listener.expect.containsExactly(RecipeSavedEvent(
+            listener.expectNext.containsExactly(RecipeSavedEvent(
                     firstSnapshot, recipe))
 
             recipe.update {
@@ -109,14 +109,14 @@ internal class RecipesTest {
                 save()
             }
 
-            listener.expect.containsExactly(RecipeSavedEvent(
+            listener.expectNext.containsExactly(RecipeSavedEvent(
                     secondSnapshot, recipe))
 
             recipe.update {
                 delete()
             }
 
-            listener.expect.containsExactly(RecipeSavedEvent(
+            listener.expectNext.containsExactly(RecipeSavedEvent(
                     thirdSnapshot, null))
         }
     }

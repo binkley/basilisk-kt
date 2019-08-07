@@ -74,7 +74,7 @@ internal class SourcesTest {
                     firstSnapshot.name, firstSnapshot.code,
                     mutableListOf(location))
 
-            listener.expect.containsExactly(SourceSavedEvent(
+            listener.expectNext.containsExactly(SourceSavedEvent(
                     null, source))
 
             source.update {
@@ -83,7 +83,7 @@ internal class SourcesTest {
                 save()
             }
 
-            listener.expect.containsExactly(SourceSavedEvent(
+            listener.expectNext.containsExactly(SourceSavedEvent(
                     firstSnapshot, source))
 
             source.update {
@@ -91,14 +91,14 @@ internal class SourcesTest {
                 save()
             }
 
-            listener.expect.containsExactly(SourceSavedEvent(
+            listener.expectNext.containsExactly(SourceSavedEvent(
                     secondSnapshot, source))
 
             source.update {
                 delete()
             }
 
-            listener.expect.containsExactly(SourceSavedEvent(
+            listener.expectNext.containsExactly(SourceSavedEvent(
                     thirdSnapshot, null))
         }
     }

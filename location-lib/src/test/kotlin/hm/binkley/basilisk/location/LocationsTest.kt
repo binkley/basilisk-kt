@@ -59,7 +59,7 @@ internal class LocationsTest {
             val location = locations.new(
                     firstSnapshot.name, firstSnapshot.code)
 
-            listener.expect.containsExactly(LocationSavedEvent(
+            listener.expectNext.containsExactly(LocationSavedEvent(
                     null, location))
 
             location.update {
@@ -67,14 +67,14 @@ internal class LocationsTest {
                 save()
             }
 
-            listener.expect.containsExactly(LocationSavedEvent(
+            listener.expectNext.containsExactly(LocationSavedEvent(
                     firstSnapshot, location))
 
             location.update {
                 delete()
             }
 
-            listener.expect.containsExactly(LocationSavedEvent(
+            listener.expectNext.containsExactly(LocationSavedEvent(
                     secondSnapshot, null))
         }
     }

@@ -168,7 +168,7 @@ internal class IngredientsTest {
                     source, firstSnapshot.code, chef,
                     mutableListOf(location))
 
-            listener.expect.containsExactly(IngredientSavedEvent(
+            listener.expectNext.containsExactly(IngredientSavedEvent(
                     null, ingredient))
 
             ingredient.update {
@@ -176,24 +176,24 @@ internal class IngredientsTest {
                 save()
             }
 
-            listener.expect.containsExactly(IngredientSavedEvent(
+            listener.expectNext.containsExactly(IngredientSavedEvent(
                     firstSnapshot, ingredient))
 
             val usedIngredient = ingredient.use(recipe)
 
-            listener.expect.containsExactly(IngredientSavedEvent(
+            listener.expectNext.containsExactly(IngredientSavedEvent(
                     secondSnapshot, usedIngredient))
 
             val unusedIngredient = usedIngredient.unuse()
 
-            listener.expect.containsExactly(IngredientSavedEvent(
+            listener.expectNext.containsExactly(IngredientSavedEvent(
                     thirdSnapshot, unusedIngredient))
 
             ingredient.update {
                 delete()
             }
 
-            listener.expect.containsExactly(IngredientSavedEvent(
+            listener.expectNext.containsExactly(IngredientSavedEvent(
                     secondSnapshot, null))
         }
     }
