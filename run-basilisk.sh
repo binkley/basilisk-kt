@@ -22,7 +22,8 @@ function -print-help() {
   cat <<EOH
 
 Options:
-  -h, --help            Print this help and exit
+  -h, --help      Print this help and exit
+  -n, --dru-run   Prints what would execute; does not execute
 
 Arguments:
   ENVIRONMENTS(s)  Run all programs using with Micronaut ENVIRONMENTS(s)
@@ -34,12 +35,16 @@ basil_vm_args=()
 chefs_environments=("app" "db")
 chefs_vm_args=()
 
-while getopts :h-: opt; do
+run=
+while getopts :hn-: opt; do
   [[ $opt == - ]] && opt=${OPTARG%%=*} OPTARG=${OPTARG#*=}
   case $opt in
   h | help)
     -print-help
     exit 0
+    ;;
+  n | dry-run)
+    run=echo
     ;;
   *)
     -print-usage >&2
@@ -49,10 +54,10 @@ while getopts :h-: opt; do
 done
 shift $((OPTIND - 1))
 
-if ! docker ps >/dev/null 2>&1; then
-  echo "$0: ${pred}Docker not running${preset}" >&2
-  exit 2
-fi
+case $# in
+0) set - all ;;
+*) set - "$@" logs ;;  # Assume log tailing, avoid early exit
+esac
 
 function -join() {
   local IFS=,
@@ -69,6 +74,8 @@ rc=0
 trap 'exit $rc' INT TERM
 trap 'rm -rf "$tmpdir" ; kill 0 ; exit $rc' EXIT
 tmpdir="$(mktemp -d 2>/dev/null || mktemp -d -t basilisk)"
+
+logs_to_tail=()
 
 function -ready-or-die() {
   local bgpid=$1
@@ -91,33 +98,101 @@ function -ready-or-die() {
   done
 }
 
-echo "Resetting docker ..."
-docker-compose down -v >"$tmpdir/docker" 2>&1
-
-echo "Waiting for postgres to be ready ..."
-docker-compose up basilisk-db >>"$tmpdir/postgres" 2>&1 &
--ready-or-die $! "$tmpdir/postgres" 'database system is ready to accept connections'
-
-echo "Installing schemas ..."
-./gradlew flywayMigrate >"$tmpdir/schema"
-
-echo "${pyellow}No seed data${preset}"
-
-echo "Building applications ..."
-# Use this instead of `if ... then ... fi` to capture $?
-./gradlew shadowJar --rerun-tasks >"$tmpdir/jars" || {
-  rc=$?
-  cat "$tmpdir/jars"
-  exit $rc
+function check-docker() {
+  if ! docker ps >/dev/null 2>&1; then
+    echo "$0: ${pred}Docker not running${preset}" >&2
+    exit 2
+  fi
 }
 
-echo "Waiting for Basil ..."
-java "${basil_vm_args[@]}" -jar basil-bin/build/libs/*-all.jar >"$tmpdir/basil" 2>&1 &
--ready-or-die $! "$tmpdir/basil" "Startup completed in"
+function reset-docker() {
+  echo "Resetting docker ..."
+  docker-compose down -v >"$tmpdir/docker" 2>&1
+}
 
-echo "Waiting for Chefs ..."
-java "${chefs_vm_args[@]}" -jar chefs-bin/build/libs/*-all.jar >"$tmpdir/chefs" 2>&1 &
--ready-or-die $! "$tmpdir/chefs" "Startup completed in"
+function run-postgres() {
+  echo "Waiting for postgres to be ready ..."
+  docker-compose up basilisk-db >>"$tmpdir/postgres" 2>&1 &
+  -ready-or-die $! "$tmpdir/postgres" 'database system is ready to accept connections'
+}
 
-echo "Ready.  Following application logs ..."
-tail -F "$tmpdir/basil" "$tmpdir/chefs"
+function run-schemas() {
+  echo "Installing schemas ..."
+  ./gradlew flywayMigrate >"$tmpdir/schema"
+}
+
+function run-seed-data() {
+  echo "${pyellow}No seed data${preset}"
+}
+
+function run-build() {
+  echo "Building applications ..."
+  # Use this instead of `if ... then ... fi` to capture $?
+  ./gradlew shadowJar --rerun-tasks >"$tmpdir/jars" || {
+    rc=$?
+    cat "$tmpdir/jars"
+    exit $rc
+  }
+}
+
+function run-chefs() {
+  echo "Waiting for Chefs ..."
+  java "${chefs_vm_args[@]}" -jar chefs-bin/build/libs/*-all.jar >"$tmpdir/chefs" 2>&1 &
+  -ready-or-die $! "$tmpdir/chefs" "Startup completed in"
+  logs_to_tail=("${logs_to_tail[@]}" "$tmpdir/chefs")
+}
+
+function run-basil() {
+  echo "Waiting for Basil ..."
+  java "${basil_vm_args[@]}" -jar basil-bin/build/libs/*-all.jar >"$tmpdir/basil" 2>&1 &
+  -ready-or-die $! "$tmpdir/basil" "Startup completed in"
+  logs_to_tail=("${logs_to_tail[@]}" "$tmpdir/basil")
+}
+
+function tail-logs() {
+  [[ 0 == "${#logs_to_tail[@]}" ]] && return
+  echo "Ready.  Following application logs ..."
+  tail -F "${logs_to_tail[@]}"
+}
+
+# language=Makefile
+commands=($(
+  make -f - "$@" <<'EOM'
+all: basilisk chefs logs
+
+basilisk: need-basil
+chefs: need-chefs
+logs: need-logs
+
+need-docker:
+	@echo check-docker
+	@echo reset-docker
+
+need-postgres: need-docker
+	@echo run-postgres
+
+need-schemas: need-postgres
+	@echo run-schemas
+
+need-seed-data: need-schemas
+	@echo run-seed-data
+
+need-basil: need-seed-data need-chefs need-build
+	@echo run-basil
+
+need-chefs: need-seed-data need-build
+	@echo run-chefs
+
+need-build:
+	@echo run-build
+
+need-logs:
+	@echo tail-logs
+EOM
+))
+
+for command in "${commands[@]}"; do
+  $run "$command"
+done
+
+tail-logs
