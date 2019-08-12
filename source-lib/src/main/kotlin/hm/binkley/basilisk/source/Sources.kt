@@ -1,6 +1,7 @@
 package hm.binkley.basilisk.source
 
 import hm.binkley.basilisk.db.findOne
+import hm.binkley.basilisk.domain.notifySaved
 import hm.binkley.basilisk.location.Location
 import hm.binkley.basilisk.location.LocationRecord
 import hm.binkley.basilisk.location.Locations
@@ -44,17 +45,9 @@ class Sources(
     /** For implementors of other record types having a reference. */
     fun toRecord(source: Source) = source.record
 
-    internal fun notifySaved(
-            before: SourceResource?,
-            after: SourceRecord?) {
-        // Only publish if changed, not if unchanged
-        val afterSnapshot = after?.let {
-            SourceResource(from(it)) // TODO: Ick!
-        }
-        if (before != afterSnapshot)
-            publisher.publishEvent(SourceSavedEvent(
-                    before, after?.let { from(it) }))
-    }
+    internal fun notifySaved(before: SourceResource?, after: SourceRecord?) =
+            notifySaved(before, after,
+                    ::SourceResource, ::from, ::SourceSavedEvent, publisher)
 
     internal fun locationFrom(locationRecord: LocationRecord) =
             locations.from(locationRecord)

@@ -6,6 +6,7 @@ import hm.binkley.basilisk.chef.ChefRepository
 import hm.binkley.basilisk.chef.Chefs
 import hm.binkley.basilisk.db.ListLike
 import hm.binkley.basilisk.db.findOne
+import hm.binkley.basilisk.domain.notifySaved
 import hm.binkley.basilisk.ingredient.IngredientRecord
 import hm.binkley.basilisk.ingredient.IngredientRepository
 import hm.binkley.basilisk.location.Location
@@ -55,17 +56,9 @@ class Recipes(
     /** For implementors of other record types having a reference. */
     fun toRecord(recipe: Recipe) = recipe.record
 
-    internal fun notifySaved(
-            before: RecipeResource?,
-            after: RecipeRecord?) {
-        // Only publish if changed, not if unchanged
-        val afterSnapshot = after?.let {
-            RecipeResource(from(it)) // TODO: Ick!
-        }
-        if (before != afterSnapshot)
-            publisher.publishEvent(RecipeSavedEvent(
-                    before, after?.let { from(it) }))
-    }
+    internal fun notifySaved(before: RecipeResource?, after: RecipeRecord?) =
+            notifySaved(before, after,
+                    ::RecipeResource, ::from, ::RecipeSavedEvent, publisher)
 
     internal fun chefFrom(chefRecord: ChefRecord) =
             chefs.from(chefRecord)

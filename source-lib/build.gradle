@@ -4,6 +4,7 @@ apply from: "${project.rootDir}/testing.gradle"
 
 dependencies {
     compile project(":db")
+    compile project(":domain-lib")
     compile project(":location-lib")
     testCompile project(":testing")
 }

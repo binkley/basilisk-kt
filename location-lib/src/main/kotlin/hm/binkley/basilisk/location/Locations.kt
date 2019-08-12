@@ -1,6 +1,7 @@
 package hm.binkley.basilisk.location
 
 import hm.binkley.basilisk.db.findOne
+import hm.binkley.basilisk.domain.notifySaved
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
@@ -36,16 +37,10 @@ class Locations(private val publisher: ApplicationEventPublisher) {
     fun toRecord(location: Location) = location.record
 
     internal fun notifySaved(
-            before: LocationResource?,
-            after: LocationRecord?) {
-        // Only publish if changed, not if unchanged
-        val afterSnapshot = after?.let {
-            LocationResource(from(it)) // TODO: Ick!
-        }
-        if (before != afterSnapshot)
-            publisher.publishEvent(LocationSavedEvent(
-                    before, after?.let { from(it) }))
-    }
+            before: LocationResource?, after: LocationRecord?) =
+            notifySaved(before, after,
+                    ::LocationResource, ::from, ::LocationSavedEvent,
+                    publisher)
 }
 
 interface LocationDetails {

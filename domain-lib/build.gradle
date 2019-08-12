@@ -1,0 +1,3 @@
+apply from: "${project.rootDir}/kotlin-micronaut.gradle"
+apply from: "${project.rootDir}/persistence.gradle"
+apply from: "${project.rootDir}/testing.gradle"

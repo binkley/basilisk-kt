@@ -1,6 +1,7 @@
 package hm.binkley.basilisk.chef
 
 import hm.binkley.basilisk.db.findOne
+import hm.binkley.basilisk.domain.notifySaved
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
@@ -41,17 +42,9 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
     /** For implementors of other record types having a reference. */
     fun toRecord(chef: Chef) = chef.record
 
-    internal fun notifySaved(
-            before: ChefResource?,
-            after: ChefRecord?) {
-        // Only publish if changed, not if unchanged
-        val afterSnapshot = after?.let {
-            ChefResource(from(it)) // TODO: Ick!
-        }
-        if (before != afterSnapshot)
-            publisher.publishEvent(ChefSavedEvent(
-                    before, after?.let { from(it) }))
-    }
+    internal fun notifySaved(before: ChefResource?, after: ChefRecord?) =
+            notifySaved(before, after,
+                    ::ChefResource, ::from, ::ChefSavedEvent, publisher)
 }
 
 interface ChefDetails {

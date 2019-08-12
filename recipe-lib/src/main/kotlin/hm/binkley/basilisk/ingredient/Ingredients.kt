@@ -6,6 +6,7 @@ import hm.binkley.basilisk.chef.ChefRepository
 import hm.binkley.basilisk.chef.Chefs
 import hm.binkley.basilisk.db.ListLike
 import hm.binkley.basilisk.db.findOne
+import hm.binkley.basilisk.domain.notifySaved
 import hm.binkley.basilisk.location.Location
 import hm.binkley.basilisk.location.LocationRecord
 import hm.binkley.basilisk.location.Locations
@@ -82,16 +83,10 @@ class Ingredients(
             else UsedIngredient(record, this)
 
     internal fun notifySaved(
-            before: IngredientResource?,
-            after: IngredientRecord?) {
-        // Only publish if changed, not if unchanged
-        val afterSnapshot = after?.let {
-            IngredientResource(from(it)) // TODO: Ick!
-        }
-        if (before != afterSnapshot)
-            publisher.publishEvent(IngredientSavedEvent(
-                    before, after?.let { from(it) }))
-    }
+            before: IngredientResource?, after: IngredientRecord?) =
+            notifySaved(before, after,
+                    ::IngredientResource, ::from, ::IngredientSavedEvent,
+                    publisher)
 
     internal fun sourceFrom(sourceRecord: SourceRecord) =
             sources.from(sourceRecord)
