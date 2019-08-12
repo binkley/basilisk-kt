@@ -68,6 +68,25 @@ trap 'exit $rc' INT TERM
 trap 'rm -rf "$tmpdir" ; kill 0 ; exit $rc' EXIT
 tmpdir="$(mktemp -d 2>/dev/null || mktemp -d -t basilisk)"
 
+# TODO: How to exit from ERR with original failed exit code?
+#function stack-trace-and-exit() {
+#  local err=$?
+#  set +o xtrace # Do not trace this code
+#  local code="${1:-1}"
+#  echo "Error in ${BASH_SOURCE[1]}:${BASH_LINENO[0]}. '${BASH_COMMAND}' exited with status $err"
+#  # Print out the stack trace described by $function_stack
+#  if [ ${#FUNCNAME[@]} -gt 2 ]; then
+#    echo "Stack:"
+#    for ((i = 1; i < ${#FUNCNAME[@]} - 1; i++)); do
+#      echo " $i: ${BASH_SOURCE[$i + 1]}:${BASH_LINENO[$i]} ${FUNCNAME[$i]}(...)"
+#    done
+#  fi
+#  echo "Exiting with status $err"
+#  exit "$err"
+#}
+#trap stack-trace-and-exit ERR
+#set -o errtrace
+
 logs_to_tail=()
 function -tail-log() {
   logs_to_tail=("${logs_to_tail[@]}" "$1")
@@ -159,9 +178,7 @@ function tail-logs() {
   tail -F "${logs_to_tail[@]}"
 }
 
-read -rd '' -a commands < <(
-  # language=Makefile
-  make -s -f - "$@" <<'EOM'
+make -s -f - "$@" <<'EOM' >"$tmpdir/make"
 all: basil chefs logs
 
 basil: need-basil
@@ -190,11 +207,10 @@ need-chefs: need-seed-data need-build
 need-build:
 	echo run-build
 
-need-logs:
+need-logs
 	echo tail-logs
 EOM
-) || true
 
-for command in "${commands[@]}"; do
+while read -r command; do
   $run "$command"
-done
+done <"$tmpdir/make"
