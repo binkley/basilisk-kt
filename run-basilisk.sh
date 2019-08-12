@@ -31,9 +31,7 @@ EOH
 }
 
 basil_environments=("app" "db")
-basil_vm_args=()
 chefs_environments=("app" "db")
-chefs_vm_args=()
 
 run=
 while getopts :hn-: opt; do
@@ -44,7 +42,7 @@ while getopts :hn-: opt; do
     exit 0
     ;;
   n | dry-run)
-    run=echo
+    run="echo"
     ;;
   *)
     -print-usage >&2
@@ -56,18 +54,13 @@ shift $((OPTIND - 1))
 
 case $# in
 0) set - all ;;
-*) set - "$@" logs ;;  # Assume log tailing, avoid early exit
 esac
+set - "$@" logs # Assume always log tailing
 
 function -join() {
   local IFS=,
   echo "$*"
 }
-
-basil_vm_args=("${basil_vm_args[@]}"
-  "-Dmicronaut.environments=$(-join "${basil_environments[@]}" "$@")")
-chefs_vm_args=("${chefs_vm_args[@]}"
-  "-Dmicronaut.environments=$(-join "${chefs_environments[@]}" "$@")")
 
 # See https://stackoverflow.com/a/22644006
 rc=0
@@ -76,6 +69,9 @@ trap 'rm -rf "$tmpdir" ; kill 0 ; exit $rc' EXIT
 tmpdir="$(mktemp -d 2>/dev/null || mktemp -d -t basilisk)"
 
 logs_to_tail=()
+function -tail-log() {
+  logs_to_tail=("${logs_to_tail[@]}" "$1")
+}
 
 function -ready-or-die() {
   local bgpid=$1
@@ -137,16 +133,24 @@ function run-build() {
 
 function run-chefs() {
   echo "Waiting for Chefs ..."
-  java "${chefs_vm_args[@]}" -jar chefs-bin/build/libs/*-all.jar >"$tmpdir/chefs" 2>&1 &
+  echo "${pred}$0: WARN: Not passing in profiles from command line${preset}"
+  local chefs_vm_args=("${chefs_vm_args[@]}"
+    "-Dmicronaut.environments=$(-join "${chefs_environments[@]}" "$@")")
+  echo "Running java ${chefs_vm_args[*]} -jar chefs-bin/build/libs/*-all.jar" >"$tmpdir/chefs"
+  java "${chefs_vm_args[@]}" -jar chefs-bin/build/libs/*-all.jar >>"$tmpdir/chefs" 2>&1 &
   -ready-or-die $! "$tmpdir/chefs" "Startup completed in"
-  logs_to_tail=("${logs_to_tail[@]}" "$tmpdir/chefs")
+  -tail-log "$tmpdir/chefs"
 }
 
 function run-basil() {
   echo "Waiting for Basil ..."
-  java "${basil_vm_args[@]}" -jar basil-bin/build/libs/*-all.jar >"$tmpdir/basil" 2>&1 &
+  echo "${pred}$0: WARN: Not passing in profiles from command line${preset}"
+  local basil_vm_args=("${basil_vm_args[@]}"
+    "-Dmicronaut.environments=$(-join "${basil_environments[@]}" "$@")")
+  echo "Running java ${basil_vm_args[*]} -jar basil-bin/build/libs/*-all.jar" >"$tmpdir/basil"
+  java "${basil_vm_args[@]}" -jar basil-bin/build/libs/*-all.jar >>"$tmpdir/basil" 2>&1 &
   -ready-or-die $! "$tmpdir/basil" "Startup completed in"
-  logs_to_tail=("${logs_to_tail[@]}" "$tmpdir/basil")
+  -tail-log "$tmpdir/basil"
 }
 
 function tail-logs() {
@@ -155,44 +159,42 @@ function tail-logs() {
   tail -F "${logs_to_tail[@]}"
 }
 
-# language=Makefile
-commands=($(
-  make -f - "$@" <<'EOM'
-all: basilisk chefs logs
+read -rd '' -a commands < <(
+  # language=Makefile
+  make -s -f - "$@" <<'EOM'
+all: basil chefs logs
 
-basilisk: need-basil
+basil: need-basil
 chefs: need-chefs
 logs: need-logs
 
 need-docker:
-	@echo check-docker
-	@echo reset-docker
+	echo check-docker
+	echo reset-docker
 
 need-postgres: need-docker
-	@echo run-postgres
+	echo run-postgres
 
 need-schemas: need-postgres
-	@echo run-schemas
+	echo run-schemas
 
 need-seed-data: need-schemas
-	@echo run-seed-data
+	echo run-seed-data
 
 need-basil: need-seed-data need-chefs need-build
-	@echo run-basil
+	echo run-basil
 
 need-chefs: need-seed-data need-build
-	@echo run-chefs
+	echo run-chefs
 
 need-build:
-	@echo run-build
+	echo run-build
 
 need-logs:
-	@echo tail-logs
+	echo tail-logs
 EOM
-))
+) || true
 
 for command in "${commands[@]}"; do
   $run "$command"
 done
-
-tail-logs
