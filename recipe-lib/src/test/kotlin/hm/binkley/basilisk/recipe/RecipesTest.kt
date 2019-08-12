@@ -1,6 +1,7 @@
 package hm.binkley.basilisk.recipe
 
 import ch.tutteli.atrium.api.cc.en_GB.containsExactly
+import ch.tutteli.atrium.api.cc.en_GB.isEmpty
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.TestListener
@@ -118,6 +119,37 @@ internal class RecipesTest {
 
             listener.expectNext.containsExactly(RecipeSavedEvent(
                     thirdSnapshot, null))
+        }
+    }
+
+    @Test
+    fun shouldSkipPublishSaveEventsIfUnchanged() {
+        val chefName = "Chef Boy-ar-dee"
+        val chefCode = "BOY"
+        val locationName = "The Dallas Yellow Rose"
+        val locationCode = "DAL"
+
+        testTransaction {
+            val chef = chefs.new(chefName, chefCode)
+            val location = locations.new(locationName, locationCode)
+            listener.reset()
+
+            val snapshot = RecipeResource(
+                    name, code, ChefResource(chef), PLANNING,
+                    listOf(LocationResource(location)))
+
+            val recipe = recipes.new(
+                    snapshot.name, snapshot.code, chef,
+                    mutableListOf(location))
+
+            listener.expectNext.containsExactly(RecipeSavedEvent(
+                    null, recipe))
+
+            recipe.update {
+                save()
+            }
+
+            listener.expectNext.isEmpty()
         }
     }
 }

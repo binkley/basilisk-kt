@@ -38,8 +38,13 @@ class Locations(private val publisher: ApplicationEventPublisher) {
     internal fun notifySaved(
             before: LocationResource?,
             after: LocationRecord?) {
-        publisher.publishEvent(LocationSavedEvent(
-                before, after?.let { from(it) }))
+        // Only publish if changed, not if unchanged
+        val afterSnapshot = after?.let {
+            LocationResource(from(it)) // TODO: Ick!
+        }
+        if (before != afterSnapshot)
+            publisher.publishEvent(LocationSavedEvent(
+                    before, after?.let { from(it) }))
     }
 }
 

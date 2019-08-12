@@ -47,8 +47,13 @@ class Sources(
     internal fun notifySaved(
             before: SourceResource?,
             after: SourceRecord?) {
-        publisher.publishEvent(SourceSavedEvent(
-                before, after?.let { from(it) }))
+        // Only publish if changed, not if unchanged
+        val afterSnapshot = after?.let {
+            SourceResource(from(it)) // TODO: Ick!
+        }
+        if (before != afterSnapshot)
+            publisher.publishEvent(SourceSavedEvent(
+                    before, after?.let { from(it) }))
     }
 
     internal fun locationFrom(locationRecord: LocationRecord) =

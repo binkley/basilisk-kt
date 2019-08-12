@@ -1,6 +1,7 @@
 package hm.binkley.basilisk.chef
 
 import ch.tutteli.atrium.api.cc.en_GB.containsExactly
+import ch.tutteli.atrium.api.cc.en_GB.isEmpty
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.TestListener
@@ -79,6 +80,26 @@ internal class ChefsTest {
 
             listener.expectNext.containsExactly(ChefSavedEvent(
                     secondSnapshot, null))
+        }
+    }
+
+    @Test
+    fun shouldSkipPublishSaveEventsIfUnchanged() {
+        testTransaction {
+            val snapshot = ChefResource(name, code, FIT)
+
+            val chef = chefs.new(
+                    snapshot.name, snapshot.code,
+                    snapshot.health)
+
+            listener.expectNext.containsExactly(ChefSavedEvent(
+                    null, chef))
+
+            chef.update {
+                save()
+            }
+
+            listener.expectNext.isEmpty()
         }
     }
 }

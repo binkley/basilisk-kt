@@ -58,8 +58,13 @@ class Recipes(
     internal fun notifySaved(
             before: RecipeResource?,
             after: RecipeRecord?) {
-        publisher.publishEvent(RecipeSavedEvent(
-                before, after?.let { from(it) }))
+        // Only publish if changed, not if unchanged
+        val afterSnapshot = after?.let {
+            RecipeResource(from(it)) // TODO: Ick!
+        }
+        if (before != afterSnapshot)
+            publisher.publishEvent(RecipeSavedEvent(
+                    before, after?.let { from(it) }))
     }
 
     internal fun chefFrom(chefRecord: ChefRecord) =

@@ -84,8 +84,13 @@ class Ingredients(
     internal fun notifySaved(
             before: IngredientResource?,
             after: IngredientRecord?) {
-        publisher.publishEvent(IngredientSavedEvent(
-                before, after?.let { from(it) }))
+        // Only publish if changed, not if unchanged
+        val afterSnapshot = after?.let {
+            IngredientResource(from(it)) // TODO: Ick!
+        }
+        if (before != afterSnapshot)
+            publisher.publishEvent(IngredientSavedEvent(
+                    before, after?.let { from(it) }))
     }
 
     internal fun sourceFrom(sourceRecord: SourceRecord) =

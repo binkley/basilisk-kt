@@ -1,6 +1,7 @@
 package hm.binkley.basilisk.location
 
 import ch.tutteli.atrium.api.cc.en_GB.containsExactly
+import ch.tutteli.atrium.api.cc.en_GB.isEmpty
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.TestListener
@@ -76,6 +77,25 @@ internal class LocationsTest {
 
             listener.expectNext.containsExactly(LocationSavedEvent(
                     secondSnapshot, null))
+        }
+    }
+
+    @Test
+    fun shouldSkipPublishSaveEventsIfUnchanged() {
+        testTransaction {
+            val snapshot = LocationResource(name, code)
+
+            val location = locations.new(
+                    snapshot.name, snapshot.code)
+
+            listener.expectNext.containsExactly(LocationSavedEvent(
+                    null, location))
+
+            location.update {
+                save()
+            }
+
+            listener.expectNext.isEmpty()
         }
     }
 }

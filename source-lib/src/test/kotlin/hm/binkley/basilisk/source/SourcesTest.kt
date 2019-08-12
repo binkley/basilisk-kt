@@ -1,6 +1,7 @@
 package hm.binkley.basilisk.source
 
 import ch.tutteli.atrium.api.cc.en_GB.containsExactly
+import ch.tutteli.atrium.api.cc.en_GB.isEmpty
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.TestListener
@@ -100,6 +101,33 @@ internal class SourcesTest {
 
             listener.expectNext.containsExactly(SourceSavedEvent(
                     thirdSnapshot, null))
+        }
+    }
+
+    @Test
+    fun shouldSkipPublishSaveEventsIfUnchangd() {
+        val locationName = "The Dallas Yellow Rose"
+        val locationCode = "DAL"
+
+        testTransaction {
+            val location = locations.new(locationName, locationCode)
+            listener.reset()
+
+            val snapshot = SourceResource(
+                    name, code, listOf(LocationResource(location)))
+
+            val source = sources.new(
+                    snapshot.name, snapshot.code,
+                    mutableListOf(location))
+
+            listener.expectNext.containsExactly(SourceSavedEvent(
+                    null, source))
+
+            source.update {
+                save()
+            }
+
+            listener.expectNext.isEmpty()
         }
     }
 }
