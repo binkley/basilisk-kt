@@ -4,7 +4,7 @@ import hm.binkley.basilisk.chef.Chef
 import hm.binkley.basilisk.chef.ChefRecord
 import hm.binkley.basilisk.chef.ChefRepository
 import hm.binkley.basilisk.chef.Chefs
-import hm.binkley.basilisk.db.ListLike
+import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
 import hm.binkley.basilisk.location.Location
@@ -40,6 +40,12 @@ class Ingredients(
     fun byCode(code: String) = IngredientRecord.findOne {
         IngredientRepository.code eq code
     }?.let {
+        from(it)
+    }
+
+    fun byRecipe(recipe: Recipe) = IngredientRecord.find {
+        IngredientRepository.recipe eq recipe.record.id
+    }.mapLazy {
         from(it)
     }
 
@@ -210,10 +216,11 @@ class MutableIngredient internal constructor(
         }
     var locations: MutableList<Location>
         get() {
-            val update = ListLike(
-                    record.locations.forUpdate().mapLazy {
-                        factory.locationFrom(it)
-                    }, { update -> locations = update })
+            val update = record.locations.forUpdate().mapLazy {
+                factory.locationFrom(it)
+            }.asList { update ->
+                locations = update
+            }
             locations = update // Glue changes of list back to record
             return update
         }

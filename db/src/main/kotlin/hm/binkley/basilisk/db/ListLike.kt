@@ -2,9 +2,12 @@ package hm.binkley.basilisk.db
 
 import org.jetbrains.exposed.sql.SizedIterable
 
+fun <T> SizedIterable<T>.asList(updateWith: (ListLike<T>) -> Unit = { }) =
+        ListLike<T>(this, updateWith)
+
 class ListLike<T>(
         field: SizedIterable<T>,
-        private val updateWith: (ListLike<T>) -> Unit)
+        private val updateWith: (ListLike<T>) -> Unit = { })
     : AbstractMutableList<T>() {
     private val backing = field.toMutableList()
 

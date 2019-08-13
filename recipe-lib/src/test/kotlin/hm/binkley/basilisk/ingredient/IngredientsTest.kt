@@ -10,6 +10,7 @@ import hm.binkley.basilisk.chef.ChefRecord
 import hm.binkley.basilisk.chef.ChefResource
 import hm.binkley.basilisk.chef.Chefs
 import hm.binkley.basilisk.chef.Chefs.Companion.FIT
+import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.testTransaction
 import hm.binkley.basilisk.location.LocationResource
 import hm.binkley.basilisk.location.Locations
@@ -71,6 +72,7 @@ internal class IngredientsTest {
         testTransaction {
             val chef = chefs.new("CHEF BOB", "CHEF123")
             val source = sources.new(name, "SRC012")
+            val recipe = recipes.new("TASTY PIE", "REC456", chef)
             ingredients.newAny(source, code, chef, null)
 
             val ingredient = ingredients.byCode(code)!!
@@ -78,6 +80,8 @@ internal class IngredientsTest {
             expect(ingredient.code).toBe(code)
             expect(ingredient.name).toBe(name)
             expect(ingredient).isA<UnusedIngredient> { }
+
+            expect(ingredients.byRecipe(recipe).asList()).isEmpty()
         }
     }
 
@@ -97,6 +101,9 @@ internal class IngredientsTest {
             expect(ingredient.code).toBe(code)
             expect(ingredient.name).toBe(name)
             expect(ingredient).isA<UsedIngredient> { }
+
+            expect(ingredients.byRecipe(recipe).asList())
+                    .containsExactly(ingredient)
         }
     }
 

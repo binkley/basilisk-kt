@@ -24,6 +24,7 @@ fun Recipe.restrictions(): SizedIterable<Location> {
 
     if (!recipeRestrictions.empty())
         return recipeRestrictions
+
     // TODO: Give the recipe ingredients
     return EmptySizedIterable()
 }

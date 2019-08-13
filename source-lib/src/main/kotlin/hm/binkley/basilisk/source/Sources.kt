@@ -1,6 +1,6 @@
 package hm.binkley.basilisk.source
 
-import hm.binkley.basilisk.db.ListLike
+import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
 import hm.binkley.basilisk.location.Location
@@ -109,9 +109,11 @@ class MutableSource internal constructor(
         private val factory: Sources) : MutableSourceDetails by record {
     var locations: MutableList<Location>
         get() {
-            val update = ListLike(record.locations.forUpdate().mapLazy {
+            val update = record.locations.forUpdate().mapLazy {
                 factory.locationFrom(it)
-            }, { update -> locations = update })
+            }.asList { update ->
+                locations = update
+            }
             locations = update // Glue changes of list back to record
             return update
         }
