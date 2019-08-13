@@ -163,7 +163,7 @@ sealed class Ingredient<I : Ingredient<I>>(
     override fun hashCode() = record.hashCode()
 
     override fun toString() =
-            "${super.toString()}{record=$record, chef=$chef}"
+            "${super.toString()}{record=$record, chef=$chef, recipe=$recipe, locations=$locations}"
 }
 
 class UnusedIngredient internal constructor(

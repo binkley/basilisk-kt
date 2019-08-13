@@ -130,7 +130,8 @@ class Recipe internal constructor(
 
     override fun hashCode() = record.hashCode()
 
-    override fun toString() = "${super.toString()}{record=$record}"
+    override fun toString() =
+            "${super.toString()}{record=$record, chef=$chef, location=$locations}"
 }
 
 class MutableRecipe internal constructor(
