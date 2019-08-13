@@ -57,30 +57,33 @@ internal class SourcesTest {
 
     @Test
     fun shouldPublishSaveEvents() {
-        val locationName = "The Dallas Yellow Rose"
-        val locationCode = "DAL"
+        val locationAName = "The Dallas Yellow Rose"
+        val locationACode = "DAL"
+        val locationBName = "Melbourne Pink Heath"
+        val locationBCode = "MEL"
 
         testTransaction {
-            val location = locations.new(locationName, locationCode)
+            val locationA = locations.new(locationAName, locationACode)
+            val locationB = locations.new(locationBName, locationBCode)
             listener.reset()
 
-            val firstSnapshot = SourceResource(
-                    name, code, listOf(LocationResource(location)))
-            val secondSnapshot = SourceResource(
-                    "LIME", code, listOf())
-            val thirdSnapshot = SourceResource(
-                    "LIME", code, listOf(LocationResource(location)))
+            val firstSnapshot = SourceResource(name, code, listOf(
+                    LocationResource(locationA),
+                    LocationResource(locationB)))
+            val secondSnapshot = SourceResource("LIME", code, listOf(
+                    LocationResource(locationA)))
+            val thirdSnapshot = SourceResource("LIME", code, listOf())
 
             val source = sources.new(
                     firstSnapshot.name, firstSnapshot.code,
-                    mutableListOf(location))
+                    mutableListOf(locationA, locationB))
 
             listener.expectNext.containsExactly(SourceSavedEvent(
                     null, source))
 
             source.update {
                 this.name = secondSnapshot.name
-                this.locations.clear()
+                this.locations.remove(locationB)
                 save()
             }
 
@@ -88,7 +91,7 @@ internal class SourcesTest {
                     firstSnapshot, source))
 
             source.update {
-                this.locations = mutableListOf(location) // Change our minds
+                this.locations = mutableListOf()
                 save()
             }
 

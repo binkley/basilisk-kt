@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.SizedIterable
 fun <T> SizedIterable<T>.asList(updateWith: (ListLike<T>) -> Unit = { }) =
         ListLike<T>(this, updateWith)
 
+// TODO: There should be a nicer way
 class ListLike<T>(
         field: SizedIterable<T>,
         private val updateWith: (ListLike<T>) -> Unit = { })
