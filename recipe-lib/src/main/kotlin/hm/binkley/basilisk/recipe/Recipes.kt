@@ -7,8 +7,6 @@ import hm.binkley.basilisk.chef.Chefs
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
-import hm.binkley.basilisk.ingredient.IngredientRecord
-import hm.binkley.basilisk.ingredient.IngredientRepository
 import hm.binkley.basilisk.location.Location
 import hm.binkley.basilisk.location.LocationRecord
 import hm.binkley.basilisk.location.Locations
@@ -200,7 +198,6 @@ class RecipeRecord(id: EntityID<Int>) : IntEntity(id),
     override var code by RecipeRepository.code
     var chef by ChefRecord referencedOn RecipeRepository.chef
     override var status by RecipeRepository.status
-    val ingredients by IngredientRecord optionalReferrersOn IngredientRepository.recipe
     var locations by LocationRecord via RecipeLocationsRepository
 
     override fun delete() {
@@ -215,13 +212,12 @@ class RecipeRecord(id: EntityID<Int>) : IntEntity(id),
         return name == other.name
                 && code == other.code
                 && chef == other.chef
-                && ingredients == other.ingredients
                 && locations == other.locations
     }
 
     override fun hashCode() =
-            Objects.hash(name, code, chef, ingredients, locations)
+            Objects.hash(name, code, chef, locations)
 
     override fun toString() =
-            "${super.toString()}{id=$id, name=$name, code=$code, chef=$chef, ingredients=$ingredients, locations=$locations}"
+            "${super.toString()}{id=$id, name=$name, code=$code, chef=$chef, locations=$locations}"
 }
