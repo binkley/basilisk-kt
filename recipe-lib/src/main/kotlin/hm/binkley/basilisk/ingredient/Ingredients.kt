@@ -78,7 +78,7 @@ class Ingredients(
             }
 
     /** For implementors of other record types having a reference. */
-    fun from(record: IngredientRecord) =
+    fun from(record: IngredientRecord): Ingredient<*> =
             if (null == record.recipe) UnusedIngredient(record, this)
             else UsedIngredient(record, this)
 

@@ -134,6 +134,87 @@ internal class IngredientsTest {
     }
 
     @Test
+    fun shouldUnuseUsedIngredient() {
+        val name = name
+        val code = code
+
+        testTransaction {
+            val chef = ChefRecord.new {
+                this.name = "CHEF BOB"
+                this.code = "CHEF123"
+                health = FIT
+            }
+            chef.flush()
+            val source = SourceRecord.new {
+                this.name = name
+                this.code = "SRC012"
+            }
+            source.flush()
+            val recipe = RecipeRecord.new {
+                this.name = "TASTY PIE"
+                this.code = "REC456"
+                this.chef = chef
+                status = PLANNING
+            }
+            recipe.flush()
+            IngredientRecord.new {
+                this.code = code
+                this.chef = chef
+                this.source = source
+                this.recipe = recipe
+            }.flush()
+
+            val ingredient =
+                    (ingredients.byCode(code)!! as UsedIngredient).unuse()
+
+            expect(ingredient.code).toBe(code)
+            expect(ingredient.name).toBe(name)
+            expect(ingredient.recipe).toBe(null)
+        }
+    }
+
+    @Test
+    fun shouldUseUnusedIngredient() {
+        val name = name
+        val code = code
+
+        testTransaction {
+            val chef = ChefRecord.new {
+                this.name = "CHEF BOB"
+                this.code = "CHEF123"
+                health = FIT
+            }
+            chef.flush()
+            val source = SourceRecord.new {
+                this.name = name
+                this.code = "SRC012"
+            }
+            source.flush()
+            val recipeRecord = RecipeRecord.new {
+                this.name = "TASTY PIE"
+                this.code = "REC456"
+                this.chef = chef
+                status = PLANNING
+            }
+            recipeRecord.flush()
+            IngredientRecord.new {
+                this.code = code
+                this.chef = chef
+                this.source = source
+            }.flush()
+
+            val recipe = recipes.from(recipeRecord)
+            val ingredient =
+                    (ingredients.byCode(code)!! as UnusedIngredient)
+                            .use(recipe)
+
+            expect(ingredient.code).toBe(code)
+            expect(ingredient.name).toBe(name)
+            expect(ingredient.recipe).toBe(recipe)
+        }
+    }
+
+    @Test
     fun shouldPublishSaveEvents() {
         val sourceName = name
         val sourceCode = "SRC012"
