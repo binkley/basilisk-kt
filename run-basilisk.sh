@@ -52,10 +52,12 @@ while getopts :hn-: opt; do
 done
 shift $((OPTIND - 1))
 
+targets=() # Avoid clobbering cmd line flags, esp `-x`
 case $# in
-0) set - all ;;
+0) targets=(basil chefs) ;;
+*) targets=("$@") ;;
 esac
-set - "$@" logs # Assume always log tailing
+targets=("${targets[@]}" logs) # Assume tailing logs
 
 function -join() {
   local IFS=,
@@ -131,16 +133,20 @@ function run-postgres() {
   -ready-or-die $! "$tmpdir/postgres" 'database system is ready to accept connections'
 }
 
-function run-schemas() {
+function install-schemas() {
   echo "Installing schemas ..."
-  ./gradlew flywayMigrate >"$tmpdir/schema"
+  ./gradlew flywayMigrate >"$tmpdir/schemas" || {
+    rc=$?
+    cat "$tmpdir/schemas" >&2
+    return $rc
+  }
 }
 
-function run-seed-data() {
+function install-seed-data() {
   echo "${pyellow}No seed data${preset}"
 }
 
-function run-build() {
+function build-all() {
   echo "Building applications ..."
   # Use this instead of `if ... then ... fi` to capture $?
   ./gradlew shadowJar --rerun-tasks >"$tmpdir/jars" || {
@@ -178,11 +184,21 @@ function tail-logs() {
   tail -F "${logs_to_tail[@]}"
 }
 
-make -s -f - "$@" <<'EOM' >"$tmpdir/make"
-all: basil chefs logs
+make -s -f - "${targets[@]}" >"$tmpdir/make" <<'EOM'
+all:
+	echo BUG
+	exit 1
 
+ifneq ($(filter-out basil,$(MAKECMDGOALS)),$(MAKECMDGOALS))
 basil: need-basil
+else
+basil: mock-basil
+endif
+ifneq ($(filter-out chefs,$(MAKECMDGOALS)),$(MAKECMDGOALS))
 chefs: need-chefs
+else
+chefs: mock-chefs
+endif
 logs: need-logs
 
 need-docker:
@@ -193,24 +209,37 @@ need-postgres: need-docker
 	echo run-postgres
 
 need-schemas: need-postgres
-	echo run-schemas
+	echo install-schemas
 
 need-seed-data: need-schemas
-	echo run-seed-data
+	echo install-seed-data
 
-need-basil: need-seed-data need-chefs need-build
+need-basil: need-seed-data chefs need-build
 	echo run-basil
+
+mock-basil:
+	echo mock-basil
 
 need-chefs: need-seed-data need-build
 	echo run-chefs
 
-need-build:
-	echo run-build
+mock-chefs:
+	echo mock-chefs
 
-need-logs
+need-build:
+	echo build-all
+
+need-logs:
 	echo tail-logs
 EOM
 
-while read -r command; do
-  $run "$command"
-done <"$tmpdir/make"
+# Read in here; avoid calls in functions to programs that drain STDIN
+# I'm looking at you, Gradle
+IFS=$'\n' read -d '' -r -a commands <"$tmpdir/make" || true
+for command in "${commands[@]}"; do
+  $run "$command" || {
+    rc=$?
+    echo "${pred}$0: Function failed: $command${preset}" >&2
+    exit $rc
+  }
+done
