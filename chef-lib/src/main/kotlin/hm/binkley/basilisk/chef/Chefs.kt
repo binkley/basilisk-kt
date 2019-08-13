@@ -23,6 +23,7 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
         from(it)
     }
 
+    /** Saves a new chef in [FIT] health. */
     fun new(name: String, code: String, health: String = FIT) =
             from(ChefRecord.new {
                 this.name = name

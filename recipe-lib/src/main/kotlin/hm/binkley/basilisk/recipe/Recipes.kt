@@ -37,6 +37,7 @@ class Recipes(
         from(it)
     }
 
+    /** Saves a new recipe in [PLANNING] status. */
     fun new(name: String, code: String, chef: Chef,
             locations: MutableList<Location> = mutableListOf()) =
             from(RecipeRecord.new {

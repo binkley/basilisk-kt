@@ -69,22 +69,9 @@ internal class IngredientsTest {
         val code = code
 
         testTransaction {
-            val chef = ChefRecord.new {
-                this.name = "CHEF BOB"
-                this.code = "CHEF123"
-                health = FIT
-            }
-            chef.flush()
-            val source = SourceRecord.new {
-                this.name = name
-                this.code = "SRC012"
-            }
-            source.flush()
-            IngredientRecord.new {
-                this.code = code
-                this.chef = chef
-                this.source = source
-            }.flush()
+            val chef = chefs.new("CHEF BOB", "CHEF123")
+            val source = sources.new(name, "SRC012")
+            ingredients.newAny(source, code, chef, null)
 
             val ingredient = ingredients.byCode(code)!!
 
@@ -100,30 +87,10 @@ internal class IngredientsTest {
         val code = code
 
         testTransaction {
-            val chef = ChefRecord.new {
-                this.name = "CHEF BOB"
-                this.code = "CHEF123"
-                health = FIT
-            }
-            chef.flush()
-            val source = SourceRecord.new {
-                this.name = name
-                this.code = "SRC012"
-            }
-            source.flush()
-            val recipe = RecipeRecord.new {
-                this.name = "TASTY PIE"
-                this.code = "REC456"
-                this.chef = chef
-                status = PLANNING
-            }
-            recipe.flush()
-            IngredientRecord.new {
-                this.code = code
-                this.chef = chef
-                this.source = source
-                this.recipe = recipe
-            }.flush()
+            val chef = chefs.new("CHEF BOB", "CHEF123")
+            val source = sources.new(name, "SRC012")
+            val recipe = recipes.new("TASTY PIE", "REC456", chef)
+            ingredients.newAny(source, code, chef, recipe)
 
             val ingredient = ingredients.byCode(code)!!
 
@@ -139,30 +106,10 @@ internal class IngredientsTest {
         val code = code
 
         testTransaction {
-            val chef = ChefRecord.new {
-                this.name = "CHEF BOB"
-                this.code = "CHEF123"
-                health = FIT
-            }
-            chef.flush()
-            val source = SourceRecord.new {
-                this.name = name
-                this.code = "SRC012"
-            }
-            source.flush()
-            val recipe = RecipeRecord.new {
-                this.name = "TASTY PIE"
-                this.code = "REC456"
-                this.chef = chef
-                status = PLANNING
-            }
-            recipe.flush()
-            IngredientRecord.new {
-                this.code = code
-                this.chef = chef
-                this.source = source
-                this.recipe = recipe
-            }.flush()
+            val chef = chefs.new("CHEF BOB", "CHEF123")
+            val source = sources.new(name, "SRC012")
+            val recipe = recipes.new("TASTY PIE", "REC456", chef)
+            ingredients.newAny(source, code, chef, recipe)
 
             val ingredient =
                     (ingredients.byCode(code)!! as UsedIngredient).unuse()
@@ -292,7 +239,6 @@ internal class IngredientsTest {
         testTransaction {
             val source = sources.new(sourceName, sourceCode)
             val chef = chefs.new(chefName, chefCode)
-            val recipe = recipes.new("TASTY PIE", "REC456", chef)
             val location = locations.new(locationName, locationCode)
             listener.reset()
 
