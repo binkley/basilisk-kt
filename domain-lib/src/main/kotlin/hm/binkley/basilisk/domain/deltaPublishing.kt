@@ -3,7 +3,7 @@ package hm.binkley.basilisk.domain
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 
-inline fun <Resource, Domain, Event : ApplicationEvent> notifySaved(
+fun <Resource, Domain, Event : ApplicationEvent> notifySaved(
         before: Resource?, after: Domain?,
         publisher: ApplicationEventPublisher,
         resource: (Domain) -> Resource,
