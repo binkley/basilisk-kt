@@ -224,12 +224,12 @@ class MutableIngredient internal constructor(
         }
 
     fun save() = apply {
-        record.flush() // TODO: Aggressively flush, or wait for txn to end?
+        record.flush()
         factory.notifySaved(snapshot, record)
     }
 
     fun delete() {
-        record.delete() // TODO: Detect if edited, and not saved, then deleted
+        record.delete()
         factory.notifySaved(snapshot, null)
     }
 
