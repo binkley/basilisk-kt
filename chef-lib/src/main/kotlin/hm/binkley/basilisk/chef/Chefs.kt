@@ -43,8 +43,8 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
     fun toRecord(chef: Chef) = chef.record
 
     internal fun notifySaved(before: ChefResource?, after: ChefRecord?) =
-            notifySaved(before, after,
-                    ::ChefResource, ::from, ::ChefSavedEvent, publisher)
+            notifySaved(before, after?.let { from(it) }, publisher,
+                    ::ChefResource, ::ChefSavedEvent)
 }
 
 interface ChefDetails {

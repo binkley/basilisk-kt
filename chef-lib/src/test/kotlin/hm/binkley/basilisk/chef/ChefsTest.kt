@@ -89,7 +89,8 @@ internal class ChefsTest {
             val snapshot = ChefResource(name, code, FIT)
 
             val chef = chefs.new(
-                    snapshot.name, snapshot.code,
+                    snapshot.name,
+                    snapshot.code,
                     snapshot.health)
 
             listener.expectNext.containsExactly(ChefSavedEvent(

@@ -46,8 +46,8 @@ class Sources(
     fun toRecord(source: Source) = source.record
 
     internal fun notifySaved(before: SourceResource?, after: SourceRecord?) =
-            notifySaved(before, after,
-                    ::SourceResource, ::from, ::SourceSavedEvent, publisher)
+            notifySaved(before, after?.let { from(it) }, publisher,
+                    ::SourceResource, ::SourceSavedEvent)
 
     internal fun locationFrom(locationRecord: LocationRecord) =
             locations.from(locationRecord)

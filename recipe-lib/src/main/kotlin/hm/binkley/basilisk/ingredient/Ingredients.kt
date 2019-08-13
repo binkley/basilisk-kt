@@ -84,9 +84,8 @@ class Ingredients(
 
     internal fun notifySaved(
             before: IngredientResource?, after: IngredientRecord?) =
-            notifySaved(before, after,
-                    ::IngredientResource, ::from, ::IngredientSavedEvent,
-                    publisher)
+            notifySaved(before, after?.let { from(it) }, publisher,
+                    ::IngredientResource, ::IngredientSavedEvent)
 
     internal fun sourceFrom(sourceRecord: SourceRecord) =
             sources.from(sourceRecord)

@@ -38,9 +38,8 @@ class Locations(private val publisher: ApplicationEventPublisher) {
 
     internal fun notifySaved(
             before: LocationResource?, after: LocationRecord?) =
-            notifySaved(before, after,
-                    ::LocationResource, ::from, ::LocationSavedEvent,
-                    publisher)
+            notifySaved(before, after?.let { from(it) }, publisher,
+                    ::LocationResource, ::LocationSavedEvent)
 }
 
 interface LocationDetails {

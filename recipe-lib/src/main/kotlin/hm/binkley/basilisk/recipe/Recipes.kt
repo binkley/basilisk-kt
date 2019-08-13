@@ -57,8 +57,8 @@ class Recipes(
     fun toRecord(recipe: Recipe) = recipe.record
 
     internal fun notifySaved(before: RecipeResource?, after: RecipeRecord?) =
-            notifySaved(before, after,
-                    ::RecipeResource, ::from, ::RecipeSavedEvent, publisher)
+            notifySaved(before, after?.let { from(it) }, publisher,
+                    ::RecipeResource, ::RecipeSavedEvent)
 
     internal fun chefFrom(chefRecord: ChefRecord) =
             chefs.from(chefRecord)
