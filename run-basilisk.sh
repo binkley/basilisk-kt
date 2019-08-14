@@ -11,6 +11,7 @@ set -o pipefail
 # Colors!
 printf -v preset "\e[0m"
 printf -v pred "\e[31m"
+printf -v pgreen "\e[32m"
 printf -v pyellow "\e[33m"
 
 function -print-usage() {
@@ -71,23 +72,23 @@ trap 'rm -rf "$tmpdir" ; kill 0 ; exit $rc' EXIT
 tmpdir="$(mktemp -d 2>/dev/null || mktemp -d -t basilisk)"
 
 # TODO: How to exit from ERR with original failed exit code?
-#function stack-trace-and-exit() {
-#  local err=$?
-#  set +o xtrace # Do not trace this code
-#  local code="${1:-1}"
-#  echo "Error in ${BASH_SOURCE[1]}:${BASH_LINENO[0]}. '${BASH_COMMAND}' exited with status $err"
-#  # Print out the stack trace described by $function_stack
-#  if [ ${#FUNCNAME[@]} -gt 2 ]; then
-#    echo "Stack:"
-#    for ((i = 1; i < ${#FUNCNAME[@]} - 1; i++)); do
-#      echo " $i: ${BASH_SOURCE[$i + 1]}:${BASH_LINENO[$i]} ${FUNCNAME[$i]}(...)"
-#    done
-#  fi
-#  echo "Exiting with status $err"
-#  exit "$err"
-#}
-#trap stack-trace-and-exit ERR
-#set -o errtrace
+function stack-trace-and-exit() {
+  local err=$?
+  set +o xtrace # Do not trace this code
+  local code="${1:-1}"
+  echo "Error in ${BASH_SOURCE[1]}:${BASH_LINENO[0]}. '${BASH_COMMAND}' exited with status $err"
+  # Print out the stack trace described by $function_stack
+  if [ ${#FUNCNAME[@]} -gt 2 ]; then
+    echo "Stack:"
+    for ((i = 1; i < ${#FUNCNAME[@]} - 1; i++)); do
+      echo " $i: ${BASH_SOURCE[$i + 1]}:${BASH_LINENO[$i]} ${FUNCNAME[$i]}(...)"
+    done
+  fi
+  echo "Exiting with status $err"
+  exit "$err"
+}
+trap stack-trace-and-exit ERR
+set -o errtrace
 
 logs_to_tail=()
 function -tail-log() {
@@ -205,13 +206,13 @@ function mock-basil() {
 
 function tail-logs() {
   [[ 0 == "${#logs_to_tail[@]}" ]] && return
-  echo "Ready.  Following application logs ..."
+  echo "${pgreen}Ready${preset}.  Following application logs ..."
   tail -F "${logs_to_tail[@]}"
 }
 
-make -s -f - "${targets[@]}" >"$tmpdir/make" <<'EOM'
+make -rs -f - "${targets[@]}" >"$tmpdir/make" <<'EOM'
 all:
-	echo BUG
+	echo BUG: No targets
 	exit 1
 
 ifneq ($(filter-out basil,$(MAKECMDGOALS)),$(MAKECMDGOALS))
