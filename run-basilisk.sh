@@ -158,12 +158,31 @@ function build-all() {
 
 function run-chefs() {
   echo "Waiting for Chefs ..."
-  echo "${pred}$0: WARN: Not passing in profiles from command line${preset}"
+  echo "${pyellow}$0: WARN: Not passing in profiles from command line${preset}"
   local chefs_vm_args=("${chefs_vm_args[@]}"
     "-Dmicronaut.environments=$(-join "${chefs_environments[@]}" "$@")")
   echo "Running java ${chefs_vm_args[*]} -jar chefs-bin/build/libs/*-all.jar" >"$tmpdir/chefs"
   java "${chefs_vm_args[@]}" -jar chefs-bin/build/libs/*-all.jar >>"$tmpdir/chefs" 2>&1 &
   -ready-or-die $! "$tmpdir/chefs" "Startup completed in"
+  -tail-log "$tmpdir/chefs"
+}
+
+function -mock-service() {
+  [[ -z "$(which socat 2>/dev/null)" ]] || {
+    echo "${pred}$0: ERROR: 'socat' not installed${preset}" >&2
+    exit 1
+  }
+
+  local port="$1"
+  local exec="$2"
+  local log="$3"
+
+  socat -v tcp-l:$port,fork exec:$exec >"$log" 2>&1 &
+}
+
+function mock-chefs() {
+  echo "Mocking Chefs ..."
+  -mock-service 7372 ./mock-chefs.sh "$tmpdir/chefs"
   -tail-log "$tmpdir/chefs"
 }
 
@@ -175,6 +194,12 @@ function run-basil() {
   echo "Running java ${basil_vm_args[*]} -jar basil-bin/build/libs/*-all.jar" >"$tmpdir/basil"
   java "${basil_vm_args[@]}" -jar basil-bin/build/libs/*-all.jar >>"$tmpdir/basil" 2>&1 &
   -ready-or-die $! "$tmpdir/basil" "Startup completed in"
+  -tail-log "$tmpdir/basil"
+}
+
+function mock-basil() {
+  echo "Mocking Basil ..."
+  -mock-service 7371 ./mock-basil.sh "$tmpdir/basil"
   -tail-log "$tmpdir/basil"
 }
 
