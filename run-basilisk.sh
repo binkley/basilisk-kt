@@ -168,7 +168,7 @@ function run-chefs() {
 }
 
 function -mock-service() {
-  [[ -z "$(which socat 2>/dev/null)" ]] || {
+  [[ -n "$(which socat 2>/dev/null)" ]] || {
     echo "${pred}$0: ERROR: 'socat' not installed${preset}" >&2
     exit 1
   }
