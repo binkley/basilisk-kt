@@ -189,7 +189,7 @@ function mock-chefs() {
 
 function run-basil() {
   echo "Waiting for Basil ..."
-  echo "${pred}$0: WARN: Not passing in profiles from command line${preset}"
+  echo "${pyellow}$0: WARN: Not passing in profiles from command line${preset}"
   local basil_vm_args=("${basil_vm_args[@]}"
     "-Dmicronaut.environments=$(-join "${basil_environments[@]}" "$@")")
   echo "Running java ${basil_vm_args[*]} -jar basil-bin/build/libs/*-all.jar" >"$tmpdir/basil"
@@ -207,6 +207,7 @@ function mock-basil() {
 function tail-logs() {
   [[ 0 == "${#logs_to_tail[@]}" ]] && return
   echo "${pgreen}Ready${preset}.  Following application logs ..."
+  echo # Blank line to help spot the start of logs
   tail -F "${logs_to_tail[@]}"
 }
 
