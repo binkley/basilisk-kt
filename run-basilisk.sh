@@ -23,6 +23,9 @@ function -print-help() {
   cat <<EOH
 
 Options:
+  -e, --environment=ENVIRONMENT(s)
+                  Run with specific Micronaut ENVIRONMENT(s), comma-separated
+                    if multiple; default is "app db"
   -h, --help      Print this help and exit
   -n, --dry-run   Prints what would execute, but does not execute
 
@@ -31,13 +34,30 @@ Arguments:
 EOH
 }
 
+function -join() {
+  local IFS=,
+  echo "$*"
+}
+
+function -split() {
+  echo "$1" | {
+    local environments
+    IFS=, read -r -a environments
+    echo "${environments[@]}"
+  }
+}
+
 basil_environments=("app" "db")
 chefs_environments=("app" "db")
 
 run=
-while getopts :hn-: opt; do
+while getopts :E:e:hn-: opt; do
   [[ $opt == - ]] && opt=${OPTARG%%=*} OPTARG=${OPTARG#*=}
   case $opt in
+  E | environment)
+    basil_environments=($(-split "$OPTARG"))
+    chefs_environments=($(-split "$OPTARG"))
+    ;;
   h | help)
     -print-help
     exit 0
@@ -59,11 +79,6 @@ case $# in
 *) targets=("$@") ;;
 esac
 targets=("${targets[@]}" logs) # Assume tailing logs
-
-function -join() {
-  local IFS=,
-  echo "$*"
-}
 
 # See https://stackoverflow.com/a/22644006
 rc=0
@@ -159,7 +174,6 @@ function build-all() {
 
 function run-chefs() {
   echo "Waiting for Chefs ..."
-  echo "${pyellow}$0: WARN: Not passing in profiles from command line${preset}"
   local chefs_vm_args=("${chefs_vm_args[@]}"
     "-Dmicronaut.environments=$(-join "${chefs_environments[@]}" "$@")")
   echo "Running java ${chefs_vm_args[*]} -jar chefs-bin/build/libs/*-all.jar" >"$tmpdir/chefs"
@@ -189,7 +203,6 @@ function mock-chefs() {
 
 function run-basil() {
   echo "Waiting for Basil ..."
-  echo "${pyellow}$0: WARN: Not passing in profiles from command line${preset}"
   local basil_vm_args=("${basil_vm_args[@]}"
     "-Dmicronaut.environments=$(-join "${basil_environments[@]}" "$@")")
   echo "Running java ${basil_vm_args[*]} -jar basil-bin/build/libs/*-all.jar" >"$tmpdir/basil"
