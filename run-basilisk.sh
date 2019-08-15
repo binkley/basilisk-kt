@@ -34,19 +34,6 @@ Arguments:
 EOH
 }
 
-function -join() {
-  local IFS=,
-  echo "$*"
-}
-
-function -split() {
-  echo "$1" | {
-    local environments
-    IFS=, read -r -a environments
-    echo "${environments[@]}"
-  }
-}
-
 basil_environments=("app" "db")
 chefs_environments=("app" "db")
 
@@ -55,8 +42,8 @@ while getopts :E:e:hn-: opt; do
   [[ $opt == - ]] && opt=${OPTARG%%=*} OPTARG=${OPTARG#*=}
   case $opt in
   E | environment)
-    basil_environments=($(-split "$OPTARG"))
-    chefs_environments=($(-split "$OPTARG"))
+    IFS=, read -r -a basil_environments <<<"$OPTARG"
+    IFS=, read -r -a chefs_environments <<<"$OPTARG"
     ;;
   h | help)
     -print-help
@@ -104,6 +91,11 @@ function stack-trace-and-exit() {
 }
 trap stack-trace-and-exit ERR
 set -o errtrace
+
+function -join() {
+  local IFS=,
+  echo "$*"
+}
 
 logs_to_tail=()
 function -tail-log() {
