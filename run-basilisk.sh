@@ -15,7 +15,7 @@ printf -v pgreen "\e[32m"
 printf -v pyellow "\e[33m"
 
 function -print-usage() {
-  echo "Usage: $0 [-h|--help] [ENVIRONMENTS(s)]"
+  echo "Usage: $0 [-h|--help] [TARGETS(s)]"
 }
 
 function -print-help() {
@@ -24,10 +24,10 @@ function -print-help() {
 
 Options:
   -h, --help      Print this help and exit
-  -n, --dru-run   Prints what would execute; does not execute
+  -n, --dry-run   Prints what would execute, but does not execute
 
 Arguments:
-  ENVIRONMENTS(s)  Run all programs using with Micronaut ENVIRONMENTS(s)
+  TARGETS(s)  Run specific TARGET(s); default is "basil chefs".
 EOH
 }
 

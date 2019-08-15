@@ -37,14 +37,13 @@ $ ./run-basilisk
 ``` 
 
 - Prepares Docker
-- Starts Postgres
-- Installs SQL schema
+- Sets up Postgres and schemas
 - Builds executable jars
-- Starts project programs
+- Starts project programs, mocking what is needed
 - Tails program logs
 
 Use `^C` (SIGINT) to interrupt.  Stops all processes backgrounded in the
-script.
+script.  Use `-h` for help (there are additional features).
 
 <img src="https://www.featurepics.com/StockImage/20070125/yellow-rose-of-texas-stock-image-200039.jpg" alt="Yellow Rose of Texas" width="25%" align="right"/>
 
