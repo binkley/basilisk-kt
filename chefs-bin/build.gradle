@@ -8,7 +8,7 @@ mainClassName = "hm.binkley.basilisk.chef.ChefsApplication"
 dependencies {
     compile project(":app-lib")
     compile project(":db")
-    compile project(":chef-lib")
+    compile project(":chefs-persisted")
     testCompile project(":testing")
 }
 

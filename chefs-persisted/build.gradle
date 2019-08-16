@@ -5,9 +5,7 @@ apply from: "${project.rootDir}/testing.gradle"
 dependencies {
     compile project(":db")
     compile project(":domain-lib")
-    compile project(":chefs-persisted")
-    compile project(":location-lib")
-    compile project(":source-lib")
+    compile project(":chefs-lib")
     testCompile project(":testing")
 }
 

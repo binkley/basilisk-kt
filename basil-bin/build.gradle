@@ -10,7 +10,7 @@ dependencies {
     compile project(":db")
 
     // TODO: May need to share an abstract notion of "chef"
-    compile project(":chef-lib")
+    compile project(":chefs-persisted")
     compile project(":location-lib")
     compile project(":source-lib")
     compile project(":recipe-lib")
