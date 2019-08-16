@@ -1,8 +1,8 @@
 package hm.binkley.basilisk.recipe
 
-import hm.binkley.basilisk.chef.Chef
 import hm.binkley.basilisk.chef.ChefRecord
 import hm.binkley.basilisk.chef.ChefRepository
+import hm.binkley.basilisk.chef.PersistedChef
 import hm.binkley.basilisk.chef.PersistedChefs
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
@@ -36,7 +36,7 @@ class Recipes(
     }
 
     /** Saves a new recipe in [PLANNING] status. */
-    fun new(name: String, code: String, chef: Chef,
+    fun new(name: String, code: String, chef: PersistedChef,
             locations: MutableList<Location> = mutableListOf()) =
             from(RecipeRecord.new {
                 this.name = name
@@ -62,7 +62,7 @@ class Recipes(
     internal fun chefFrom(chefRecord: ChefRecord) =
             chefs.from(chefRecord)
 
-    internal fun toRecord(chef: Chef) =
+    internal fun toRecord(chef: PersistedChef) =
             chefs.toRecord(chef)
 
     internal fun locationFrom(locationRecord: LocationRecord) =
@@ -136,7 +136,7 @@ class MutableRecipe internal constructor(
         private val snapshot: RecipeResource?,
         private val record: RecipeRecord,
         private val factory: Recipes) : MutableRecipeDetails by record {
-    var chef: Chef
+    var chef: PersistedChef // TODO: OOPS!  Use interface, not concrete
         get() = factory.chefFrom(record.chef)
         set(update) {
             record.chef = factory.toRecord(update)

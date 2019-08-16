@@ -22,7 +22,7 @@ interface Chefs {
     fun byCode(code: String): Chef?
 
     /** Saves a new chef in [FIT] health. */
-    fun new(name: String, code: String, health: String = FIT): Chef;
+    fun new(name: String, code: String, health: String = FIT): Chef
 }
 
 @Singleton
@@ -48,10 +48,10 @@ class PersistedChefs(private val publisher: ApplicationEventPublisher)
             }
 
     /** For implementors of other record types having a reference. */
-    fun from(record: ChefRecord) = Chef(record, this)
+    fun from(record: ChefRecord) = PersistedChef(record, this)
 
     /** For implementors of other record types having a reference. */
-    fun toRecord(chef: Chef) = chef.record
+    fun toRecord(chef: PersistedChef) = chef.record
 
     internal fun notifySaved(before: ChefResource?, after: ChefRecord?) =
             notifySaved(before, after?.let { from(it) }, publisher,
@@ -74,23 +74,34 @@ data class ChefSavedEvent(
         val before: ChefResource?,
         val after: Chef?) : ApplicationEvent(after ?: before)
 
-class Chef internal constructor(
+interface Chef : ChefDetails {
+    fun update(block: MutableChef.() -> Unit): Chef
+}
+
+interface MutableChef : MutableChefDetails {
+    fun save(): MutableChef
+
+    fun delete()
+}
+
+class PersistedChef internal constructor(
         internal val record: ChefRecord,
         private val factory: PersistedChefs)
-    : ChefDetails by record {
-    fun update(block: MutableChef.() -> Unit) =
+    : Chef,
+        ChefDetails by record {
+    override fun update(block: MutableChef.() -> Unit) =
             update(ChefResource(this), block)
 
     internal inline fun update(
             snapshot: ChefResource?,
             block: MutableChef.() -> Unit) = apply {
-        MutableChef(snapshot, record, factory).block()
+        PersistedMutableChef(snapshot, record, factory).block()
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-        other as Chef
+        other as PersistedChef
         return record == other.record
     }
 
@@ -99,16 +110,18 @@ class Chef internal constructor(
     override fun toString() = "${super.toString()}{record=$record}"
 }
 
-class MutableChef internal constructor(
+class PersistedMutableChef internal constructor(
         private val snapshot: ChefResource?,
         private val record: ChefRecord,
-        private val factory: PersistedChefs) : MutableChefDetails by record {
-    fun save() = apply {
+        private val factory: PersistedChefs)
+    : MutableChef,
+        MutableChefDetails by record {
+    override fun save() = apply {
         record.flush()
         factory.notifySaved(snapshot, record)
     }
 
-    fun delete() {
+    override fun delete() {
         record.delete()
         factory.notifySaved(snapshot, null)
     }
@@ -116,7 +129,7 @@ class MutableChef internal constructor(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-        other as MutableChef
+        other as PersistedMutableChef
         return snapshot == other.snapshot
                 && record == other.record
     }

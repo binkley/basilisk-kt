@@ -8,8 +8,8 @@ import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.TestListener
 import hm.binkley.basilisk.chef.ChefRecord
 import hm.binkley.basilisk.chef.ChefResource
-import hm.binkley.basilisk.chef.Chefs
 import hm.binkley.basilisk.chef.Chefs.Companion.FIT
+import hm.binkley.basilisk.chef.PersistedChefs
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.testTransaction
 import hm.binkley.basilisk.location.LocationResource
@@ -41,7 +41,7 @@ internal class IngredientsTest {
     @Inject
     lateinit var locations: Locations
     @Inject
-    lateinit var chefs: Chefs
+    lateinit var chefs: PersistedChefs
     @Inject
     lateinit var recipes: Recipes
     @Inject

@@ -3,6 +3,7 @@ package hm.binkley.basilisk.ingredient
 import hm.binkley.basilisk.chef.Chef
 import hm.binkley.basilisk.chef.ChefRecord
 import hm.binkley.basilisk.chef.ChefRepository
+import hm.binkley.basilisk.chef.PersistedChef
 import hm.binkley.basilisk.chef.PersistedChefs
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
@@ -50,7 +51,7 @@ class Ingredients(
     }
 
     private fun <I : Ingredient<*>> new(
-            source: Source, code: String, chef: Chef,
+            source: Source, code: String, chef: PersistedChef,
             locations: MutableList<Location> = mutableListOf(),
             block: (IngredientRecord, Ingredients) -> I) =
             block(IngredientRecord.new {
@@ -62,21 +63,23 @@ class Ingredients(
                 save()
             } as I
 
-    fun newUnused(source: Source, code: String, chef: Chef,
+    fun newUnused(source: Source, code: String, chef: PersistedChef,
                   locations: MutableList<Location> = mutableListOf()) =
             new(source, code, chef, locations) { record, factory ->
                 record.recipe = null // Explicit, even if redundant
                 UnusedIngredient(record, factory)
             }
 
-    fun newUsed(source: Source, code: String, chef: Chef, recipe: Recipe,
+    fun newUsed(source: Source, code: String, chef: PersistedChef,
+                recipe: Recipe,
                 locations: MutableList<Location> = mutableListOf()) =
             new(source, code, chef, locations) { record, factory ->
                 record.recipe = factory.toRecord(recipe)
                 UsedIngredient(record, factory)
             }
 
-    fun newAny(source: Source, code: String, chef: Chef, recipe: Recipe?,
+    fun newAny(source: Source, code: String, chef: PersistedChef,
+               recipe: Recipe?,
                locations: MutableList<Location> = mutableListOf()) =
             new(source, code, chef, locations) { record, factory ->
                 record.recipe = recipe?.let { factory.toRecord(recipe) }
@@ -101,7 +104,7 @@ class Ingredients(
     internal fun chefFrom(chefRecord: ChefRecord) =
             chefs.from(chefRecord)
 
-    internal fun toRecord(chef: Chef) =
+    internal fun toRecord(chef: PersistedChef) =
             chefs.toRecord(chef)
 
     internal fun recipeFrom(recipeRecord: RecipeRecord) =
