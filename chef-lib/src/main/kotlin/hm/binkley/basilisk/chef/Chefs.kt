@@ -1,5 +1,6 @@
 package hm.binkley.basilisk.chef
 
+import hm.binkley.basilisk.chef.Chefs.Companion.FIT
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
 import io.micronaut.context.event.ApplicationEvent
@@ -11,20 +12,33 @@ import org.jetbrains.exposed.dao.IntIdTable
 import java.util.*
 import javax.inject.Singleton
 
-@Singleton
-class Chefs(private val publisher: ApplicationEventPublisher) {
+interface Chefs {
     companion object {
         const val FIT = "FIT"
     }
 
-    fun byCode(code: String) = ChefRecord.findOne {
+    fun all(): Iterable<Chef>
+
+    fun byCode(code: String): Chef?
+
+    /** Saves a new chef in [FIT] health. */
+    fun new(name: String, code: String, health: String = FIT): Chef;
+}
+
+@Singleton
+class PersistedChefs(private val publisher: ApplicationEventPublisher)
+    : Chefs {
+    override fun all() = ChefRecord.all().map {
+        from(it)
+    }
+
+    override fun byCode(code: String) = ChefRecord.findOne {
         ChefRepository.code eq code
     }?.let {
         from(it)
     }
 
-    /** Saves a new chef in [FIT] health. */
-    fun new(name: String, code: String, health: String = FIT) =
+    override fun new(name: String, code: String, health: String) =
             from(ChefRecord.new {
                 this.name = name
                 this.code = code
@@ -32,10 +46,6 @@ class Chefs(private val publisher: ApplicationEventPublisher) {
             }).update(null) {
                 save()
             }
-
-    fun all() = ChefRecord.all().map {
-        from(it)
-    }
 
     /** For implementors of other record types having a reference. */
     fun from(record: ChefRecord) = Chef(record, this)
@@ -66,7 +76,7 @@ data class ChefSavedEvent(
 
 class Chef internal constructor(
         internal val record: ChefRecord,
-        private val factory: Chefs)
+        private val factory: PersistedChefs)
     : ChefDetails by record {
     fun update(block: MutableChef.() -> Unit) =
             update(ChefResource(this), block)
@@ -92,7 +102,7 @@ class Chef internal constructor(
 class MutableChef internal constructor(
         private val snapshot: ChefResource?,
         private val record: ChefRecord,
-        private val factory: Chefs) : MutableChefDetails by record {
+        private val factory: PersistedChefs) : MutableChefDetails by record {
     fun save() = apply {
         record.flush()
         factory.notifySaved(snapshot, record)

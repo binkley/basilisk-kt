@@ -2,6 +2,6 @@ package hm.binkley.basilisk.chef
 
 import io.micronaut.http.annotation.Controller
 
-@Controller("/chefs")
-class ChefsController(private val client: ChefClient)
+@Controller
+class ChefsController(private val client: RemoteChefs)
     : ChefsOperations by client

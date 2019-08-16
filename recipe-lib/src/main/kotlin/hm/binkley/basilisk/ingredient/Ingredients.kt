@@ -3,7 +3,7 @@ package hm.binkley.basilisk.ingredient
 import hm.binkley.basilisk.chef.Chef
 import hm.binkley.basilisk.chef.ChefRecord
 import hm.binkley.basilisk.chef.ChefRepository
-import hm.binkley.basilisk.chef.Chefs
+import hm.binkley.basilisk.chef.PersistedChefs
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
@@ -33,7 +33,7 @@ import javax.inject.Singleton
 @Singleton
 class Ingredients(
         private val sources: Sources,
-        private val chefs: Chefs,
+        private val chefs: PersistedChefs,
         private val recipes: Recipes,
         private val locations: Locations,
         private val publisher: ApplicationEventPublisher) {

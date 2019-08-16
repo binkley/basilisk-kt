@@ -2,7 +2,6 @@ apply from: "${project.rootDir}/kotlin-micronaut.gradle"
 apply from: "${project.rootDir}/testing.gradle"
 
 dependencies {
-    compile "io.micronaut:micronaut-http-client"
     compile "io.micronaut:micronaut-http-server-netty"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVersion}"
     runtime "ch.qos.logback:logback-classic:${logbackVersion}"
