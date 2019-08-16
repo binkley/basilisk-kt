@@ -70,7 +70,7 @@ internal class IngredientsTest {
         val code = code
 
         testTransaction {
-            val chef = chefs.new("CHEF BOB", "CHEF123")
+            val chef = chefs.new(ChefResource("CHEF BOB", "CHEF123"))
             val source = sources.new(name, "SRC012")
             val recipe = recipes.new("TASTY PIE", "REC456", chef)
             ingredients.newAny(source, code, chef, null)
@@ -91,7 +91,7 @@ internal class IngredientsTest {
         val code = code
 
         testTransaction {
-            val chef = chefs.new("CHEF BOB", "CHEF123")
+            val chef = chefs.new(ChefResource("CHEF BOB", "CHEF123"))
             val source = sources.new(name, "SRC012")
             val recipe = recipes.new("TASTY PIE", "REC456", chef)
             ingredients.newAny(source, code, chef, recipe)
@@ -113,7 +113,7 @@ internal class IngredientsTest {
         val code = code
 
         testTransaction {
-            val chef = chefs.new("CHEF BOB", "CHEF123")
+            val chef = chefs.new(ChefResource("CHEF BOB", "CHEF123"))
             val source = sources.new(name, "SRC012")
             val recipe = recipes.new("TASTY PIE", "REC456", chef)
             ingredients.newAny(source, code, chef, recipe)
@@ -179,7 +179,7 @@ internal class IngredientsTest {
 
         testTransaction {
             val source = sources.new(sourceName, sourceCode)
-            val chef = chefs.new(chefName, chefCode)
+            val chef = chefs.new(ChefResource(chefName, chefCode))
             val recipe = recipes.new("TASTY PIE", "REC456", chef)
             val location = locations.new(locationName, locationCode)
             listener.reset()
@@ -245,7 +245,7 @@ internal class IngredientsTest {
 
         testTransaction {
             val source = sources.new(sourceName, sourceCode)
-            val chef = chefs.new(chefName, chefCode)
+            val chef = chefs.new(ChefResource(chefName, chefCode))
             val location = locations.new(locationName, locationCode)
             listener.reset()
 

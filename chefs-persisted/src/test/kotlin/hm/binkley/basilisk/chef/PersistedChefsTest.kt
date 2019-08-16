@@ -16,14 +16,14 @@ import javax.inject.Inject
 
 @MicronautTest
 @TestInstance(PER_CLASS)
-internal class ChefsTest {
+internal class PersistedChefsTest {
     companion object {
         const val name = "CHEF BOB"
         const val code = "CHEF123"
     }
 
     @Inject
-    lateinit var chefs: Chefs
+    lateinit var chefs: PersistedChefs
     @Inject
     lateinit var listener: TestListener<ChefSavedEvent>
 
@@ -35,16 +35,16 @@ internal class ChefsTest {
     @Test
     fun shouldFindNoChef() {
         testTransaction {
-            val ingredient = chefs.byCode(code)
+            val chef = chefs.byCode(code)
 
-            expect(ingredient).toBe(null)
+            expect(chef).toBe(null)
         }
     }
 
     @Test
     fun shouldRoundTrip() {
         testTransaction {
-            chefs.new(name, code)
+            chefs.new(ChefResource(name, code))
             val chef = chefs.byCode(code)!!
 
             expect(chef.code).toBe(code)
@@ -58,9 +58,7 @@ internal class ChefsTest {
             val firstSnapshot = ChefResource(name, code, FIT)
             val secondSnapshot = ChefResource("CHEF ROBERT", code, "OUT")
 
-            val chef = chefs.new(
-                    firstSnapshot.name, firstSnapshot.code,
-                    firstSnapshot.health)
+            val chef = chefs.new(firstSnapshot)
 
             listener.expectNext.containsExactly(ChefSavedEvent(
                     null, chef))
@@ -88,10 +86,7 @@ internal class ChefsTest {
         testTransaction {
             val snapshot = ChefResource(name, code, FIT)
 
-            val chef = chefs.new(
-                    snapshot.name,
-                    snapshot.code,
-                    snapshot.health)
+            val chef = chefs.new(snapshot)
 
             listener.expectNext.containsExactly(ChefSavedEvent(
                     null, chef))

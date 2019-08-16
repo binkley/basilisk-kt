@@ -1,6 +1,5 @@
 package hm.binkley.basilisk.chef
 
-import hm.binkley.basilisk.chef.Chefs.Companion.FIT
 import io.micronaut.context.event.ApplicationEvent
 
 interface Chefs {
@@ -12,8 +11,7 @@ interface Chefs {
 
     fun byCode(code: String): Chef?
 
-    /** Saves a new chef in [FIT] health. */
-    fun new(name: String, code: String, health: String = FIT): Chef
+    fun new(chef: ChefResource): Chef
 }
 
 interface ChefDetails {
@@ -26,6 +24,8 @@ interface MutableChefDetails {
     var name: String
     var code: String
     var health: String
+
+    fun freeze() = ChefResource(name, code, health)
 }
 
 data class ChefSavedEvent(

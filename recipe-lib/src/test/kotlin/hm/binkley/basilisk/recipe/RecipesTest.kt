@@ -56,7 +56,7 @@ internal class RecipesTest {
         val chefCode = "BOY"
 
         testTransaction {
-            val chef = chefs.new(chefName, chefCode)
+            val chef = chefs.new(ChefResource(chefName, chefCode))
 
             recipes.new(name, code, chef)
             val recipe = recipes.byCode(code)!!
@@ -74,7 +74,7 @@ internal class RecipesTest {
         val locationCode = "DAL"
 
         testTransaction {
-            val chef = chefs.new(chefName, chefCode)
+            val chef = chefs.new(ChefResource(chefName, chefCode))
             val location = locations.new(locationName, locationCode)
             listener.reset()
 
@@ -130,7 +130,7 @@ internal class RecipesTest {
         val locationCode = "DAL"
 
         testTransaction {
-            val chef = chefs.new(chefName, chefCode)
+            val chef = chefs.new(ChefResource(chefName, chefCode))
             val location = locations.new(locationName, locationCode)
             listener.reset()
 

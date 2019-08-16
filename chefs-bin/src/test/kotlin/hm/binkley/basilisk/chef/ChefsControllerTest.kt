@@ -16,7 +16,7 @@ import javax.inject.Inject
 @TestInstance(PER_CLASS)
 internal class ChefsControllerTest {
     @Inject
-    lateinit var client: RemoteChefs
+    lateinit var client: ChefsClient
 
     @Test
     fun `should get no chefs`() {

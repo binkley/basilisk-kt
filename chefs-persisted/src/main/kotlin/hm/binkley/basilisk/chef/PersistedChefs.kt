@@ -23,11 +23,11 @@ class PersistedChefs(private val publisher: ApplicationEventPublisher)
         from(it)
     }
 
-    override fun new(name: String, code: String, health: String) =
+    override fun new(chef: ChefResource) =
             from(ChefRecord.new {
-                this.name = name
-                this.code = code
-                this.health = health
+                this.name = chef.name
+                this.code = chef.code
+                this.health = chef.health
             }).update(null) {
                 save()
             }

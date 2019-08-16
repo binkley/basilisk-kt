@@ -5,4 +5,4 @@ import io.micronaut.retry.annotation.Retryable
 
 @Client("http://localhost:7372")
 @Retryable
-interface RemoteChefs : ChefsOperations
+interface ChefsClient : ChefsOperations
