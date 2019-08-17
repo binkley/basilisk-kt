@@ -64,6 +64,8 @@ data class MutableChefResource(
         @NotNull override var code: String,
         @NotNull override var health: String) : MutableChefDetails {
     constructor(chef: ChefResource) : this(chef.name, chef.code, chef.health)
+
+    fun freeze() = ChefResource(name, code, health)
 }
 
 class RemoteMutableChef internal constructor(

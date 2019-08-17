@@ -9,7 +9,6 @@ dependencies {
     compile project(":app-lib")
     compile project(":db")
     compile project(":chefs-persisted")
-    compile project(":chefs-remote")
     testCompile project(":testing")
 }
 

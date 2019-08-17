@@ -2,6 +2,7 @@ package hm.binkley.basilisk.chef
 
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
+import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
@@ -42,6 +43,10 @@ class PersistedChefs(private val publisher: ApplicationEventPublisher)
             notifySaved(before, after?.let { from(it) }, publisher,
                     ::ChefResource, ::ChefSavedEvent)
 }
+
+data class ChefSavedEvent(
+        val before: ChefResource?,
+        val after: Chef?) : ApplicationEvent(after ?: before)
 
 class PersistedChef internal constructor(
         internal val record: ChefRecord,

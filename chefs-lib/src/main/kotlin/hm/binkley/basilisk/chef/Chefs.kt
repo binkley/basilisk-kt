@@ -1,7 +1,5 @@
 package hm.binkley.basilisk.chef
 
-import io.micronaut.context.event.ApplicationEvent
-
 interface Chefs {
     companion object {
         const val FIT = "FIT"
@@ -24,13 +22,7 @@ interface MutableChefDetails {
     var name: String
     var code: String
     var health: String
-
-    fun freeze() = ChefResource(name, code, health)
 }
-
-data class ChefSavedEvent(
-        val before: ChefResource?,
-        val after: Chef?) : ApplicationEvent(after ?: before)
 
 interface Chef : ChefDetails {
     fun update(block: MutableChef.() -> Unit): Chef
