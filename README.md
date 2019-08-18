@@ -9,9 +9,9 @@
 Demonstrate Kotlin, Micronaut, Kotlin Exposed, JUnit 5, Atrium,
 Testcontainers, Docker, et al.
 
+* [Features](#features)
 * [Building and running](#building-and-running)
 * [Model](#model)
-* [Features](#features)
 * [Feedback](#feedback)
 
 (Yet to be written:)
@@ -20,6 +20,56 @@ Testcontainers, Docker, et al.
 * [Development](#development)
 * [Testing](#testing)
 * [Advice and examples](#advice-and-examples)
+
+## Features
+
+https://github.com/micronaut-projects/micronaut-core/issues/2019
+
+* [Clean build](#clean-build)
+* [Vertical slicing of domain](#vertical-slicing)
+* [Composable build](#composable-build)
+* [Docker](#docker)
+* [Postgres](#postgres)
+* [Micronaut](#micronaut)
+* [Kotlin Exposed](#persistence)
+* [Atrium and Testcontainers](#testing)
+* [Swagger](#api)
+
+### Clean build
+
+When sensible, the build never prints output on success; however, on failure,
+the build prints the right information to address the failure.
+
+There are a set of external issues to address:
+
+- [Kapt complains annotations are non-incremental with Kotlin 1.3.50](https://github.com/micronaut-projects/micronaut-core/issues/2019)
+
+### Vertical slicing
+
+This project slices domains _vertically_.  That is, there is no "controller"
+or "service" or "database" layer _per se_.  Rather, each domain concept is
+placed in a dedicated library (see 
+[Composable build](#composable-build))&mdash;including all needed
+functionality (database persistence, etc.)&mdash;and a separate module
+provides interfaces.  Each program may choose between a "persisted"
+representation of a domain (the program _owns_ the domain concept) and a
+"remote" representation (the program consults another service). 
+
+### Composable build
+
+One goal of this project is to demonstrate creating microservices by composing
+library modules.  For example:
+
+* Chefs program
+  - [Chefs program](chefs-bin/)
+  - [Chefs database library](chefs-persisted/)
+  - [Chefs shared library](chefs-lib/)
+
+In this example, [Chefs database library](chefs-persisted/) is unique to the
+"Chefs" program, and [Chefs shared library](chefs-lib/) is shared by both the
+provider of Chefs, and by the consumers.
+
+[[TOC]](#basilisk)
 
 ## Building and running
 
@@ -160,19 +210,6 @@ Other relationships:
 - LEGs --> TRIP: Many-to-one (each trip is one or more connected legs) 
 
 [[TOC]](#basilisk)
-
-
-## Features
-
-* [Docker](#docker)
-* [Postgres](#postgres)
-* [Micronaut](#micronaut)
-* [Kotlin Exposed](#persistence)
-* [Atrium and Testcontainers](#testing)
-* [Swagger](#api)
-
-[[TOC]](#basilisk)
-
 
 ## Feedback
 
