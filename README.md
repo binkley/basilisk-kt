@@ -42,6 +42,7 @@ the build prints the right information to address the failure.
 
 There are a set of external issues to address:
 
+- [Kapt complains when processing factory replacement](https://github.com/micronaut-projects/micronaut-core/issues/1902)
 - [Kapt complains annotations are non-incremental with Kotlin 1.3.50](https://github.com/micronaut-projects/micronaut-core/issues/2019)
 
 ### Vertical slicing
