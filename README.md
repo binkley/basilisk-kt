@@ -23,8 +23,6 @@ Testcontainers, Docker, et al.
 
 ## Features
 
-https://github.com/micronaut-projects/micronaut-core/issues/2019
-
 * [Clean build](#clean-build)
 * [Vertical slicing of domain](#vertical-slicing)
 * [Composable build](#composable-build)
@@ -40,7 +38,7 @@ https://github.com/micronaut-projects/micronaut-core/issues/2019
 When sensible, the build never prints output on success; however, on failure,
 the build prints the right information to address the failure.
 
-There are a set of external issues to address:
+There is a set of external issues to address:
 
 - [Kapt complains when processing factory replacement](https://github.com/micronaut-projects/micronaut-core/issues/1902)
 - [Kapt complains annotations are non-incremental with Kotlin 1.3.50](https://github.com/micronaut-projects/micronaut-core/issues/2019)
@@ -51,26 +49,27 @@ This project slices domains _vertically_.  That is, there is no "controller"
 or "service" or "database" layer _per se_.  Rather, each domain concept is
 placed in a dedicated library (see 
 [Composable build](#composable-build))&mdash;including all needed
-functionality (database persistence, etc.)&mdash;and a separate module
+functionality (database persistence, etc.)&mdash;, and a separate module
 provides interfaces.  Each program may choose between a "persisted"
 representation of a domain (the program _owns_ the domain concept) and a
-"remote" representation (the program consults another service). 
+"remote" representation (the program consults another program).  There is
+presently no mechanism to ensure only one program owns a domain. 
 
 ### Composable build
 
-One goal of this project is to demonstrate creating microservices by composing
+One goal of this project is to demonstrate creating programs by composing
 library modules.  For example:
 
 * Chefs program
-  - [Chefs program](chefs-bin/)
-  - [Chefs database library](chefs-persisted/)
+  - [Chefs program itself](chefs-bin/)
+  - [Chefs persistence library](chefs-persisted/)
   - [Chefs shared library](chefs-lib/)
 
-In this example, [Chefs database library](chefs-persisted/) is unique to the
-"Chefs" program, and [Chefs shared library](chefs-lib/) is shared by both the
-provider of Chefs, and by the consumers.
+In this example, [Chefs persistence library](chefs-persisted/) is unique to
+the "Chefs" program, and [Chefs shared library](chefs-lib/) is shared by both
+the provider of Chefs (the program), and by the consumers (other programs).
 
-[[TOC]](#basilisk)
+[[Table of contents]](#basilisk)
 
 ## Building and running
 
@@ -177,7 +176,7 @@ You can reach some conclusions from all this information:
   are important, but they are _not_ aggregate roots.  You move chefs around
   your locations over time, but the recipes are tied more to ingredients, and
   possibly restricted by location and season.  Note: Chefs run as a separate
-  service
+  program
 * [`Locations`](location-lib/src/main/kotlin/hm/binkley/basilisk/location/Locations.kt)
   restricts what ingredients are available at a location (eg, _The Dallas
   Yellow Rose_)
@@ -210,14 +209,14 @@ Other relationships:
 - INGREDIENTs --> CHEF: Many-to-one (each chef has unused ingredients)
 - LEGs --> TRIP: Many-to-one (each trip is one or more connected legs) 
 
-[[TOC]](#basilisk)
+[[Table of contents]](#basilisk)
 
 ## Feedback
 
 _Please_ file [GitHub issues](https://github.com/hm.binkley/basilisk-kt/issues) 
 for questions, suggestions, additions, bugs, or improvements!
 
-[[TOC]](#basilisk)
+[[Table of contents]](#basilisk)
 
 ## Design
 
@@ -236,4 +235,4 @@ Some reading:
 * [Anemic Domain Model](https://martinfowler.com/bliki/AnemicDomainModel.html)
 * [How accurate is “Business logic should be in a service, not in a model”?](https://softwareengineering.stackexchange.com/questions/218011/how-accurate-is-business-logic-should-be-in-a-service-not-in-a-model)
 
-[[TOC]](#basilisk)
+[[Table of contents]](#basilisk)
