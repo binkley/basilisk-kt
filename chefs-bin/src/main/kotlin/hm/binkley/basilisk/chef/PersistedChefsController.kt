@@ -41,7 +41,7 @@ class PersistedChefsController(private val chefs: PersistedChefs)
             }
 
     override fun update(@PathVariable code: String,
-                        @Body chef: ChefResource): HttpResponse<ChefResource> =
+            @Body chef: ChefResource): HttpResponse<ChefResource> =
             transaction {
                 chefs.byCode(code)!!.update {
                     this.name = chef.name
@@ -55,7 +55,7 @@ class PersistedChefsController(private val chefs: PersistedChefs)
             }
 
     override fun delete(@PathVariable code: String,
-                        @Body chef: ChefResource): HttpResponse<Unit> =
+            @Body chef: ChefResource): HttpResponse<Unit> =
             transaction {
                 chefs.byCode(code)!!.update {
                     delete()

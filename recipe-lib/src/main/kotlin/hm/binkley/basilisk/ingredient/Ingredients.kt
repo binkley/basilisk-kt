@@ -64,23 +64,23 @@ class Ingredients(
             } as I
 
     fun newUnused(source: Source, code: String, chef: PersistedChef,
-                  locations: MutableList<Location> = mutableListOf()) =
+            locations: MutableList<Location> = mutableListOf()) =
             new(source, code, chef, locations) { record, factory ->
                 record.recipe = null // Explicit, even if redundant
                 UnusedIngredient(record, factory)
             }
 
     fun newUsed(source: Source, code: String, chef: PersistedChef,
-                recipe: Recipe,
-                locations: MutableList<Location> = mutableListOf()) =
+            recipe: Recipe,
+            locations: MutableList<Location> = mutableListOf()) =
             new(source, code, chef, locations) { record, factory ->
                 record.recipe = factory.toRecord(recipe)
                 UsedIngredient(record, factory)
             }
 
     fun newAny(source: Source, code: String, chef: PersistedChef,
-               recipe: Recipe?,
-               locations: MutableList<Location> = mutableListOf()) =
+            recipe: Recipe?,
+            locations: MutableList<Location> = mutableListOf()) =
             new(source, code, chef, locations) { record, factory ->
                 record.recipe = recipe?.let { factory.toRecord(recipe) }
                 factory.from(record)
