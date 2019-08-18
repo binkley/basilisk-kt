@@ -6,6 +6,6 @@ data class SourceResource(
         val name: String,
         val code: String,
         val locations: List<LocationResource>) {
-    constructor(source: PersistedSource) : this(source.name, source.code,
+    constructor(source: Source) : this(source.name, source.code,
             source.locations.map { LocationResource(it) })
 }

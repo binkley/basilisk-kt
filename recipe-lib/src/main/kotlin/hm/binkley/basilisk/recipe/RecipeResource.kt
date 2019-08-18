@@ -9,9 +9,7 @@ data class RecipeResource(
         val chef: ChefResource,
         val status: RecipeStatus,
         val locations: List<LocationResource>) {
-    constructor(persistedRecipe: PersistedRecipe)
-            : this(persistedRecipe.name, persistedRecipe.code,
-            ChefResource(persistedRecipe.chef),
-            persistedRecipe.status,
-            persistedRecipe.locations.map { LocationResource(it) })
+    constructor(recipe: Recipe)
+            : this(recipe.name, recipe.code, ChefResource(recipe.chef),
+            recipe.status, recipe.locations.map { LocationResource(it) })
 }

@@ -21,7 +21,7 @@ data class IngredientResource(
     companion object {
         private fun recipeResource(
                 ingredient: Ingredient<*>): RecipeResource? {
-            val recipe = ingredient.persistedRecipe
+            val recipe = ingredient.recipe
             // TODO: Typing here?
             return recipe?.let { RecipeResource(recipe) }
         }

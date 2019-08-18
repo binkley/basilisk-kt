@@ -9,7 +9,7 @@ import hm.binkley.basilisk.chef.ChefResource
 import hm.binkley.basilisk.chef.PersistedChefs
 import hm.binkley.basilisk.db.testTransaction
 import hm.binkley.basilisk.location.LocationResource
-import hm.binkley.basilisk.location.PersistedLocations
+import hm.binkley.basilisk.location.Locations
 import hm.binkley.basilisk.recipe.RecipeStatus.PLANNING
 import hm.binkley.basilisk.recipe.RecipeStatus.PREPARING
 import io.micronaut.test.annotation.MicronautTest
@@ -21,18 +21,18 @@ import javax.inject.Inject
 
 @MicronautTest
 @TestInstance(PER_CLASS)
-internal class PersistedRecipesTest {
+internal class RecipesTest {
     companion object {
         const val name = "TASTY PIE"
         const val code = "REC345"
     }
 
     @Inject
-    lateinit var recipes: PersistedRecipes
+    lateinit var recipes: Recipes
     @Inject
     lateinit var chefs: PersistedChefs
     @Inject
-    lateinit var locations: PersistedLocations
+    lateinit var locations: Locations
     @Inject
     lateinit var listener: TestListener<RecipeSavedEvent>
 

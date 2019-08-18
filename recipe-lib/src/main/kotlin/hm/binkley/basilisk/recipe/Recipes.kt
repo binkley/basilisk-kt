@@ -7,9 +7,9 @@ import hm.binkley.basilisk.chef.PersistedChefs
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
+import hm.binkley.basilisk.location.Location
 import hm.binkley.basilisk.location.LocationRecord
-import hm.binkley.basilisk.location.PersistedLocation
-import hm.binkley.basilisk.location.PersistedLocations
+import hm.binkley.basilisk.location.Locations
 import hm.binkley.basilisk.recipe.RecipeStatus.PLANNING
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
@@ -25,9 +25,9 @@ import java.util.*
 import javax.inject.Singleton
 
 @Singleton
-class PersistedRecipes(
+class Recipes(
         private val chefs: PersistedChefs,
-        private val locations: PersistedLocations,
+        private val locations: Locations,
         private val publisher: ApplicationEventPublisher) {
     fun byCode(code: String) = RecipeRecord.findOne {
         RecipeRepository.code eq code
@@ -37,7 +37,7 @@ class PersistedRecipes(
 
     /** Saves a new recipe in [PLANNING] status. */
     fun new(name: String, code: String, chef: PersistedChef,
-            locations: MutableList<PersistedLocation> = mutableListOf()) =
+            locations: MutableList<Location> = mutableListOf()) =
             from(RecipeRecord.new {
                 this.name = name
                 this.code = code
@@ -50,10 +50,10 @@ class PersistedRecipes(
             }
 
     /** For implementors of other record types having a reference. */
-    fun from(record: RecipeRecord) = PersistedRecipe(record, this)
+    fun from(record: RecipeRecord) = Recipe(record, this)
 
     /** For implementors of other record types having a reference. */
-    fun toRecord(persistedRecipe: PersistedRecipe) = persistedRecipe.record
+    fun toRecord(recipe: Recipe) = recipe.record
 
     internal fun notifySaved(before: RecipeResource?, after: RecipeRecord?) =
             notifySaved(before, after?.let { from(it) }, publisher,
@@ -68,7 +68,7 @@ class PersistedRecipes(
     internal fun locationFrom(locationRecord: LocationRecord) =
             locations.from(locationRecord)
 
-    internal fun toRecord(location: PersistedLocation) =
+    internal fun toRecord(location: Location) =
             locations.toRecord(location)
 }
 
@@ -96,32 +96,32 @@ interface MutableRecipeDetails {
 
 data class RecipeSavedEvent(
         val before: RecipeResource?,
-        val after: PersistedRecipe?) : ApplicationEvent(after ?: before)
+        val after: Recipe?) : ApplicationEvent(after ?: before)
 
-class PersistedRecipe internal constructor(
+class Recipe internal constructor(
         internal val record: RecipeRecord,
-        private val factory: PersistedRecipes)
+        private val factory: Recipes)
     : RecipeDetails by record {
     val chef = factory.chefFrom(record.chef)
-    val locations: SizedIterable<PersistedLocation>
+    val locations: SizedIterable<Location>
         get() = record.locations.notForUpdate().mapLazy {
             factory.locationFrom(it)
         }
 
-    fun update(block: PersistedMutableRecipe.() -> Unit) =
+    fun update(block: MutableRecipe.() -> Unit) =
             update(RecipeResource(this), block)
 
     internal inline fun update(
             snapshot: RecipeResource?,
-            block: PersistedMutableRecipe.() -> Unit) = apply {
-        PersistedMutableRecipe(snapshot, record, factory).block()
+            block: MutableRecipe.() -> Unit) = apply {
+        MutableRecipe(snapshot, record, factory).block()
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as PersistedRecipe
+        other as Recipe
 
         return record == other.record
     }
@@ -132,16 +132,16 @@ class PersistedRecipe internal constructor(
             "${super.toString()}{record=$record, chef=$chef, location=$locations}"
 }
 
-class PersistedMutableRecipe internal constructor(
+class MutableRecipe internal constructor(
         private val snapshot: RecipeResource?,
         private val record: RecipeRecord,
-        private val factory: PersistedRecipes) : MutableRecipeDetails by record {
+        private val factory: Recipes) : MutableRecipeDetails by record {
     var chef: PersistedChef // TODO: OOPS!  Use interface, not concrete
         get() = factory.chefFrom(record.chef)
         set(update) {
             record.chef = factory.toRecord(update)
         }
-    var locations: MutableList<PersistedLocation>
+    var locations: MutableList<Location>
         get() {
             val update = record.locations.forUpdate().mapLazy {
                 factory.locationFrom(it)
@@ -170,7 +170,7 @@ class PersistedMutableRecipe internal constructor(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-        other as PersistedMutableRecipe
+        other as MutableRecipe
         return snapshot == other.snapshot
                 && record == other.record
     }

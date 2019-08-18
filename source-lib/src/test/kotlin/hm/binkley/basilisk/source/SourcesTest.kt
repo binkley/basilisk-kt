@@ -7,7 +7,7 @@ import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.TestListener
 import hm.binkley.basilisk.db.testTransaction
 import hm.binkley.basilisk.location.LocationResource
-import hm.binkley.basilisk.location.PersistedLocations
+import hm.binkley.basilisk.location.Locations
 import io.micronaut.test.annotation.MicronautTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -17,16 +17,16 @@ import javax.inject.Inject
 
 @MicronautTest
 @TestInstance(PER_CLASS)
-internal class PersistedSourcesTest {
+internal class SourcesTest {
     companion object {
         const val name = "RHUBARB"
         const val code = "SRC012"
     }
 
     @Inject
-    lateinit var sources: PersistedSources
+    lateinit var sources: Sources
     @Inject
-    lateinit var locations: PersistedLocations
+    lateinit var locations: Locations
     @Inject
     lateinit var listener: TestListener<SourceSavedEvent>
 
