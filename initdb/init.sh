@@ -3,10 +3,11 @@
 set -e
 
 psql -b -v ON_ERROR_STOP=1 <<-'EOSQL'
-CREATE DATABASE basilisk;
 CREATE USER basilisk;
+CREATE DATABASE basilisk;
 GRANT ALL PRIVILEGES ON DATABASE basilisk TO basilisk;
-\connect basilisk basilisk;
-CREATE SCHEMA basil;
-CREATE SCHEMA chefs;
+CREATE DATABASE basil;
+GRANT ALL PRIVILEGES ON DATABASE basil TO basilisk;
+CREATE DATABASE chefs;
+GRANT ALL PRIVILEGES ON DATABASE chefs TO basilisk;
 EOSQL
