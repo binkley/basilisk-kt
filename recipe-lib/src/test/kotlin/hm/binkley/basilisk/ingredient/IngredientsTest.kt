@@ -13,14 +13,14 @@ import hm.binkley.basilisk.chef.PersistedChefs
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.testTransaction
 import hm.binkley.basilisk.location.LocationResource
-import hm.binkley.basilisk.location.Locations
+import hm.binkley.basilisk.location.PersistedLocations
+import hm.binkley.basilisk.recipe.PersistedRecipes
 import hm.binkley.basilisk.recipe.RecipeRecord
 import hm.binkley.basilisk.recipe.RecipeResource
 import hm.binkley.basilisk.recipe.RecipeStatus.PLANNING
-import hm.binkley.basilisk.recipe.Recipes
+import hm.binkley.basilisk.source.PersistedSources
 import hm.binkley.basilisk.source.SourceRecord
 import hm.binkley.basilisk.source.SourceResource
-import hm.binkley.basilisk.source.Sources
 import io.micronaut.test.annotation.MicronautTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -37,13 +37,13 @@ internal class IngredientsTest {
     }
 
     @Inject
-    lateinit var sources: Sources
+    lateinit var sources: PersistedSources
     @Inject
-    lateinit var locations: Locations
+    lateinit var locations: PersistedLocations
     @Inject
     lateinit var chefs: PersistedChefs
     @Inject
-    lateinit var recipes: Recipes
+    lateinit var recipes: PersistedRecipes
     @Inject
     lateinit var ingredients: Ingredients
     @Inject
@@ -123,7 +123,7 @@ internal class IngredientsTest {
 
             expect(ingredient.code).toBe(code)
             expect(ingredient.name).toBe(name)
-            expect(ingredient.recipe).toBe(null)
+            expect(ingredient.persistedRecipe).toBe(null)
         }
     }
 
@@ -164,7 +164,7 @@ internal class IngredientsTest {
 
             expect(ingredient.code).toBe(code)
             expect(ingredient.name).toBe(name)
-            expect(ingredient.recipe).toBe(recipe)
+            expect(ingredient.persistedRecipe).toBe(recipe)
         }
     }
 

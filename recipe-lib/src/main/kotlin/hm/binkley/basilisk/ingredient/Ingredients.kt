@@ -8,17 +8,17 @@ import hm.binkley.basilisk.chef.PersistedChefs
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
-import hm.binkley.basilisk.location.Location
 import hm.binkley.basilisk.location.LocationRecord
-import hm.binkley.basilisk.location.Locations
-import hm.binkley.basilisk.recipe.Recipe
+import hm.binkley.basilisk.location.PersistedLocation
+import hm.binkley.basilisk.location.PersistedLocations
+import hm.binkley.basilisk.recipe.PersistedRecipe
+import hm.binkley.basilisk.recipe.PersistedRecipes
 import hm.binkley.basilisk.recipe.RecipeRecord
 import hm.binkley.basilisk.recipe.RecipeRepository
-import hm.binkley.basilisk.recipe.Recipes
-import hm.binkley.basilisk.source.Source
+import hm.binkley.basilisk.source.PersistedSource
+import hm.binkley.basilisk.source.PersistedSources
 import hm.binkley.basilisk.source.SourceRecord
 import hm.binkley.basilisk.source.SourceRepository
-import hm.binkley.basilisk.source.Sources
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
@@ -33,10 +33,10 @@ import javax.inject.Singleton
 
 @Singleton
 class Ingredients(
-        private val sources: Sources,
+        private val sources: PersistedSources,
         private val chefs: PersistedChefs,
-        private val recipes: Recipes,
-        private val locations: Locations,
+        private val recipes: PersistedRecipes,
+        private val locations: PersistedLocations,
         private val publisher: ApplicationEventPublisher) {
     fun byCode(code: String) = IngredientRecord.findOne {
         IngredientRepository.code eq code
@@ -44,15 +44,15 @@ class Ingredients(
         from(it)
     }
 
-    fun byRecipe(recipe: Recipe) = IngredientRecord.find {
-        IngredientRepository.recipe eq recipe.record.id
+    fun byRecipe(persistedRecipe: PersistedRecipe) = IngredientRecord.find {
+        IngredientRepository.recipe eq persistedRecipe.record.id
     }.mapLazy {
         from(it)
     }
 
     private fun <I : Ingredient<*>> new(
-            source: Source, code: String, chef: PersistedChef,
-            locations: MutableList<Location> = mutableListOf(),
+            source: PersistedSource, code: String, chef: PersistedChef,
+            locations: MutableList<PersistedLocation> = mutableListOf(),
             block: (IngredientRecord, Ingredients) -> I) =
             block(IngredientRecord.new {
                 this.source = toRecord(source)
@@ -63,26 +63,28 @@ class Ingredients(
                 save()
             } as I
 
-    fun newUnused(source: Source, code: String, chef: PersistedChef,
-            locations: MutableList<Location> = mutableListOf()) =
+    fun newUnused(source: PersistedSource, code: String, chef: PersistedChef,
+            locations: MutableList<PersistedLocation> = mutableListOf()) =
             new(source, code, chef, locations) { record, factory ->
                 record.recipe = null // Explicit, even if redundant
                 UnusedIngredient(record, factory)
             }
 
-    fun newUsed(source: Source, code: String, chef: PersistedChef,
-            recipe: Recipe,
-            locations: MutableList<Location> = mutableListOf()) =
+    fun newUsed(source: PersistedSource, code: String, chef: PersistedChef,
+            persistedRecipe: PersistedRecipe,
+            locations: MutableList<PersistedLocation> = mutableListOf()) =
             new(source, code, chef, locations) { record, factory ->
-                record.recipe = factory.toRecord(recipe)
+                record.recipe = factory.toRecord(persistedRecipe)
                 UsedIngredient(record, factory)
             }
 
-    fun newAny(source: Source, code: String, chef: PersistedChef,
-            recipe: Recipe?,
-            locations: MutableList<Location> = mutableListOf()) =
+    fun newAny(source: PersistedSource, code: String, chef: PersistedChef,
+            persistedRecipe: PersistedRecipe?,
+            locations: MutableList<PersistedLocation> = mutableListOf()) =
             new(source, code, chef, locations) { record, factory ->
-                record.recipe = recipe?.let { factory.toRecord(recipe) }
+                record.recipe = persistedRecipe?.let {
+                    factory.toRecord(persistedRecipe)
+                }
                 factory.from(record)
             }
 
@@ -99,7 +101,7 @@ class Ingredients(
     internal fun sourceFrom(sourceRecord: SourceRecord) =
             sources.from(sourceRecord)
 
-    internal fun toRecord(source: Source) = sources.toRecord(source)
+    internal fun toRecord(source: PersistedSource) = sources.toRecord(source)
 
     internal fun chefFrom(chefRecord: ChefRecord) =
             chefs.from(chefRecord)
@@ -110,13 +112,13 @@ class Ingredients(
     internal fun recipeFrom(recipeRecord: RecipeRecord) =
             recipes.from(recipeRecord)
 
-    internal fun toRecord(recipe: Recipe) =
-            recipes.toRecord(recipe)
+    internal fun toRecord(persistedRecipe: PersistedRecipe) =
+            recipes.toRecord(persistedRecipe)
 
     internal fun locationFrom(locationRecord: LocationRecord) =
             locations.from(locationRecord)
 
-    internal fun toRecord(location: Location) =
+    internal fun toRecord(location: PersistedLocation) =
             locations.toRecord(location)
 }
 
@@ -142,12 +144,12 @@ sealed class Ingredient<I : Ingredient<I>>(
         get() = factory.sourceFrom(record.source)
     val chef
         get() = factory.chefFrom(record.chef)
-    val recipe: Recipe?
+    val persistedRecipe: PersistedRecipe?
         get() {
             val recipeRecord = record.recipe
             return recipeRecord?.let { factory.recipeFrom(recipeRecord) }
         }
-    val locations: SizedIterable<Location>
+    val locations: SizedIterable<PersistedLocation>
         get() = record.locations.notForUpdate().mapLazy {
             factory.locationFrom(it)
         }
@@ -172,16 +174,16 @@ sealed class Ingredient<I : Ingredient<I>>(
     override fun hashCode() = record.hashCode()
 
     override fun toString() =
-            "${super.toString()}{record=$record, chef=$chef, recipe=$recipe, locations=$locations}"
+            "${super.toString()}{record=$record, chef=$chef, recipe=$persistedRecipe, locations=$locations}"
 }
 
 class UnusedIngredient internal constructor(
         record: IngredientRecord,
         factory: Ingredients)
     : Ingredient<UnusedIngredient>(record, factory) {
-    fun use(recipe: Recipe): UsedIngredient {
+    fun use(persistedRecipe: PersistedRecipe): UsedIngredient {
         update {
-            this.recipe = recipe
+            this.persistedRecipe = persistedRecipe
             save()
         }
         return UsedIngredient(record, factory)
@@ -194,7 +196,7 @@ class UsedIngredient internal constructor(
     : Ingredient<UsedIngredient>(record, factory) {
     fun unuse(): UnusedIngredient {
         update {
-            recipe = null
+            persistedRecipe = null
             save()
         }
         return UnusedIngredient(record, factory)
@@ -205,11 +207,11 @@ class MutableIngredient internal constructor(
         private val snapshot: IngredientResource?,
         private val record: IngredientRecord,
         private val factory: Ingredients) : MutableIngredientDetails by record {
-    val source: Source // Immutable on creation
+    val source: PersistedSource // Immutable on creation
         get() = factory.sourceFrom(record.source)
     val chef: Chef // Immutable on creation
         get() = factory.chefFrom(record.chef)
-    var recipe: Recipe?
+    var persistedRecipe: PersistedRecipe?
         get() {
             val recipeRecord = record.recipe
             return recipeRecord?.let { factory.recipeFrom(recipeRecord) }
@@ -217,7 +219,7 @@ class MutableIngredient internal constructor(
         set(update) {
             record.recipe = update?.let { factory.toRecord(update) }
         }
-    var locations: MutableList<Location>
+    var locations: MutableList<PersistedLocation>
         get() {
             val update = record.locations.forUpdate().mapLazy {
                 factory.locationFrom(it)

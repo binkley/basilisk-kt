@@ -15,14 +15,14 @@ import javax.inject.Inject
 
 @MicronautTest
 @TestInstance(PER_CLASS)
-internal class LocationsTest {
+internal class PersistedLocationsTest {
     companion object {
         const val name = "LOCATION BOB"
         const val code = "LOCATION123"
     }
 
     @Inject
-    lateinit var locations: Locations
+    lateinit var locations: PersistedLocations
     @Inject
     lateinit var listener: TestListener<LocationSavedEvent>
 

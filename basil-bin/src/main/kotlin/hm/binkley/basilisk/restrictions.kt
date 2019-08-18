@@ -1,15 +1,15 @@
 package hm.binkley.basilisk
 
 import hm.binkley.basilisk.ingredient.Ingredient
-import hm.binkley.basilisk.location.Location
-import hm.binkley.basilisk.recipe.Recipe
-import hm.binkley.basilisk.source.Source
+import hm.binkley.basilisk.location.PersistedLocation
+import hm.binkley.basilisk.recipe.PersistedRecipe
+import hm.binkley.basilisk.source.PersistedSource
 import org.jetbrains.exposed.sql.EmptySizedIterable
 import org.jetbrains.exposed.sql.SizedIterable
 
-fun Source.restrictions() = this.locations
+fun PersistedSource.restrictions() = this.locations
 
-fun <I : Ingredient<I>> Ingredient<I>.restrictions(): SizedIterable<Location> {
+fun <I : Ingredient<I>> Ingredient<I>.restrictions(): SizedIterable<PersistedLocation> {
     val ingredientRestrictions = this.locations
     val sourceRestrictions = this.source.restrictions()
 
@@ -19,7 +19,7 @@ fun <I : Ingredient<I>> Ingredient<I>.restrictions(): SizedIterable<Location> {
     return sourceRestrictions
 }
 
-fun Recipe.restrictions(): SizedIterable<Location> {
+fun PersistedRecipe.restrictions(): SizedIterable<PersistedLocation> {
     val recipeRestrictions = this.locations
 
     if (!recipeRestrictions.empty())
