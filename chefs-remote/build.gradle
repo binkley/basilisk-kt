@@ -6,7 +6,9 @@ dependencies {
     compile project(":db")
     compile project(":domain-lib")
     compile project(":chefs-lib")
+
     testCompile project(":testing")
+    testCompile project(":chefs-remote-testing")
 }
 
 test {

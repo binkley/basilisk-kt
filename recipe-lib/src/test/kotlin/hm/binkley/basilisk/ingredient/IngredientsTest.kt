@@ -6,10 +6,9 @@ import ch.tutteli.atrium.api.cc.en_GB.isEmpty
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.TestListener
-import hm.binkley.basilisk.chef.ChefRecord
 import hm.binkley.basilisk.chef.ChefResource
-import hm.binkley.basilisk.chef.Chefs.Companion.FIT
-import hm.binkley.basilisk.chef.PersistedChefs
+import hm.binkley.basilisk.chef.MockChefsClient
+import hm.binkley.basilisk.chef.RemoteChefs
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.testTransaction
 import hm.binkley.basilisk.location.LocationResource
@@ -41,7 +40,9 @@ internal class IngredientsTest {
     @Inject
     lateinit var locations: Locations
     @Inject
-    lateinit var chefs: PersistedChefs
+    lateinit var mockChefsClient: MockChefsClient
+    @Inject
+    lateinit var chefs: RemoteChefs
     @Inject
     lateinit var recipes: Recipes
     @Inject
@@ -133,12 +134,8 @@ internal class IngredientsTest {
         val code = code
 
         testTransaction {
-            val chef = ChefRecord.new {
-                this.name = "CHEF BOB"
-                this.code = "CHEF123"
-                health = FIT
-            }
-            chef.flush()
+            val chef = ChefResource("CHEF BOB", "CHEF123")
+            mockChefsClient.one = chef
             val source = SourceRecord.new {
                 this.name = name
                 this.code = "SRC012"
@@ -147,13 +144,13 @@ internal class IngredientsTest {
             val recipeRecord = RecipeRecord.new {
                 this.name = "TASTY PIE"
                 this.code = "REC456"
-                this.chef = chef
+                this.chefCode = chef.code
                 status = PLANNING
             }
             recipeRecord.flush()
             IngredientRecord.new {
                 this.code = code
-                this.chef = chef
+                this.chefCode = chef.code
                 this.source = source
             }.flush()
 

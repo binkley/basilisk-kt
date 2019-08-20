@@ -1,10 +1,9 @@
 package hm.binkley.basilisk.ingredient
 
 import hm.binkley.basilisk.chef.Chef
-import hm.binkley.basilisk.chef.ChefRecord
-import hm.binkley.basilisk.chef.ChefRepository
-import hm.binkley.basilisk.chef.PersistedChef
-import hm.binkley.basilisk.chef.PersistedChefs
+import hm.binkley.basilisk.chef.ChefResource
+import hm.binkley.basilisk.chef.RemoteChef
+import hm.binkley.basilisk.chef.RemoteChefs
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
@@ -34,7 +33,7 @@ import javax.inject.Singleton
 @Singleton
 class Ingredients(
         private val sources: Sources,
-        private val chefs: PersistedChefs,
+        private val chefs: RemoteChefs,
         private val recipes: Recipes,
         private val locations: Locations,
         private val publisher: ApplicationEventPublisher) {
@@ -51,26 +50,26 @@ class Ingredients(
     }
 
     private fun <I : Ingredient<*>> new(
-            source: Source, code: String, chef: PersistedChef,
+            source: Source, code: String, chef: RemoteChef,
             locations: MutableList<Location> = mutableListOf(),
             block: (IngredientRecord, Ingredients) -> I) =
             block(IngredientRecord.new {
                 this.source = toRecord(source)
                 this.code = code
-                this.chef = toRecord(chef)
+                this.chefCode = chef.code
             }, this).update(null) {
                 this.locations = locations
                 save()
             } as I
 
-    fun newUnused(source: Source, code: String, chef: PersistedChef,
+    fun newUnused(source: Source, code: String, chef: RemoteChef,
             locations: MutableList<Location> = mutableListOf()) =
             new(source, code, chef, locations) { record, factory ->
                 record.recipe = null // Explicit, even if redundant
                 UnusedIngredient(record, factory)
             }
 
-    fun newUsed(source: Source, code: String, chef: PersistedChef,
+    fun newUsed(source: Source, code: String, chef: RemoteChef,
             recipe: Recipe,
             locations: MutableList<Location> = mutableListOf()) =
             new(source, code, chef, locations) { record, factory ->
@@ -78,7 +77,7 @@ class Ingredients(
                 UsedIngredient(record, factory)
             }
 
-    fun newAny(source: Source, code: String, chef: PersistedChef,
+    fun newAny(source: Source, code: String, chef: RemoteChef,
             recipe: Recipe?,
             locations: MutableList<Location> = mutableListOf()) =
             new(source, code, chef, locations) { record, factory ->
@@ -101,11 +100,11 @@ class Ingredients(
 
     internal fun toRecord(source: Source) = sources.toRecord(source)
 
-    internal fun chefFrom(chefRecord: ChefRecord) =
-            chefs.from(chefRecord)
+    internal fun chefFrom(chefResource: ChefResource) =
+            chefs.from(chefResource)
 
-    internal fun toRecord(chef: PersistedChef) =
-            chefs.toRecord(chef)
+    internal fun chefFrom(chefCode: String) =
+            chefs.byCode(chefCode)!! // TODO: What about remote failure?
 
     internal fun recipeFrom(recipeRecord: RecipeRecord) =
             recipes.from(recipeRecord)
@@ -141,7 +140,7 @@ sealed class Ingredient<I : Ingredient<I>>(
     val source
         get() = factory.sourceFrom(record.source)
     val chef
-        get() = factory.chefFrom(record.chef)
+        get() = factory.chefFrom(record.chefCode)
     val recipe: Recipe?
         get() {
             val recipeRecord = record.recipe
@@ -208,7 +207,7 @@ class MutableIngredient internal constructor(
     val source: Source // Immutable on creation
         get() = factory.sourceFrom(record.source)
     val chef: Chef // Immutable on creation
-        get() = factory.chefFrom(record.chef)
+        get() = factory.chefFrom(record.chefCode)
     var recipe: Recipe?
         get() {
             val recipeRecord = record.recipe
@@ -261,7 +260,7 @@ object IngredientRepository : IntIdTable("INGREDIENT") {
     // TODO: What to do about "source" hiding parent class member?
     val sourceRef = reference("source_id", SourceRepository)
     val code = text("code")
-    val chef = reference("chef_id", ChefRepository)
+    val chefCode = text("chef_code")
     val recipe = reference("recipe_id",
             RecipeRepository).nullable()
 }
@@ -276,7 +275,7 @@ class IngredientRecord(id: EntityID<Int>)
     override val name
         get() = source.name
     override var code by IngredientRepository.code
-    var chef by ChefRecord referencedOn IngredientRepository.chef
+    var chefCode by IngredientRepository.chefCode
     var recipe by RecipeRecord optionalReferencedOn IngredientRepository.recipe
     var locations by LocationRecord via IngredientLocationsRepository
 
@@ -286,14 +285,14 @@ class IngredientRecord(id: EntityID<Int>)
         other as IngredientRecord
         return source == other.source
                 && code == other.code
-                && chef == other.chef
+                && chefCode == other.chefCode
                 && recipe == other.recipe
                 && locations == other.locations
     }
 
     override fun hashCode() =
-            Objects.hash(source, code, chef, recipe, locations)
+            Objects.hash(source, code, chefCode, recipe, locations)
 
     override fun toString() =
-            "${super.toString()}{id=$id, source=$source, code=$code, chef=$chef, recipe=$recipe, locations=$locations}"
+            "${super.toString()}{id=$id, source=$source, code=$code, chefCode=$chefCode, recipe=$recipe, locations=$locations}"
 }

@@ -4,7 +4,7 @@ import ch.tutteli.atrium.api.cc.en_GB.isEmpty
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
 import io.micronaut.test.annotation.MicronautTest
-import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
@@ -23,7 +23,7 @@ internal class RemoteChefsTest {
     @Inject
     lateinit var mock: MockChefsClient
 
-    @AfterEach
+    @BeforeEach
     fun tearDown() = mock.reset()
 
     @Test
@@ -56,7 +56,7 @@ internal class RemoteChefsTest {
 
     @Test
     fun `should find a chef`() {
-        val one = ChefResource("Chef Bob", "BOB")
+        val one = ChefResource(name, code)
         mock.one = one
 
         val chef = chefs.byCode(code)

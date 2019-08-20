@@ -6,7 +6,8 @@ import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.TestListener
 import hm.binkley.basilisk.chef.ChefResource
-import hm.binkley.basilisk.chef.PersistedChefs
+import hm.binkley.basilisk.chef.MockChefsClient
+import hm.binkley.basilisk.chef.RemoteChefs
 import hm.binkley.basilisk.db.testTransaction
 import hm.binkley.basilisk.location.LocationResource
 import hm.binkley.basilisk.location.Locations
@@ -30,7 +31,9 @@ internal class RecipesTest {
     @Inject
     lateinit var recipes: Recipes
     @Inject
-    lateinit var chefs: PersistedChefs
+    lateinit var mockChefsClient: MockChefsClient
+    @Inject
+    lateinit var chefs: RemoteChefs
     @Inject
     lateinit var locations: Locations
     @Inject

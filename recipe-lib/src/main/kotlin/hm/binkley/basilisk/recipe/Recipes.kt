@@ -1,9 +1,7 @@
 package hm.binkley.basilisk.recipe
 
-import hm.binkley.basilisk.chef.ChefRecord
-import hm.binkley.basilisk.chef.ChefRepository
-import hm.binkley.basilisk.chef.PersistedChef
-import hm.binkley.basilisk.chef.PersistedChefs
+import hm.binkley.basilisk.chef.RemoteChef
+import hm.binkley.basilisk.chef.RemoteChefs
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
@@ -29,7 +27,7 @@ import javax.inject.Singleton
 
 @Singleton
 class Recipes(
-        private val chefs: PersistedChefs,
+        private val chefs: RemoteChefs,
         private val ingredientsFactory: Provider<Ingredients>, // Circular
         private val locations: Locations,
         private val publisher: ApplicationEventPublisher) {
@@ -40,12 +38,12 @@ class Recipes(
     }
 
     /** Saves a new recipe in [PLANNING] status. */
-    fun new(name: String, code: String, chef: PersistedChef,
+    fun new(name: String, code: String, chef: RemoteChef,
             locations: MutableList<Location> = mutableListOf()) =
             from(RecipeRecord.new {
                 this.name = name
                 this.code = code
-                this.chef = toRecord(chef)
+                this.chefCode = chef.code
                 this.status = PLANNING
             }).update(null) {
                 // Exposed wants the record complete before adding relationships
@@ -63,11 +61,8 @@ class Recipes(
             notifySaved(before, after?.let { from(it) }, publisher,
                     ::RecipeResource, ::RecipeSavedEvent)
 
-    internal fun chefFrom(chefRecord: ChefRecord) =
-            chefs.from(chefRecord)
-
-    internal fun toRecord(chef: PersistedChef) =
-            chefs.toRecord(chef)
+    internal fun chefFrom(chefCode: String) =
+            chefs.byCode(chefCode)!! // TODO: What about remote failure?
 
     internal fun locationFrom(locationRecord: LocationRecord) =
             locations.from(locationRecord)
@@ -109,7 +104,8 @@ class Recipe internal constructor(
         internal val record: RecipeRecord,
         private val factory: Recipes)
     : RecipeDetails by record {
-    val chef = factory.chefFrom(record.chef)
+    val chef
+        get() = factory.chefFrom(record.chefCode)
     val ingredients: SizedIterable<UsedIngredient>
         get() = factory.ingredientsFrom(this)
     val locations: SizedIterable<Location>
@@ -145,10 +141,10 @@ class MutableRecipe internal constructor(
         private val snapshot: RecipeResource?,
         private val record: RecipeRecord,
         private val factory: Recipes) : MutableRecipeDetails by record {
-    var chef: PersistedChef // TODO: OOPS!  Use interface, not concrete
-        get() = factory.chefFrom(record.chef)
+    var chef: RemoteChef // TODO: OOPS!  Use interface, not concrete
+        get() = factory.chefFrom(record.chefCode)
         set(update) {
-            record.chef = factory.toRecord(update)
+            record.chefCode = update.code
         }
     var locations: MutableList<Location>
         get() {
@@ -193,7 +189,7 @@ class MutableRecipe internal constructor(
 object RecipeRepository : IntIdTable("RECIPE") {
     val name = text("name")
     val code = text("code")
-    val chef = reference("chef_id", ChefRepository)
+    val chefCode = text("chef_code")
     val status = enumerationByName("status", RecipeStatus.maxLength(),
             RecipeStatus::class)
 }
@@ -205,7 +201,7 @@ class RecipeRecord(id: EntityID<Int>) : IntEntity(id),
 
     override var name by RecipeRepository.name
     override var code by RecipeRepository.code
-    var chef by ChefRecord referencedOn RecipeRepository.chef
+    var chefCode by RecipeRepository.chefCode
     override var status by RecipeRepository.status
     var locations by LocationRecord via RecipeLocationsRepository
 
@@ -220,13 +216,13 @@ class RecipeRecord(id: EntityID<Int>) : IntEntity(id),
         other as RecipeRecord
         return name == other.name
                 && code == other.code
-                && chef == other.chef
+                && chefCode == other.chefCode
                 && locations == other.locations
     }
 
     override fun hashCode() =
-            Objects.hash(name, code, chef, locations)
+            Objects.hash(name, code, chefCode, locations)
 
     override fun toString() =
-            "${super.toString()}{id=$id, name=$name, code=$code, chef=$chef, locations=$locations}"
+            "${super.toString()}{id=$id, name=$name, code=$code, chefCode=$chefCode, locations=$locations}"
 }

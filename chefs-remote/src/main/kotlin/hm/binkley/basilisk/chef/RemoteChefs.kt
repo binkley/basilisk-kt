@@ -28,7 +28,7 @@ class RemoteChefs(private val client: ChefsOperations)
         client.delete(resource)
     }
 
-    internal fun from(resource: ChefResource) = RemoteChef(resource, this)
+    fun from(resource: ChefResource) = RemoteChef(resource, this)
 }
 
 class RemoteChef internal constructor(
