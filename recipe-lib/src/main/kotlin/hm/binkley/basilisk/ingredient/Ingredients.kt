@@ -47,7 +47,7 @@ class Ingredients(
     fun byRecipe(recipe: Recipe) = IngredientRecord.find {
         IngredientRepository.recipe eq recipe.record.id
     }.mapLazy {
-        from(it)
+        UsedIngredient(it, this)
     }
 
     private fun <I : Ingredient<*>> new(

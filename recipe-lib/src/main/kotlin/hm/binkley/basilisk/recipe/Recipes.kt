@@ -7,6 +7,8 @@ import hm.binkley.basilisk.chef.PersistedChefs
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
+import hm.binkley.basilisk.ingredient.Ingredients
+import hm.binkley.basilisk.ingredient.UsedIngredient
 import hm.binkley.basilisk.location.Location
 import hm.binkley.basilisk.location.LocationRecord
 import hm.binkley.basilisk.location.Locations
@@ -22,11 +24,13 @@ import org.jetbrains.exposed.sql.SizedIterable
 import org.jetbrains.exposed.sql.emptySized
 import org.jetbrains.exposed.sql.mapLazy
 import java.util.*
+import javax.inject.Provider
 import javax.inject.Singleton
 
 @Singleton
 class Recipes(
         private val chefs: PersistedChefs,
+        private val ingredientsFactory: Provider<Ingredients>, // Circular
         private val locations: Locations,
         private val publisher: ApplicationEventPublisher) {
     fun byCode(code: String) = RecipeRecord.findOne {
@@ -70,6 +74,9 @@ class Recipes(
 
     internal fun toRecord(location: Location) =
             locations.toRecord(location)
+
+    internal fun ingredientsFrom(recipe: Recipe) =
+            ingredientsFactory.get().byRecipe(recipe)
 }
 
 enum class RecipeStatus {
@@ -103,6 +110,8 @@ class Recipe internal constructor(
         private val factory: Recipes)
     : RecipeDetails by record {
     val chef = factory.chefFrom(record.chef)
+    val ingredients: SizedIterable<UsedIngredient>
+        get() = factory.ingredientsFrom(this)
     val locations: SizedIterable<Location>
         get() = record.locations.notForUpdate().mapLazy {
             factory.locationFrom(it)
