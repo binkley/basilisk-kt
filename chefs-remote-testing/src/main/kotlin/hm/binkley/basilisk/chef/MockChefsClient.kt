@@ -5,9 +5,9 @@ import io.micronaut.http.HttpResponse.created
 import io.micronaut.http.HttpResponse.ok
 import javax.inject.Singleton
 
-@Replaces(ChefsOperations::class)
+@Replaces(ChefsClient::class)
 @Singleton
-class MockChefsClient : ChefsOperations {
+class MockChefsClient : ChefsClient {
     var all = emptyList<ChefResource>()
     var one: ChefResource? = null
 

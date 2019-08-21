@@ -15,6 +15,7 @@ dependencies {
     compile project(":recipe-lib")
 
     testCompile project(":testing")
+    testCompile project(":chefs-remote-testing")
 }
 
 test {

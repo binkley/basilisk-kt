@@ -6,7 +6,7 @@ import javax.inject.Singleton
 import javax.validation.constraints.NotNull
 
 @Singleton
-class RemoteChefs(private val client: ChefsOperations)
+class RemoteChefs(private val client: ChefsClient)
     : Chefs {
     override fun all() = client.all().map {
         from(it)
@@ -91,8 +91,7 @@ class RemoteMutableChef internal constructor(
         }
 
     override fun save() = apply {
-        val frozen = resource.freeze()
-        factory.update(frozen)
+        factory.update(resource.freeze())
     }
 
     override fun delete() {

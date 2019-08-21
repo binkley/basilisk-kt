@@ -5,6 +5,8 @@ import ch.tutteli.atrium.verbs.expect
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import hm.binkley.basilisk.chef.ChefResource
+import hm.binkley.basilisk.chef.MockChefsClient
 import io.micronaut.http.HttpStatus.OK
 import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.test.annotation.MicronautTest
@@ -16,6 +18,7 @@ import java.net.http.HttpClient.newHttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
 import java.net.http.HttpResponse.BodyHandlers.discarding
+import java.nio.charset.StandardCharsets.UTF_8
 import javax.inject.Inject
 
 @MicronautTest
@@ -25,6 +28,8 @@ internal class BasiliskApplicationTest {
     lateinit var server: EmbeddedServer
     @Inject
     lateinit var objectMapper: ObjectMapper
+    @Inject
+    lateinit var mockChefsClient: MockChefsClient
 
     private val client = newHttpClient()
 
@@ -101,12 +106,26 @@ internal class BasiliskApplicationTest {
     fun `should let user interact with API`() {
         val request = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create(
-                        "http://localhost:${server.port}/swagger"))
+                .uri(URI.create("http://localhost:${server.port}/swagger"))
                 .build()
 
         val response = client.send(request, discarding())
 
         expect(response.statusCode()).toBe(OK.code)
+    }
+
+    @Test
+    fun `should have chefs`() {
+        val request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create("http://localhost:${server.port}/chefs"))
+                .build()
+
+        val response = client.send(request, BodyHandlers.ofString(UTF_8))
+
+        expect(response.statusCode()).toBe(OK.code)
+        val body =
+                objectMapper.readValue<Array<ChefResource>>(response.body())
+        expect(body.size).toBe(0)
     }
 }
