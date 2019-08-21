@@ -3,6 +3,8 @@ dependencies {
     compile "ch.tutteli.atrium:atrium-cc-en_GB-robstoll:${atriumVersion}"
 
     testCompile "org.junit.jupiter:junit-jupiter-api:${junit5Version}"
+    testCompile "io.mockk:mockk:${mockkVersion}"
+
     testRuntime "org.junit.jupiter:junit-jupiter-engine:${junit5Version}"
     testRuntime "ch.qos.logback:logback-classic:${logbackVersion}"
 }

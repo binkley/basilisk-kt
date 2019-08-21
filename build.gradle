@@ -59,6 +59,7 @@ subprojects {
         kotlinVersion = "1.3.50-eap-86"
         logbackVersion = "1.2.3"
         micronautVersion = "1.2.1.BUILD-SNAPSHOT"
+        mockkVersion = "1.9.3"
         postgresVersion = "10.9"
         shadowVersion = "5.1.0"
         springBootBuildInfoVersion = "0.1.3"

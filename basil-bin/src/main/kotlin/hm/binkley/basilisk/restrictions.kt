@@ -6,11 +6,12 @@ import hm.binkley.basilisk.recipe.Recipe
 import hm.binkley.basilisk.source.Source
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.SizedIterable
+import org.jetbrains.exposed.sql.emptySized
 
-fun Source.restrictions() = this.locations
+fun Source.restrictions() = locations
 
 fun <I : Ingredient<I>> Ingredient<I>.restrictions(): SizedIterable<Location> {
-    val ingredientRestrictions = this.locations
+    val ingredientRestrictions = locations
     if (!ingredientRestrictions.empty())
         return ingredientRestrictions
 
@@ -18,15 +19,18 @@ fun <I : Ingredient<I>> Ingredient<I>.restrictions(): SizedIterable<Location> {
 }
 
 fun Recipe.restrictions(): SizedIterable<Location> {
-    val recipeRestrictions = this.locations
+    val recipeRestrictions = locations
     if (!recipeRestrictions.empty())
         return recipeRestrictions
 
-    return this.ingredients.map {
+    val restrictions = ingredients.map {
         it.restrictions()
     }.filter {
         !it.empty()
-    }.reduce { a, b ->
+    }
+
+    return if (restrictions.isEmpty()) emptySized()
+    else restrictions.reduce { a, b ->
         a.intersect(b)
     }
 }
