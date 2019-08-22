@@ -16,6 +16,7 @@ import java.net.http.HttpClient.newHttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
 import java.net.http.HttpResponse.BodyHandlers.discarding
+import java.nio.charset.StandardCharsets.UTF_8
 import javax.inject.Inject
 
 @MicronautTest
@@ -108,5 +109,20 @@ internal class ChefsApplicationTest {
         val response = client.send(request, discarding())
 
         expect(response.statusCode()).toBe(OK.code)
+    }
+
+    @Test
+    fun `should have chefs`() {
+        val request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create("http://localhost:${server.port}/chefs"))
+                .build()
+
+        val response = client.send(request, BodyHandlers.ofString(UTF_8))
+
+        expect(response.statusCode()).toBe(OK.code)
+        val body =
+                objectMapper.readValue<Array<ChefResource>>(response.body())
+        expect(body.size).toBe(0)
     }
 }
