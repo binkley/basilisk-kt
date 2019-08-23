@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import java.net.URI
+import java.net.http.HttpClient.newHttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
 import java.nio.charset.StandardCharsets.UTF_8
@@ -25,7 +26,7 @@ import javax.inject.Inject
 @TestInstance(PER_CLASS)
 internal class PersistedChefsControllerTest {
     companion object {
-        const val statusCodeFixed = false
+        const val statusCodeFixed = false // TODO Better status codes
     }
 
     @Inject
@@ -46,7 +47,7 @@ internal class PersistedChefsControllerTest {
 
     @Test
     fun `should get no chef`() {
-        val client = java.net.http.HttpClient.newHttpClient()
+        val client = newHttpClient()
         val request = HttpRequest.newBuilder()
                 .GET()
                 .uri(URI.create(
