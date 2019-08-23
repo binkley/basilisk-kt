@@ -8,7 +8,7 @@ import javax.inject.Singleton
 @Replaces(ChefsClient::class)
 @Singleton
 class MockChefsClient : ChefsClient {
-    var all = emptyList<ChefResource>()
+    var all = listOf(ChefResource("NOT SET", "NOT SET"))
     var one: ChefResource? = null
 
     fun reset() {

@@ -116,6 +116,7 @@ internal class BasiliskApplicationTest {
 
     @Test
     fun `should have chefs`() {
+        mockChefsClient.all = listOf()
         val request = HttpRequest.newBuilder()
                 .GET()
                 .uri(URI.create("http://localhost:${server.port}/chefs"))
