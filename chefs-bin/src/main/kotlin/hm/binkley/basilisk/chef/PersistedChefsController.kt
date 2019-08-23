@@ -1,13 +1,12 @@
 package hm.binkley.basilisk.chef
 
+import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpResponse.created
 import io.micronaut.http.HttpResponse.ok
-import io.micronaut.http.HttpStatus.NOT_FOUND
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Error
-import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.PathVariable
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.net.URI
@@ -21,48 +20,47 @@ class PersistedChefsController(private val chefs: PersistedChefs)
         ChefResource(it)
     }
 
-    /** @todo FIX STATUS CODE */
-    @Get("/chef/{code}")
-    @Error(exception = NotFound::class, status = NOT_FOUND)
-    override fun byCode(@PathVariable code: String) =
-            transaction {
-                chefs.byCode(code)
-            }?.let {
-                ChefResource(it)
-            } ?: throw NotFound("No chef for $code")
+    override fun byCode(@PathVariable code: String) = transaction {
+        byCodeOrThrow(code)
+    }.let {
+        ChefResource(it)
+    }
 
-    override fun new(@Body chef: ChefResource) =
-            transaction {
-                chefs.new(chef)
-            }.let {
-                ChefResource(it)
-            }.let {
-                created(it, URI.create("/chef/${it.code}"))
-            }
+    override fun new(@Body chef: ChefResource) = transaction {
+        chefs.new(chef)
+    }.let {
+        ChefResource(it)
+    }.let {
+        created<ChefResource>(it, URI.create("/chef/${it.code}"))!!
+    }
 
     override fun update(@PathVariable code: String,
-            @Body chef: ChefResource): HttpResponse<ChefResource> =
-            transaction {
-                chefs.byCode(code)!!.update {
-                    this.name = chef.name
-                    this.health = chef.health
-                    save()
-                }
-            }.let {
-                ChefResource(it)
-            }.let {
-                ok(it)
-            }
+            @Body chef: ChefResource) = transaction {
+        byCodeOrThrow(code).update {
+            this.name = chef.name
+            this.health = chef.health
+            save()
+        }
+    }.let {
+        ChefResource(it)
+    }
 
-    override fun delete(@PathVariable code: String,
-            @Body chef: ChefResource): HttpResponse<Unit> =
+    override fun delete(@PathVariable code: String): HttpResponse<Unit> =
             transaction {
-                chefs.byCode(code)!!.update {
+                byCodeOrThrow(code).update {
                     delete()
                 }
             }.let {
-                ok()
+                ok<Unit>()
             }
 
+    private fun byCodeOrThrow(code: String): PersistedChef {
+        return chefs.byCode(code) ?: throw NotFound("No chef for $code")
+    }
+
     class NotFound(message: String) : Exception(message)
+
+    @Error(NotFound::class)
+    fun notFound(request: HttpRequest<*>, e: Throwable) =
+            HttpResponse.notFound<String>(e.localizedMessage)!!
 }

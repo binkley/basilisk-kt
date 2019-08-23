@@ -9,6 +9,7 @@ import io.micronaut.http.annotation.PathVariable
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.annotation.Put
 import io.micronaut.validation.Validated
+import javax.validation.Valid
 
 @Validated
 interface ChefsOperations {
@@ -18,19 +19,28 @@ interface ChefsOperations {
     @Get("/chef/{code}")
     fun byCode(@PathVariable code: String): ChefResource?
 
-    /** Saves a new chef in [FIT] health. */
+    /** Saves a new chef in [FIT] health, and responds CREATED. */
     @Post("/chefs")
-    fun new(@Body chef: ChefResource): HttpResponse<ChefResource>
+    fun new(@Body @Valid chef: ChefResource): HttpResponse<ChefResource>
 
     @Put("/chef/{code}")
-    fun update(@PathVariable code: String, @Body chef: ChefResource): HttpResponse<ChefResource>
+    fun update(@PathVariable code: String,
+            @Body @Valid chef: ChefResource): ChefResource
 
+    /**
+     * For convenience of remote client callers.  This is the same as
+     * calling [update] with a code.
+     */
     @JvmDefault
     fun update(chef: ChefResource) = update(chef.code, chef)
 
     @Delete("/chef/{code}")
-    fun delete(@PathVariable code: String, @Body chef: ChefResource): HttpResponse<Unit>
+    fun delete(@PathVariable code: String): HttpResponse<Unit>
 
+    /**
+     * For convenience of remote client callers.  This is the same as
+     * calling [delete] with a code.
+     */
     @JvmDefault
-    fun delete(chef: ChefResource) = delete(chef.code, chef)
+    fun delete(chef: ChefResource) = delete(chef.code)
 }

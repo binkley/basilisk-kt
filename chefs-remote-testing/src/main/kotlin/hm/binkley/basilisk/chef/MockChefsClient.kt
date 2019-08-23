@@ -28,11 +28,13 @@ class MockChefsClient : ChefsClient {
         }
     }
 
-    override fun new(chef: ChefResource) = created(chef).also {
+    override fun new(chef: ChefResource) = created(chef)!!.also {
         one = chef
     }
 
-    override fun update(code: String, chef: ChefResource) = ok(chef)
+    override fun update(code: String, chef: ChefResource) = chef.also {
+        one = chef
+    }
 
-    override fun delete(code: String, chef: ChefResource) = ok(Unit)
+    override fun delete(code: String) = ok(Unit)!!
 }
