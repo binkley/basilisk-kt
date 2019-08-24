@@ -25,6 +25,11 @@ buildscript {
             url "https://jitpack.io"
         }
     }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}"
+    }
 }
 
 plugins {
@@ -86,13 +91,15 @@ subprojects {
         }
 
         dependencies {
-            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}"
-            classpath "org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}"
             classpath "com.github.jengelman.gradle.plugins:shadow:${shadowVersion}"
             classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:${gitPropertiesVersion}"
             classpath "gradle.plugin.com.pasam.gradle.buildinfo:spring-boot-build-info:${springBootBuildInfoVersion}"
         }
     }
+
+    apply plugin: "org.jetbrains.kotlin.jvm"
+    apply plugin: "org.jetbrains.kotlin.kapt"
+    apply plugin: "org.jetbrains.kotlin.plugin.allopen"
 
     version = "0.1"
     group = "hm.binkley"
