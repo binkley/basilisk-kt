@@ -15,7 +15,7 @@ printf -v pgreen "\e[32m"
 printf -v pyellow "\e[33m"
 
 function _print-usage() {
-  echo "Usage: $0 [-h|--help] [TARGETS(s)]"
+  echo "Usage: $0 [-E|--environments=ENVIRONMENT(s)][-h|--help][-n|--dry-run] [TARGETS(s)]"
 }
 
 function _print-help() {
