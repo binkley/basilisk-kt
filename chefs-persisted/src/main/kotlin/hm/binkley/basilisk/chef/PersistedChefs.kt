@@ -83,7 +83,7 @@ class PersistedChef internal constructor(
 
 class PersistedMutableChef internal constructor(
         private val snapshot: ChefResource?,
-        private val snapshotSet: (ChefResource?) -> Unit,
+        private val setSnapshot: (ChefResource?) -> Unit,
         private val record: ChefRecord,
         private val factory: PersistedChefs)
     : MutableChef,
@@ -91,13 +91,13 @@ class PersistedMutableChef internal constructor(
     override fun save() = apply {
         record.flush()
         factory.notifySaved(snapshot, record)
-        snapshotSet(ChefResource(record))
+        setSnapshot(ChefResource(record))
     }
 
     override fun delete() {
         record.delete()
         factory.notifySaved(snapshot, null)
-        snapshotSet(null)
+        setSnapshot(null)
     }
 
     override fun equals(other: Any?): Boolean {
