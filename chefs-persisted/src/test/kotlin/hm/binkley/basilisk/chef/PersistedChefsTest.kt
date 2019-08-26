@@ -64,6 +64,13 @@ internal class PersistedChefsTest {
             listener.expectNext.containsExactly(ChefSavedEvent(
                     null, chef))
 
+            // Saving without changing does not publish an update
+            chef.update {
+                save()
+            }
+
+            listener.expectNext.isEmpty()
+
             // Update twice, check first snapshot is original values
             chef.update {
                 this.name = firstSnapshot.name + "X"
