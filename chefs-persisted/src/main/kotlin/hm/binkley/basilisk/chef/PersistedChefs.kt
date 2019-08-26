@@ -53,13 +53,20 @@ class PersistedChef internal constructor(
         private val factory: PersistedChefs)
     : Chef,
         ChefDetails by record {
+    private var snapshot: ChefResource? = ChefResource(this)
+
+    /**
+     * @throws IllegalStateException if this chef has been deleted
+     */
     override fun update(block: MutableChef.() -> Unit) =
-            update(ChefResource(this), block)
+            update(checkNotNull(snapshot), block)
 
     internal inline fun update(
             snapshot: ChefResource?,
             block: MutableChef.() -> Unit) = apply {
-        PersistedMutableChef(snapshot, record, factory).block()
+        PersistedMutableChef(snapshot, { newSnapshot ->
+            this.snapshot = newSnapshot
+        }, record, factory).block()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -76,6 +83,7 @@ class PersistedChef internal constructor(
 
 class PersistedMutableChef internal constructor(
         private val snapshot: ChefResource?,
+        private val snapshotSet: (ChefResource?) -> Unit,
         private val record: ChefRecord,
         private val factory: PersistedChefs)
     : MutableChef,
@@ -83,11 +91,13 @@ class PersistedMutableChef internal constructor(
     override fun save() = apply {
         record.flush()
         factory.notifySaved(snapshot, record)
+        snapshotSet(ChefResource(record))
     }
 
     override fun delete() {
         record.delete()
         factory.notifySaved(snapshot, null)
+        snapshotSet(null)
     }
 
     override fun equals(other: Any?): Boolean {

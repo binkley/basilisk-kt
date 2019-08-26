@@ -3,12 +3,13 @@ package hm.binkley.basilisk.chef
 import ch.tutteli.atrium.api.cc.en_GB.containsExactly
 import ch.tutteli.atrium.api.cc.en_GB.isEmpty
 import ch.tutteli.atrium.api.cc.en_GB.toBe
+import ch.tutteli.atrium.api.cc.en_GB.toThrow
 import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.TestListener
 import hm.binkley.basilisk.chef.Chefs.Companion.FIT
 import hm.binkley.basilisk.db.testTransaction
 import io.micronaut.test.annotation.MicronautTest
-import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
@@ -27,8 +28,8 @@ internal class PersistedChefsTest {
     @Inject
     lateinit var listener: TestListener<ChefSavedEvent>
 
-    @AfterEach
-    fun tearDown() {
+    @BeforeEach
+    fun setUp() {
         listener.reset()
     }
 
@@ -63,6 +64,11 @@ internal class PersistedChefsTest {
             listener.expectNext.containsExactly(ChefSavedEvent(
                     null, chef))
 
+            // Update twice, check first snapshot is original values
+            chef.update {
+                this.name = firstSnapshot.name + "X"
+            }
+
             chef.update {
                 this.name = secondSnapshot.name
                 this.health = secondSnapshot.health
@@ -96,6 +102,22 @@ internal class PersistedChefsTest {
             }
 
             listener.expectNext.isEmpty()
+        }
+    }
+
+    @Test
+    fun shouldComplainIfUpdatingAfterDeleted() {
+        testTransaction {
+            val snapshot = ChefResource(name, code, FIT)
+            val chef = chefs.new(snapshot)
+
+            chef.update {
+                delete()
+            }
+
+            expect {
+                chef.update {}
+            }.toThrow<IllegalStateException> {}
         }
     }
 }
