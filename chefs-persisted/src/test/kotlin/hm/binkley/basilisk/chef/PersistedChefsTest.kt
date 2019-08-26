@@ -124,7 +124,7 @@ internal class PersistedChefsTest {
 
             expect {
                 chef.update {}
-            }.toThrow<IllegalStateException> {}
+            }.toThrow<java.lang.IllegalStateException> {}
         }
     }
 }
