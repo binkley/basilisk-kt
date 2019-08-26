@@ -73,12 +73,14 @@ class PersistedChef internal constructor(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
         other as PersistedChef
-        return record == other.record
+        return snapshot == other.snapshot
+                && record == other.record
     }
 
-    override fun hashCode() = record.hashCode()
+    override fun hashCode() = Objects.hash(snapshot, record)
 
-    override fun toString() = "${super.toString()}{record=$record}"
+    override fun toString() =
+            "${super.toString()}{snapshot=$snapshot, record=$record}"
 }
 
 class PersistedMutableChef internal constructor(
