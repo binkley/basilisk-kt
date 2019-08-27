@@ -76,8 +76,9 @@ targets=("${targets[@]}" logs) # Assume tailing logs
 # See https://stackoverflow.com/a/22644006
 rc=0
 trap 'exit $rc' INT TERM
-trap 'rm -rf "$tmpdir" ; kill 0 ; exit $rc' EXIT
+trap 'rm -rf "$tmpdir" ./logs ; kill 0 ; exit $rc' EXIT
 tmpdir="$(mktemp -d 2>/dev/null || mktemp -d -t basilisk)"
+ln -s "$tmpdir" ./logs
 
 # TODO: How to exit from ERR with original failed exit code?
 function stack-trace-and-exit() {
