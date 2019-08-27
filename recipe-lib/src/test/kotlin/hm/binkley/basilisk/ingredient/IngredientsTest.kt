@@ -12,7 +12,7 @@ import hm.binkley.basilisk.chef.RemoteChefs
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.testTransaction
 import hm.binkley.basilisk.location.LocationResource
-import hm.binkley.basilisk.location.Locations
+import hm.binkley.basilisk.location.PersistedLocations
 import hm.binkley.basilisk.recipe.RecipeRecord
 import hm.binkley.basilisk.recipe.RecipeResource
 import hm.binkley.basilisk.recipe.RecipeStatus.PLANNING
@@ -38,7 +38,7 @@ internal class IngredientsTest {
     @Inject
     lateinit var sources: Sources
     @Inject
-    lateinit var locations: Locations
+    lateinit var locations: PersistedLocations
     @Inject
     lateinit var mockChefsClient: MockChefsClient
     @Inject
@@ -178,7 +178,8 @@ internal class IngredientsTest {
             val source = sources.new(sourceName, sourceCode)
             val chef = chefs.new(ChefResource(chefName, chefCode))
             val recipe = recipes.new("TASTY PIE", "REC456", chef)
-            val location = locations.new(locationName, locationCode)
+            val location = locations.new(
+                    LocationResource(locationName, locationCode))
             listener.reset()
 
             val firstSnapshot = IngredientResource(
@@ -243,7 +244,8 @@ internal class IngredientsTest {
         testTransaction {
             val source = sources.new(sourceName, sourceCode)
             val chef = chefs.new(ChefResource(chefName, chefCode))
-            val location = locations.new(locationName, locationCode)
+            val location = locations.new(
+                    LocationResource(locationName, locationCode))
             listener.reset()
 
             val snapshot = IngredientResource(

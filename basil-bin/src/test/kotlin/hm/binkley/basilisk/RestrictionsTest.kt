@@ -4,7 +4,7 @@ import ch.tutteli.atrium.api.cc.en_GB.containsExactly
 import ch.tutteli.atrium.api.cc.en_GB.toBe
 import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.ingredient.UsedIngredient
-import hm.binkley.basilisk.location.Location
+import hm.binkley.basilisk.location.PersistedLocation
 import hm.binkley.basilisk.recipe.Recipe
 import hm.binkley.basilisk.source.Source
 import io.mockk.every
@@ -31,7 +31,7 @@ class RestrictionsTest {
     @Test
     fun `should use restrictions from sources`() {
         val source = mockk<Source>()
-        val location = mockk<Location>()
+        val location = mockk<PersistedLocation>()
         every { source.locations } answers { SizedCollection(location) }
         val ingredient = mockk<UsedIngredient>()
         every { ingredient.source } answers { source }
@@ -46,11 +46,11 @@ class RestrictionsTest {
     @Test
     fun `should use restrictions from ingredients`() {
         val source = mockk<Source>()
-        val locationA = mockk<Location>()
+        val locationA = mockk<PersistedLocation>()
         every { source.locations } answers { SizedCollection(locationA) }
         val ingredient = mockk<UsedIngredient>()
         every { ingredient.source } answers { source }
-        val locationB = mockk<Location>()
+        val locationB = mockk<PersistedLocation>()
         every { ingredient.locations } answers { SizedCollection(locationB) }
         val recipe = mockk<Recipe>()
         every { recipe.ingredients } answers { SizedCollection(ingredient) }
@@ -65,11 +65,11 @@ class RestrictionsTest {
         every { source.locations } answers { emptySized() }
         val ingredient = mockk<UsedIngredient>()
         every { ingredient.source } answers { source }
-        val locationA = mockk<Location>()
+        val locationA = mockk<PersistedLocation>()
         every { ingredient.locations } answers { SizedCollection(locationA) }
         val recipe = mockk<Recipe>()
         every { recipe.ingredients } answers { SizedCollection(ingredient) }
-        val locationB = mockk<Location>()
+        val locationB = mockk<PersistedLocation>()
         every { recipe.locations } answers { SizedCollection(locationB) }
 
         expect(recipe.restrictions()).containsExactly(locationB)
@@ -81,14 +81,14 @@ class RestrictionsTest {
         every { source.locations } answers { emptySized() }
         val ingredientA = mockk<UsedIngredient>()
         every { ingredientA.source } answers { source }
-        val locationA = mockk<Location>()
-        val locationC = mockk<Location>()
+        val locationA = mockk<PersistedLocation>()
+        val locationC = mockk<PersistedLocation>()
         every { ingredientA.locations } answers {
             SizedCollection(locationA, locationC)
         }
         val ingredientB = mockk<UsedIngredient>()
         every { ingredientB.source } answers { source }
-        val locationB = mockk<Location>()
+        val locationB = mockk<PersistedLocation>()
         every { ingredientB.locations } answers {
             SizedCollection(locationB, locationC)
         }

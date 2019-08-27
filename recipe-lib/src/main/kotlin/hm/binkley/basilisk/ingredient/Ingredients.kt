@@ -7,9 +7,9 @@ import hm.binkley.basilisk.chef.RemoteChefs
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
-import hm.binkley.basilisk.location.Location
 import hm.binkley.basilisk.location.LocationRecord
-import hm.binkley.basilisk.location.Locations
+import hm.binkley.basilisk.location.PersistedLocation
+import hm.binkley.basilisk.location.PersistedLocations
 import hm.binkley.basilisk.recipe.Recipe
 import hm.binkley.basilisk.recipe.RecipeRecord
 import hm.binkley.basilisk.recipe.RecipeRepository
@@ -35,7 +35,7 @@ class Ingredients(
         private val sources: Sources,
         private val chefs: RemoteChefs,
         private val recipes: Recipes,
-        private val locations: Locations,
+        private val locations: PersistedLocations,
         private val publisher: ApplicationEventPublisher) {
     fun byCode(code: String) = IngredientRecord.findOne {
         IngredientRepository.code eq code
@@ -51,7 +51,7 @@ class Ingredients(
 
     private fun <I : Ingredient<*>> new(
             source: Source, code: String, chef: RemoteChef,
-            locations: MutableList<Location> = mutableListOf(),
+            locations: MutableList<PersistedLocation> = mutableListOf(),
             block: (IngredientRecord, Ingredients) -> I) =
             block(IngredientRecord.new {
                 this.source = toRecord(source)
@@ -63,7 +63,7 @@ class Ingredients(
             } as I
 
     fun newUnused(source: Source, code: String, chef: RemoteChef,
-            locations: MutableList<Location> = mutableListOf()) =
+            locations: MutableList<PersistedLocation> = mutableListOf()) =
             new(source, code, chef, locations) { record, factory ->
                 record.recipe = null // Explicit, even if redundant
                 UnusedIngredient(record, factory)
@@ -71,7 +71,7 @@ class Ingredients(
 
     fun newUsed(source: Source, code: String, chef: RemoteChef,
             recipe: Recipe,
-            locations: MutableList<Location> = mutableListOf()) =
+            locations: MutableList<PersistedLocation> = mutableListOf()) =
             new(source, code, chef, locations) { record, factory ->
                 record.recipe = factory.toRecord(recipe)
                 UsedIngredient(record, factory)
@@ -79,7 +79,7 @@ class Ingredients(
 
     fun newAny(source: Source, code: String, chef: RemoteChef,
             recipe: Recipe?,
-            locations: MutableList<Location> = mutableListOf()) =
+            locations: MutableList<PersistedLocation> = mutableListOf()) =
             new(source, code, chef, locations) { record, factory ->
                 record.recipe = recipe?.let { factory.toRecord(recipe) }
                 factory.from(record)
@@ -115,7 +115,7 @@ class Ingredients(
     internal fun locationFrom(locationRecord: LocationRecord) =
             locations.from(locationRecord)
 
-    internal fun toRecord(location: Location) =
+    internal fun toRecord(location: PersistedLocation) =
             locations.toRecord(location)
 }
 
@@ -146,7 +146,7 @@ sealed class Ingredient<I : Ingredient<I>>(
             val recipeRecord = record.recipe
             return recipeRecord?.let { factory.recipeFrom(recipeRecord) }
         }
-    val locations: SizedIterable<Location>
+    val locations: SizedIterable<PersistedLocation>
         get() = record.locations.notForUpdate().mapLazy {
             factory.locationFrom(it)
         }
@@ -216,7 +216,7 @@ class MutableIngredient internal constructor(
         set(update) {
             record.recipe = update?.let { factory.toRecord(update) }
         }
-    var locations: MutableList<Location>
+    var locations: MutableList<PersistedLocation>
         get() {
             val update = record.locations.forUpdate().mapLazy {
                 factory.locationFrom(it)

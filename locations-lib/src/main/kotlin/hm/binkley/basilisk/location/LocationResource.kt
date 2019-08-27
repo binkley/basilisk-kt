@@ -1,5 +1,11 @@
 package hm.binkley.basilisk.location
 
-data class LocationResource(val name: String, val code: String) {
-    constructor(location: Location) : this(location.name, location.code)
+import javax.validation.constraints.NotNull
+
+data class LocationResource(
+        @NotNull override val name: String,
+        @NotNull override val code: String)
+    : LocationDetails {
+    constructor(location: PersistedLocation)
+            : this(location.name, location.code)
 }

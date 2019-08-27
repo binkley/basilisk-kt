@@ -7,7 +7,7 @@ import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.TestListener
 import hm.binkley.basilisk.db.testTransaction
 import hm.binkley.basilisk.location.LocationResource
-import hm.binkley.basilisk.location.Locations
+import hm.binkley.basilisk.location.PersistedLocations
 import io.micronaut.test.annotation.MicronautTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -26,7 +26,7 @@ internal class SourcesTest {
     @Inject
     lateinit var sources: Sources
     @Inject
-    lateinit var locations: Locations
+    lateinit var locations: PersistedLocations
     @Inject
     lateinit var listener: TestListener<SourceSavedEvent>
 
@@ -63,8 +63,10 @@ internal class SourcesTest {
         val locationBCode = "MEL"
 
         testTransaction {
-            val locationA = locations.new(locationAName, locationACode)
-            val locationB = locations.new(locationBName, locationBCode)
+            val locationA = locations.new(
+                    LocationResource(locationAName, locationACode))
+            val locationB = locations.new(
+                    LocationResource(locationBName, locationBCode))
             listener.reset()
 
             val firstSnapshot = SourceResource(name, code, listOf(
@@ -113,7 +115,8 @@ internal class SourcesTest {
         val locationCode = "DAL"
 
         testTransaction {
-            val location = locations.new(locationName, locationCode)
+            val location = locations.new(
+                    LocationResource(locationName, locationCode))
             listener.reset()
 
             val snapshot = SourceResource(

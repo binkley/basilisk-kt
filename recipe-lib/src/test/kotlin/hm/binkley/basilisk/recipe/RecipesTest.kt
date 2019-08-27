@@ -10,7 +10,7 @@ import hm.binkley.basilisk.chef.MockChefsClient
 import hm.binkley.basilisk.chef.RemoteChefs
 import hm.binkley.basilisk.db.testTransaction
 import hm.binkley.basilisk.location.LocationResource
-import hm.binkley.basilisk.location.Locations
+import hm.binkley.basilisk.location.PersistedLocations
 import hm.binkley.basilisk.recipe.RecipeStatus.PLANNING
 import hm.binkley.basilisk.recipe.RecipeStatus.PREPARING
 import io.micronaut.test.annotation.MicronautTest
@@ -35,7 +35,7 @@ internal class RecipesTest {
     @Inject
     lateinit var chefs: RemoteChefs
     @Inject
-    lateinit var locations: Locations
+    lateinit var locations: PersistedLocations
     @Inject
     lateinit var listener: TestListener<RecipeSavedEvent>
 
@@ -78,7 +78,8 @@ internal class RecipesTest {
 
         testTransaction {
             val chef = chefs.new(ChefResource(chefName, chefCode))
-            val location = locations.new(locationName, locationCode)
+            val location = locations.new(
+                    LocationResource(locationName, locationCode))
             listener.reset()
 
             val firstSnapshot = RecipeResource(
@@ -134,7 +135,8 @@ internal class RecipesTest {
 
         testTransaction {
             val chef = chefs.new(ChefResource(chefName, chefCode))
-            val location = locations.new(locationName, locationCode)
+            val location = locations.new(
+                    LocationResource(locationName, locationCode))
             listener.reset()
 
             val snapshot = RecipeResource(

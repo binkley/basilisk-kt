@@ -7,9 +7,9 @@ import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
 import hm.binkley.basilisk.ingredient.Ingredients
 import hm.binkley.basilisk.ingredient.UsedIngredient
-import hm.binkley.basilisk.location.Location
 import hm.binkley.basilisk.location.LocationRecord
-import hm.binkley.basilisk.location.Locations
+import hm.binkley.basilisk.location.PersistedLocation
+import hm.binkley.basilisk.location.PersistedLocations
 import hm.binkley.basilisk.recipe.RecipeStatus.PLANNING
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
@@ -29,7 +29,7 @@ import javax.inject.Singleton
 class Recipes(
         private val chefs: RemoteChefs,
         private val ingredientsFactory: Provider<Ingredients>, // Circular
-        private val locations: Locations,
+        private val locations: PersistedLocations,
         private val publisher: ApplicationEventPublisher) {
     fun byCode(code: String) = RecipeRecord.findOne {
         RecipeRepository.code eq code
@@ -39,7 +39,7 @@ class Recipes(
 
     /** Saves a new recipe in [PLANNING] status. */
     fun new(name: String, code: String, chef: RemoteChef,
-            locations: MutableList<Location> = mutableListOf()) =
+            locations: MutableList<PersistedLocation> = mutableListOf()) =
             from(RecipeRecord.new {
                 this.name = name
                 this.code = code
@@ -67,7 +67,7 @@ class Recipes(
     internal fun locationFrom(locationRecord: LocationRecord) =
             locations.from(locationRecord)
 
-    internal fun toRecord(location: Location) =
+    internal fun toRecord(location: PersistedLocation) =
             locations.toRecord(location)
 
     internal fun ingredientsFrom(recipe: Recipe) =
@@ -108,7 +108,7 @@ class Recipe internal constructor(
         get() = factory.chefFrom(record.chefCode)
     val ingredients: SizedIterable<UsedIngredient>
         get() = factory.ingredientsFrom(this)
-    val locations: SizedIterable<Location>
+    val locations: SizedIterable<PersistedLocation>
         get() = record.locations.notForUpdate().mapLazy {
             factory.locationFrom(it)
         }
@@ -146,7 +146,7 @@ class MutableRecipe internal constructor(
         set(update) {
             record.chefCode = update.code
         }
-    var locations: MutableList<Location>
+    var locations: MutableList<PersistedLocation>
         get() {
             val update = record.locations.forUpdate().mapLazy {
                 factory.locationFrom(it)

@@ -3,9 +3,9 @@ package hm.binkley.basilisk.source
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
-import hm.binkley.basilisk.location.Location
 import hm.binkley.basilisk.location.LocationRecord
-import hm.binkley.basilisk.location.Locations
+import hm.binkley.basilisk.location.PersistedLocation
+import hm.binkley.basilisk.location.PersistedLocations
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
@@ -21,7 +21,7 @@ import javax.inject.Singleton
 
 @Singleton
 class Sources(
-        private val locations: Locations,
+        private val locations: PersistedLocations,
         private val publisher: ApplicationEventPublisher) {
     fun byCode(code: String) = SourceRecord.findOne {
         SourceRepository.code eq code
@@ -30,7 +30,7 @@ class Sources(
     }
 
     fun new(name: String, code: String,
-            locations: MutableList<Location> = mutableListOf()) =
+            locations: MutableList<PersistedLocation> = mutableListOf()) =
             from(SourceRecord.new {
                 this.name = name
                 this.code = code
@@ -53,7 +53,7 @@ class Sources(
     internal fun locationFrom(locationRecord: LocationRecord) =
             locations.from(locationRecord)
 
-    internal fun toRecord(location: Location) =
+    internal fun toRecord(location: PersistedLocation) =
             locations.toRecord(location)
 }
 
@@ -75,7 +75,7 @@ class Source internal constructor(
         internal val record: SourceRecord,
         private val factory: Sources)
     : SourceDetails by record {
-    val locations: SizedIterable<Location>
+    val locations: SizedIterable<PersistedLocation>
         get() = record.locations.notForUpdate().mapLazy {
             factory.locationFrom(it)
         }
@@ -107,7 +107,7 @@ class MutableSource internal constructor(
         private val snapshot: SourceResource?,
         private val record: SourceRecord,
         private val factory: Sources) : MutableSourceDetails by record {
-    var locations: MutableList<Location>
+    var locations: MutableList<PersistedLocation>
         get() {
             val update = record.locations.forUpdate().mapLazy {
                 factory.locationFrom(it)

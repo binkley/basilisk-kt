@@ -15,14 +15,14 @@ import javax.inject.Inject
 
 @MicronautTest
 @TestInstance(PER_CLASS)
-internal class LocationsTest {
+internal class PersistedLocationsTest {
     companion object {
         const val name = "LOCATION BOB"
         const val code = "LOCATION123"
     }
 
     @Inject
-    lateinit var locations: Locations
+    lateinit var locations: PersistedLocations
     @Inject
     lateinit var listener: TestListener<LocationSavedEvent>
 
@@ -43,7 +43,8 @@ internal class LocationsTest {
     @Test
     fun shouldRoundTrip() {
         testTransaction {
-            locations.new(name, code)
+            val firstSnapshot = LocationResource(name, code)
+            locations.new(firstSnapshot)
             val location = locations.byCode(code)!!
 
             expect(location.code).toBe(code)
@@ -57,8 +58,7 @@ internal class LocationsTest {
             val firstSnapshot = LocationResource(name, code)
             val secondSnapshot = LocationResource("LOCATION ROBERT", code)
 
-            val location = locations.new(
-                    firstSnapshot.name, firstSnapshot.code)
+            val location = locations.new(firstSnapshot)
 
             listener.expectNext.containsExactly(LocationSavedEvent(
                     null, location))
@@ -85,8 +85,7 @@ internal class LocationsTest {
         testTransaction {
             val snapshot = LocationResource(name, code)
 
-            val location = locations.new(
-                    snapshot.name, snapshot.code)
+            val location = locations.new(snapshot)
 
             listener.expectNext.containsExactly(LocationSavedEvent(
                     null, location))
