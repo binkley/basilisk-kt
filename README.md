@@ -102,6 +102,15 @@ When using mocking features, the script needs
 
 ## Model
 
+### TODO
+
+* Connect the domains, in particular:
+  - Many domains refer to a location, avoid DB dependencies
+  - Many domains refer to a chef, avoid DB dependencies
+  - Recipes have Ingredients, but Ingredients own the relationship
+  - Chefs need a connection to their Trips
+  - Chefs need dates/locations, and Recipes need to respect these
+
 ### Basil Lips B&Bs
 
 Picture that you own a chain of Quality B&Bs (bed and breakfast
