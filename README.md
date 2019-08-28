@@ -25,6 +25,7 @@ Testcontainers, Docker, et al.
 
 * [Clean build](#clean-build)
 * [Vertical slicing of domain](#vertical-slicing)
+* [Controlled mutability](#controlled-mutability)
 * [Composable build](#composable-build)
 * [Docker](#docker)
 * [Postgres](#postgres)
@@ -54,6 +55,13 @@ provides interfaces.  Each program may choose between a "persisted"
 representation of a domain (the program _owns_ the domain concept) and a
 "remote" representation (the program consults another program).  There is
 presently no mechanism to ensure only one program owns a domain. 
+
+### Controlled mutability
+
+This project provides mutable objects, but in a controlled, intentional
+fashion.  See
+[`PersistedChefs`](chefs-persisted/src/main/kotlin/hm/binkley/basilisk/chef/PersistedChefs.kt)
+for an example in the `update` method on `PersistedChef`. 
 
 ### Composable build
 
