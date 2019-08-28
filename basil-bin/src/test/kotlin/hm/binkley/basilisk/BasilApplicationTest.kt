@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 @MicronautTest
 @TestInstance(PER_CLASS)
-internal class BasiliskApplicationTest {
+internal class BasilApplicationTest {
     @Inject
     lateinit var server: EmbeddedServer
     @Inject
@@ -94,7 +94,7 @@ internal class BasiliskApplicationTest {
         val request = HttpRequest.newBuilder()
                 .GET()
                 .uri(URI.create(
-                        "http://localhost:${server.port}/api-docs/swagger/basilisk-0.yml"))
+                        "http://localhost:${server.port}/api-docs/swagger/basil-0.yml"))
                 .build()
 
         val response = client.send(request, discarding())

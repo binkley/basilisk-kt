@@ -5,6 +5,10 @@ micronaut:
     version: 0
   server:
     port: 7371
+# TODO: This does not seem to be recognized -- deps update needed?
+#  openapi:
+#    target:
+#      file: basil-0.yml
 
 # Duplicate for each bin, until
 # https://github.com/micronaut-projects/micronaut-core/issues/517 resolved

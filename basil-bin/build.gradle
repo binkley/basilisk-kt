@@ -3,7 +3,7 @@ apply from: "${project.rootDir}/application.gradle"
 apply from: "${project.rootDir}/persistence.gradle"
 apply from: "${project.rootDir}/testing.gradle"
 
-mainClassName = "hm.binkley.basilisk.BasiliskApplication"
+mainClassName = "hm.binkley.basilisk.BasilApplication"
 
 dependencies {
     compile project(":app-lib")

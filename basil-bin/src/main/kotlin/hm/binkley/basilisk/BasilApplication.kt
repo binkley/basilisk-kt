@@ -5,14 +5,15 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Info
 
 @OpenAPIDefinition(info = Info(
-        title = "Basilisk",
+        // TODO: Pick a diff title, leave Swagger YML file name alone
+        title = "Basil",
         version = "0"))
-object BasiliskApplication {
+object BasilApplication {
     @JvmStatic
     fun main(args: Array<String>) {
         Micronaut.build()
                 .packages("hm.binkley.basilisk")
-                .mainClass(BasiliskApplication.javaClass)
+                .mainClass(BasilApplication.javaClass)
                 .start()
     }
 }
