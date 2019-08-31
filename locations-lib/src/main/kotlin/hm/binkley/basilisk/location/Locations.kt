@@ -1,11 +1,11 @@
 package hm.binkley.basilisk.location
 
 interface Locations {
-    fun all(): Iterable<PersistedLocation>
+    fun all(): Iterable<Location>
 
-    fun byCode(code: String): PersistedLocation?
+    fun byCode(code: String): Location?
 
-    fun new(location: LocationResource): PersistedLocation
+    fun new(location: LocationResource): Location
 }
 
 interface LocationDetails {
@@ -19,11 +19,11 @@ interface MutableLocationDetails {
 }
 
 interface Location : LocationDetails {
-    fun update(block: MutablePersistedLocation.() -> Unit): PersistedLocation
+    fun update(block: MutableLocation.() -> Unit): Location
 }
 
 interface MutableLocation : MutableLocationDetails {
-    fun save(): MutablePersistedLocation
+    fun save(): MutableLocation
 
     fun delete()
 }

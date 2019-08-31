@@ -2,6 +2,8 @@ package hm.binkley.basilisk.chef
 
 interface Chefs {
     companion object {
+        // TODO: Consider types instead of status fields:
+        // - FitChef vs UnfitChef, etc.
         const val FIT = "FIT"
     }
 

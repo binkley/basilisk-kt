@@ -35,9 +35,6 @@ class PersistedChefs(private val publisher: ApplicationEventPublisher)
     /** For implementors of other record types having a reference. */
     fun from(record: ChefRecord) = PersistedChef(record, this)
 
-    /** For implementors of other record types having a reference. */
-    fun toRecord(chef: PersistedChef) = chef.record
-
     internal fun notifySaved(before: ChefResource?, after: ChefRecord?) =
             notifySaved(before, after?.let { from(it) }, publisher,
                     ::ChefResource, ::ChefSavedEvent)

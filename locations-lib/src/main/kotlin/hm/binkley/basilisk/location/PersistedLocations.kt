@@ -52,7 +52,7 @@ class PersistedLocation internal constructor(
         private val factory: PersistedLocations)
     : Location,
         LocationDetails by record {
-    override fun update(block: MutablePersistedLocation.() -> Unit) =
+    override fun update(block: MutableLocation.() -> Unit) =
             update(LocationResource(this), block)
 
     internal inline fun update(
