@@ -13,9 +13,9 @@ import java.util.*
 
 object LegRepository : IntIdTable("LEG") {
     val trip = reference("trip_id", TripRepository)
-    val start = reference("start_location_id", LocationRepository)
+    val start = reference("start_location_code", LocationRepository)
     val startAt = datetime("start_at")
-    val end = reference("end_location_id", LocationRepository)
+    val end = reference("end_location_code", LocationRepository)
     val endAt = datetime("end_at")
 }
 
@@ -34,14 +34,14 @@ class LegRecord(id: EntityID<Int>) : IntEntity(id),
         if (javaClass != other?.javaClass) return false
         other as LegRecord
         return trip.id == other.trip.id
-                && start.id == other.start.id
+                && start.code == other.start.code
                 && startAt == other.startAt
-                && end.id == other.end.id
+                && end.code == other.end.code
                 && endAt == other.endAt
     }
 
     override fun hashCode() =
-            Objects.hash(trip.id, start.id, startAt, end.id, endAt)
+            Objects.hash(trip.id, start.code, startAt, end.code, endAt)
 
     override fun toString() =
             "${super.toString()}{id=$id, trip_id=${trip.id}, start=${start.code}, startAt=$startAt, end=${end.code}, endAt=$endAt}"

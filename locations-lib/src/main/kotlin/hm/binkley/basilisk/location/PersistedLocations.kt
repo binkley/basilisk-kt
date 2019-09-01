@@ -1,13 +1,13 @@
 package hm.binkley.basilisk.location
 
+import hm.binkley.basilisk.db.CodeEntity
+import hm.binkley.basilisk.db.CodeEntityClass
+import hm.binkley.basilisk.db.CodeIdTable
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
-import org.jetbrains.exposed.dao.IntIdTable
 import java.util.*
 import javax.inject.Singleton
 
@@ -103,15 +103,15 @@ class MutablePersistedLocation internal constructor(
             "${super.toString()}{snapshot=$snapshot, record=$record}"
 }
 
-object LocationRepository : IntIdTable("LOCATION") {
+object LocationRepository : CodeIdTable("LOCATION") {
     val code = text("code")
     val name = text("name")
 }
 
-class LocationRecord(id: EntityID<Int>) : IntEntity(id),
+class LocationRecord(id: EntityID<String>) : CodeEntity(id),
         LocationDetails,
         MutableLocationDetails {
-    companion object : IntEntityClass<LocationRecord>(LocationRepository)
+    companion object : CodeEntityClass<LocationRecord>(LocationRepository)
 
     override var code by LocationRepository.code
     override var name by LocationRepository.name

@@ -9,9 +9,9 @@ CREATE TABLE IF NOT EXISTS recipe
 
 CREATE TABLE IF NOT EXISTS recipe_location
 (
-    recipe_id   INT,
-    location_id INT,
-    CONSTRAINT pk_RECIPE_LOCATION PRIMARY KEY (recipe_id, location_id),
+    recipe_id     INT,
+    location_code TEXT,
+    CONSTRAINT pk_RECIPE_LOCATION PRIMARY KEY (recipe_id, location_code),
     CONSTRAINT fk_recipe_location_recipe_id_id FOREIGN KEY (recipe_id) REFERENCES "recipe" (id) ON DELETE RESTRICT ON UPDATE RESTRICT,
-    CONSTRAINT fk_recipe_location_location_id_id FOREIGN KEY (location_id) REFERENCES "location" (id) ON DELETE RESTRICT ON UPDATE RESTRICT
+    CONSTRAINT fk_recipe_location_location_code_id FOREIGN KEY (location_code) REFERENCES "location" (code) ON DELETE RESTRICT ON UPDATE RESTRICT
 );

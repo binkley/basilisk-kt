@@ -1,14 +1,13 @@
 package hm.binkley.basilisk.chef
 
+import hm.binkley.basilisk.db.CodeEntity
+import hm.binkley.basilisk.db.CodeEntityClass
+import hm.binkley.basilisk.db.CodeIdTable
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
-import org.jetbrains.exposed.dao.Entity
-import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.dao.IdTable
-import org.jetbrains.exposed.sql.Column
 import java.util.*
 import javax.inject.Singleton
 
@@ -142,11 +141,3 @@ class ChefRecord(id: EntityID<String>) : CodeEntity(id),
     override fun toString() =
             "${super.toString()}{id=$id, code=$code, name=$name, health=$health}"
 }
-
-abstract class CodeIdTable(name: String = "", columnName: String = "code") : IdTable<String>(name) {
-    override val id: Column<EntityID<String>> = text(columnName).primaryKey().entityId()
-}
-
-abstract class CodeEntity(id: EntityID<String>) : Entity<String>(id)
-
-abstract class CodeEntityClass<out E:CodeEntity>(table: IdTable<String>, entityType: Class<E>? = null) : EntityClass<String, E>(table, entityType)
