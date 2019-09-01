@@ -56,7 +56,7 @@ allprojects {
 subprojects {
     ext {
         atriumVersion = "0.8.0"
-        exposedVersion = "0.16.3"
+        exposedVersion = "0.17.3"
         handlebarsVersion = "4.1.2"
         gitPropertiesVersion = "2.1.0"
         jacksonVersion = "2.9.9"
