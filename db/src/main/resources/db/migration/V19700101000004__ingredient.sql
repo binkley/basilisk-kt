@@ -1,12 +1,12 @@
 CREATE TABLE IF NOT EXISTS ingredient
 (
-    id        SERIAL PRIMARY KEY,
-    code      TEXT NOT NULL UNIQUE,
-    chef_code TEXT NOT NULL,
-    recipe_id INT  NULL,
-    source_id INT  NOT NULL,
+    id          SERIAL PRIMARY KEY,
+    code        TEXT NOT NULL UNIQUE,
+    chef_code   TEXT NOT NULL,
+    recipe_id   INT  NULL,
+    source_code TEXT NOT NULL,
     CONSTRAINT fk_ingredient_recipe_id_id FOREIGN KEY (recipe_id) REFERENCES recipe (id) ON DELETE RESTRICT ON UPDATE RESTRICT,
-    CONSTRAINT fk_ingredient_source_id_id FOREIGN KEY (source_id) REFERENCES "source" (id) ON DELETE RESTRICT ON UPDATE RESTRICT
+    CONSTRAINT fk_ingredient_source_code_id FOREIGN KEY (source_code) REFERENCES "source" (code) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS ingredient_location

@@ -258,7 +258,7 @@ class MutableIngredient internal constructor(
 
 object IngredientRepository : IntIdTable("INGREDIENT") {
     // TODO: What to do about "source" hiding parent class member?
-    val sourceRef = reference("source_id", SourceRepository)
+    val sourceRef = reference("source_code", SourceRepository)
     val code = text("code")
     val chefCode = text("chef_code")
     val recipe = reference("recipe_id",

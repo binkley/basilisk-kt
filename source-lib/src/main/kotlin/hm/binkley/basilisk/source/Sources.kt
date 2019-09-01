@@ -1,5 +1,8 @@
 package hm.binkley.basilisk.source
 
+import hm.binkley.basilisk.db.CodeEntity
+import hm.binkley.basilisk.db.CodeEntityClass
+import hm.binkley.basilisk.db.CodeIdTable
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
@@ -9,9 +12,6 @@ import hm.binkley.basilisk.location.PersistedLocations
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
-import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.SizedIterable
 import org.jetbrains.exposed.sql.emptySized
@@ -147,15 +147,15 @@ class MutableSource internal constructor(
             "${super.toString()}{snapshot=$snapshot, record=$record}"
 }
 
-object SourceRepository : IntIdTable("SOURCE") {
+object SourceRepository : CodeIdTable("SOURCE") {
     val code = text("code")
     val name = text("name")
 }
 
-class SourceRecord(id: EntityID<Int>) : IntEntity(id),
+class SourceRecord(id: EntityID<String>) : CodeEntity(id),
         SourceDetails,
         MutableSourceDetails {
-    companion object : IntEntityClass<SourceRecord>(SourceRepository)
+    companion object : CodeEntityClass<SourceRecord>(SourceRepository)
 
     override var code by SourceRepository.code
     override var name by SourceRepository.name
