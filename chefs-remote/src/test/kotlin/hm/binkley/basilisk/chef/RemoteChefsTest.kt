@@ -36,8 +36,8 @@ internal class RemoteChefsTest {
     @Test
     fun `should find some chefs`() {
         val chefs = listOf(
-                ChefResource("Chef Bob", "BOB"),
-                ChefResource("Chef Nancy", "NANCY"))
+                ChefResource("BOB", "Chef Bob"),
+                ChefResource("NANCY", "Chef Nancy"))
         mock.all = chefs
 
         val body = this.chefs.all()
@@ -56,7 +56,7 @@ internal class RemoteChefsTest {
 
     @Test
     fun `should find a chef`() {
-        val one = ChefResource(name, code)
+        val one = ChefResource(code, name)
         mock.one = one
 
         val chef = chefs.byCode(code)

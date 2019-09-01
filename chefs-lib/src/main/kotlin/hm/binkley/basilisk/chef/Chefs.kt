@@ -15,14 +15,14 @@ interface Chefs {
 }
 
 interface ChefDetails {
-    val name: String
     val code: String
+    val name: String
     val health: String
 }
 
 interface MutableChefDetails {
-    var name: String
     var code: String
+    var name: String
     var health: String
 }
 

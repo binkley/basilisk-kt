@@ -38,11 +38,12 @@ class Recipes(
     }
 
     /** Saves a new recipe in [PLANNING] status. */
-    fun new(name: String, code: String, chef: RemoteChef,
+    fun new(code: String, name: String,
+            chef: RemoteChef,
             locations: MutableList<PersistedLocation> = mutableListOf()) =
             from(RecipeRecord.new {
-                this.name = name
                 this.code = code
+                this.name = name
                 this.chefCode = chef.code
                 this.status = PLANNING
             }).update(null) {
@@ -85,14 +86,14 @@ enum class RecipeStatus {
 }
 
 interface RecipeDetails {
-    val name: String
     val code: String
+    val name: String
     val status: RecipeStatus
 }
 
 interface MutableRecipeDetails {
-    var name: String
     var code: String
+    var name: String
     var status: RecipeStatus
 }
 
@@ -187,8 +188,8 @@ class MutableRecipe internal constructor(
 }
 
 object RecipeRepository : IntIdTable("RECIPE") {
-    val name = text("name")
     val code = text("code")
+    val name = text("name")
     val chefCode = text("chef_code")
     val status = enumerationByName("status", RecipeStatus.maxLength(),
             RecipeStatus::class)
@@ -199,8 +200,8 @@ class RecipeRecord(id: EntityID<Int>) : IntEntity(id),
         MutableRecipeDetails {
     companion object : IntEntityClass<RecipeRecord>(RecipeRepository)
 
-    override var name by RecipeRepository.name
     override var code by RecipeRepository.code
+    override var name by RecipeRepository.name
     var chefCode by RecipeRepository.chefCode
     override var status by RecipeRepository.status
     var locations by LocationRecord via RecipeLocationsRepository
@@ -214,15 +215,15 @@ class RecipeRecord(id: EntityID<Int>) : IntEntity(id),
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
         other as RecipeRecord
-        return name == other.name
-                && code == other.code
+        return code == other.code
+                && name == other.name
                 && chefCode == other.chefCode
                 && locations == other.locations
     }
 
     override fun hashCode() =
-            Objects.hash(name, code, chefCode, locations)
+            Objects.hash(code, name, chefCode, locations)
 
     override fun toString() =
-            "${super.toString()}{id=$id, name=$name, code=$code, chefCode=$chefCode, locations=$locations}"
+            "${super.toString()}{id=$id, code=$code, name=$name, chefCode=$chefCode, locations=$locations}"
 }

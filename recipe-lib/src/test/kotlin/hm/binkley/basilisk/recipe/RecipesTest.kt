@@ -59,9 +59,9 @@ internal class RecipesTest {
         val chefCode = "BOY"
 
         testTransaction {
-            val chef = chefs.new(ChefResource(chefName, chefCode))
+            val chef = chefs.new(ChefResource(chefCode, chefName))
 
-            recipes.new(name, code, chef)
+            recipes.new(code, name, chef)
             val recipe = recipes.byCode(code)!!
 
             expect(recipe.code).toBe(code)
@@ -77,23 +77,23 @@ internal class RecipesTest {
         val locationCode = "DAL"
 
         testTransaction {
-            val chef = chefs.new(ChefResource(chefName, chefCode))
+            val chef = chefs.new(ChefResource(chefCode, chefName))
             val location = locations.new(
-                    LocationResource(locationName, locationCode))
+                    LocationResource(locationCode, locationName))
             listener.reset()
 
             val firstSnapshot = RecipeResource(
-                    name, code, ChefResource(chef), PLANNING,
+                    code, name, ChefResource(chef), PLANNING,
                     listOf(LocationResource(location)))
             val secondSnapshot = RecipeResource(
-                    "COOL CAKE", code, ChefResource(chef), PLANNING,
+                    code, "COOL CAKE", ChefResource(chef), PLANNING,
                     listOf())
             val thirdSnapshot = RecipeResource(
-                    "COOL CAKE", code, ChefResource(chef), PREPARING,
+                    code, "COOL CAKE", ChefResource(chef), PREPARING,
                     listOf(LocationResource(location)))
 
             val recipe = recipes.new(
-                    firstSnapshot.name, firstSnapshot.code, chef,
+                    firstSnapshot.code, firstSnapshot.name, chef,
                     mutableListOf(location))
 
             listener.expectNext.containsExactly(RecipeSavedEvent(
@@ -134,17 +134,17 @@ internal class RecipesTest {
         val locationCode = "DAL"
 
         testTransaction {
-            val chef = chefs.new(ChefResource(chefName, chefCode))
+            val chef = chefs.new(ChefResource(chefCode, chefName))
             val location = locations.new(
-                    LocationResource(locationName, locationCode))
+                    LocationResource(locationCode, locationName))
             listener.reset()
 
             val snapshot = RecipeResource(
-                    name, code, ChefResource(chef), PLANNING,
+                    code, name, ChefResource(chef), PLANNING,
                     listOf(LocationResource(location)))
 
             val recipe = recipes.new(
-                    snapshot.name, snapshot.code, chef,
+                    snapshot.code, snapshot.name, chef,
                     mutableListOf(location))
 
             listener.expectNext.containsExactly(RecipeSavedEvent(

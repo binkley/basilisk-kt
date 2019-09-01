@@ -31,8 +31,8 @@ import javax.inject.Inject
 @TestInstance(PER_CLASS)
 internal class IngredientsTest {
     companion object {
-        const val name = "Rhubarb"
         const val code = "ING789"
+        const val name = "Rhubarb"
     }
 
     @Inject
@@ -58,8 +58,7 @@ internal class IngredientsTest {
     @Test
     fun shouldFindNoIngredient() {
         testTransaction {
-            val ingredient = ingredients.byCode(
-                    code)
+            val ingredient = ingredients.byCode(code)
 
             expect(ingredient).toBe(null)
         }
@@ -67,13 +66,13 @@ internal class IngredientsTest {
 
     @Test
     fun shouldFindUnusedIngredient() {
-        val name = name
         val code = code
+        val name = name
 
         testTransaction {
-            val chef = chefs.new(ChefResource("CHEF BOB", "CHEF123"))
-            val source = sources.new(name, "SRC012")
-            val recipe = recipes.new("TASTY PIE", "REC456", chef)
+            val chef = chefs.new(ChefResource("CHEF123", "CHEF BOB"))
+            val source = sources.new("SRC012", name)
+            val recipe = recipes.new("REC456", "TASTY PIE", chef)
             ingredients.newAny(source, code, chef, null)
 
             val ingredient = ingredients.byCode(code)!!
@@ -88,13 +87,13 @@ internal class IngredientsTest {
 
     @Test
     fun shouldFindUsedIngredient() {
-        val name = name
         val code = code
+        val name = name
 
         testTransaction {
-            val chef = chefs.new(ChefResource("CHEF BOB", "CHEF123"))
-            val source = sources.new(name, "SRC012")
-            val recipe = recipes.new("TASTY PIE", "REC456", chef)
+            val chef = chefs.new(ChefResource("CHEF123", "CHEF BOB"))
+            val source = sources.new("SRC012", name)
+            val recipe = recipes.new("REC456", "TASTY PIE", chef)
             ingredients.newAny(source, code, chef, recipe)
 
             val ingredient = ingredients.byCode(code)!!
@@ -110,13 +109,13 @@ internal class IngredientsTest {
 
     @Test
     fun shouldUnuseUsedIngredient() {
-        val name = name
         val code = code
+        val name = name
 
         testTransaction {
-            val chef = chefs.new(ChefResource("CHEF BOB", "CHEF123"))
-            val source = sources.new(name, "SRC012")
-            val recipe = recipes.new("TASTY PIE", "REC456", chef)
+            val chef = chefs.new(ChefResource("CHEF123", "CHEF BOB"))
+            val source = sources.new("SRC012", name)
+            val recipe = recipes.new("REC456", "TASTY PIE", chef)
             ingredients.newAny(source, code, chef, recipe)
 
             val ingredient =
@@ -130,20 +129,20 @@ internal class IngredientsTest {
 
     @Test
     fun shouldUseUnusedIngredient() {
-        val name = name
         val code = code
+        val name = name
 
         testTransaction {
-            val chef = ChefResource("CHEF BOB", "CHEF123")
+            val chef = ChefResource("CHEF123", "CHEF BOB")
             mockChefsClient.one = chef
             val source = SourceRecord.new {
-                this.name = name
                 this.code = "SRC012"
+                this.name = name
             }
             source.flush()
             val recipeRecord = RecipeRecord.new {
-                this.name = "TASTY PIE"
                 this.code = "REC456"
+                this.name = "TASTY PIE"
                 this.chefCode = chef.code
                 status = PLANNING
             }
@@ -167,19 +166,19 @@ internal class IngredientsTest {
 
     @Test
     fun shouldPublishSaveEvents() {
-        val sourceName = name
         val sourceCode = "SRC012"
-        val chefName = "Chef Boy-ar-dee"
+        val sourceName = name
         val chefCode = "BOY"
-        val locationName = "The Dallas Yellow Rose"
+        val chefName = "Chef Boy-ar-dee"
         val locationCode = "DAL"
+        val locationName = "The Dallas Yellow Rose"
 
         testTransaction {
-            val source = sources.new(sourceName, sourceCode)
-            val chef = chefs.new(ChefResource(chefName, chefCode))
-            val recipe = recipes.new("TASTY PIE", "REC456", chef)
+            val source = sources.new(sourceCode, sourceName)
+            val chef = chefs.new(ChefResource(chefCode, chefName))
+            val recipe = recipes.new("REC456", "TASTY PIE", chef)
             val location = locations.new(
-                    LocationResource(locationName, locationCode))
+                    LocationResource(locationCode, locationName))
             listener.reset()
 
             val firstSnapshot = IngredientResource(
@@ -234,18 +233,18 @@ internal class IngredientsTest {
 
     @Test
     fun shouldSkipPublishSaveEventsIfUnchanged() {
-        val sourceName = name
         val sourceCode = "SRC012"
-        val chefName = "Chef Boy-ar-dee"
+        val sourceName = name
         val chefCode = "BOY"
-        val locationName = "The Dallas Yellow Rose"
+        val chefName = "Chef Boy-ar-dee"
         val locationCode = "DAL"
+        val locationName = "The Dallas Yellow Rose"
 
         testTransaction {
-            val source = sources.new(sourceName, sourceCode)
-            val chef = chefs.new(ChefResource(chefName, chefCode))
+            val source = sources.new(sourceCode, sourceName)
+            val chef = chefs.new(ChefResource(chefCode, chefName))
             val location = locations.new(
-                    LocationResource(locationName, locationCode))
+                    LocationResource(locationCode, locationName))
             listener.reset()
 
             val snapshot = IngredientResource(

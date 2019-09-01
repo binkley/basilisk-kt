@@ -65,7 +65,7 @@ internal class PersistedChefsControllerTest {
     @Disabled("How does POST work?  Why is it not a method?")
     @Test
     fun `should create a chef`() {
-        val chef = ChefResource("Chef Boy-ar-dee", "CHEF123")
+        val chef = ChefResource("CHEF123", "Chef Boy-ar-dee")
         val client = newHttpClient()
         val response = client.send(
                 POST("/chefs", chef), BodyHandlers.ofString(UTF_8))

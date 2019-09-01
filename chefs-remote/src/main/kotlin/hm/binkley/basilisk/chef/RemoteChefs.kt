@@ -60,12 +60,12 @@ class RemoteChef internal constructor(
 
 @Introspected
 data class MutableChefResource(
-        @NotNull override var name: String,
         @NotNull override var code: String,
+        @NotNull override var name: String,
         @NotNull override var health: String) : MutableChefDetails {
-    constructor(chef: ChefResource) : this(chef.name, chef.code, chef.health)
+    constructor(chef: ChefResource) : this(chef.code, chef.name, chef.health)
 
-    fun freeze() = ChefResource(name, code, health)
+    fun freeze() = ChefResource(code, name, health)
 }
 
 class RemoteMutableChef internal constructor(
@@ -74,15 +74,15 @@ class RemoteMutableChef internal constructor(
         private val factory: RemoteChefs)
     : MutableChef,
         MutableChefDetails {
-    override var name: String
-        get() = resource.name
-        set(update) {
-            resource.name = update
-        }
     override var code: String
         get() = resource.code
         set(update) {
             resource.code = update
+        }
+    override var name: String
+        get() = resource.name
+        set(update) {
+            resource.name = update
         }
     override var health: String
         get() = resource.health

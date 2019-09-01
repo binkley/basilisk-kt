@@ -9,13 +9,13 @@ interface Locations {
 }
 
 interface LocationDetails {
-    val name: String
     val code: String
+    val name: String
 }
 
 interface MutableLocationDetails {
-    var name: String
     var code: String
+    var name: String
 }
 
 interface Location : LocationDetails {

@@ -29,11 +29,11 @@ class Sources(
         from(it)
     }
 
-    fun new(name: String, code: String,
+    fun new(code: String, name: String,
             locations: MutableList<PersistedLocation> = mutableListOf()) =
             from(SourceRecord.new {
-                this.name = name
                 this.code = code
+                this.name = name
             }).update(null) {
                 // Exposed wants the record complete before adding relationships
                 this.locations = locations
@@ -58,13 +58,13 @@ class Sources(
 }
 
 interface SourceDetails {
-    val name: String
     val code: String
+    val name: String
 }
 
 interface MutableSourceDetails {
-    var name: String
     var code: String
+    var name: String
 }
 
 data class SourceSavedEvent(
@@ -148,8 +148,8 @@ class MutableSource internal constructor(
 }
 
 object SourceRepository : IntIdTable("SOURCE") {
-    val name = text("name")
     val code = text("code")
+    val name = text("name")
 }
 
 class SourceRecord(id: EntityID<Int>) : IntEntity(id),
@@ -157,8 +157,8 @@ class SourceRecord(id: EntityID<Int>) : IntEntity(id),
         MutableSourceDetails {
     companion object : IntEntityClass<SourceRecord>(SourceRepository)
 
-    override var name by SourceRepository.name
     override var code by SourceRepository.code
+    override var name by SourceRepository.name
     var locations by LocationRecord via SourceLocationsRepository
 
     override fun delete() {
@@ -170,13 +170,13 @@ class SourceRecord(id: EntityID<Int>) : IntEntity(id),
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
         other as SourceRecord
-        return name == other.name
-                && code == other.code
+        return code == other.code
+                && name == other.name
                 && locations == other.locations
     }
 
-    override fun hashCode() = Objects.hash(name, code, locations)
+    override fun hashCode() = Objects.hash(code, name, locations)
 
     override fun toString() =
-            "${super.toString()}{id=$id, name=$name, code=$code, locations=$locations}"
+            "${super.toString()}{id=$id, code=$code, name=$name, locations=$locations}"
 }

@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS recipe
 (
     id        SERIAL PRIMARY KEY,
-    "name"    TEXT NOT NULL,
     code      TEXT NOT NULL UNIQUE,
+    "name"    TEXT NOT NULL,
     chef_code TEXT NOT NULL,
     status    TEXT NOT NULL
 );

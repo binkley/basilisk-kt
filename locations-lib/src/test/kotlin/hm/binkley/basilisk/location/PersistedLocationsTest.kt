@@ -43,7 +43,7 @@ internal class PersistedLocationsTest {
     @Test
     fun shouldRoundTrip() {
         testTransaction {
-            val firstSnapshot = LocationResource(name, code)
+            val firstSnapshot = LocationResource(code, name)
             locations.new(firstSnapshot)
             val location = locations.byCode(code)!!
 
@@ -55,8 +55,8 @@ internal class PersistedLocationsTest {
     @Test
     fun shouldPublishSaveEvents() {
         testTransaction {
-            val firstSnapshot = LocationResource(name, code)
-            val secondSnapshot = LocationResource("LOCATION ROBERT", code)
+            val firstSnapshot = LocationResource(code, name)
+            val secondSnapshot = LocationResource(code, "LOCATION ROBERT")
 
             val location = locations.new(firstSnapshot)
 
@@ -83,7 +83,7 @@ internal class PersistedLocationsTest {
     @Test
     fun shouldSkipPublishSaveEventsIfUnchanged() {
         testTransaction {
-            val snapshot = LocationResource(name, code)
+            val snapshot = LocationResource(code, name)
 
             val location = locations.new(snapshot)
 

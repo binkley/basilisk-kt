@@ -25,8 +25,8 @@ class PersistedLocations(private val publisher: ApplicationEventPublisher)
     }
 
     override fun new(location: LocationResource) = from(LocationRecord.new {
-        this.name = location.name
         this.code = location.code
+        this.name = location.name
     }).update(null) {
         save()
     }
@@ -104,8 +104,8 @@ class MutablePersistedLocation internal constructor(
 }
 
 object LocationRepository : IntIdTable("LOCATION") {
-    val name = text("name")
     val code = text("code")
+    val name = text("name")
 }
 
 class LocationRecord(id: EntityID<Int>) : IntEntity(id),
@@ -113,19 +113,19 @@ class LocationRecord(id: EntityID<Int>) : IntEntity(id),
         MutableLocationDetails {
     companion object : IntEntityClass<LocationRecord>(LocationRepository)
 
-    override var name by LocationRepository.name
     override var code by LocationRepository.code
+    override var name by LocationRepository.name
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
         other as LocationRecord
-        return name == other.name
-                && code == other.code
+        return code == other.code
+                && name == other.name
     }
 
-    override fun hashCode() = Objects.hash(name, code)
+    override fun hashCode() = Objects.hash(code, name)
 
     override fun toString() =
-            "${super.toString()}{id=$id, name=$name, code=$code}"
+            "${super.toString()}{id=$id, code=$code, name=$name}"
 }

@@ -120,13 +120,13 @@ class Ingredients(
 }
 
 interface IngredientDetails {
-    val name: String
     val code: String
+    val name: String
 }
 
 interface MutableIngredientDetails {
-    val name: String // Not editable -- comes from Source
     var code: String
+    val name: String // Not editable -- comes from Source
 }
 
 data class IngredientSavedEvent(
@@ -272,9 +272,9 @@ class IngredientRecord(id: EntityID<Int>)
     companion object : IntEntityClass<IngredientRecord>(IngredientRepository)
 
     var source by SourceRecord referencedOn IngredientRepository.sourceRef
+    override var code by IngredientRepository.code
     override val name
         get() = source.name
-    override var code by IngredientRepository.code
     var chefCode by IngredientRepository.chefCode
     var recipe by RecipeRecord optionalReferencedOn IngredientRepository.recipe
     var locations by LocationRecord via IngredientLocationsRepository

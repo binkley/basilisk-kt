@@ -6,8 +6,8 @@ import javax.validation.constraints.NotNull
 
 @Introspected
 data class ChefResource(
-        @NotNull override val name: String,
         @NotNull override val code: String,
+        @NotNull override val name: String,
         @NotNull override val health: String = FIT) : ChefDetails {
-    constructor(chef: ChefDetails) : this(chef.name, chef.code, chef.health)
+    constructor(chef: ChefDetails) : this(chef.code, chef.name, chef.health)
 }

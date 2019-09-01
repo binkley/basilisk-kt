@@ -19,8 +19,8 @@ import javax.inject.Inject
 @TestInstance(PER_CLASS)
 internal class PersistedChefsTest {
     companion object {
-        const val name = "CHEF BOB"
         const val code = "CHEF123"
+        const val name = "CHEF BOB"
     }
 
     @Inject
@@ -45,7 +45,7 @@ internal class PersistedChefsTest {
     @Test
     fun shouldRoundTrip() {
         testTransaction {
-            chefs.new(ChefResource(name, code))
+            chefs.new(ChefResource(code, name))
             val chef = chefs.byCode(code)!!
 
             expect(chef.code).toBe(code)
@@ -56,8 +56,8 @@ internal class PersistedChefsTest {
     @Test
     fun shouldPublishSaveEvents() {
         testTransaction {
-            val firstSnapshot = ChefResource(name, code, FIT)
-            val secondSnapshot = ChefResource("CHEF ROBERT", code, "OUT")
+            val firstSnapshot = ChefResource(code, name, FIT)
+            val secondSnapshot = ChefResource(code, "CHEF ROBERT", "OUT")
 
             val chef = chefs.new(firstSnapshot)
 
@@ -97,7 +97,7 @@ internal class PersistedChefsTest {
     @Test
     fun shouldSkipPublishSaveEventsIfUnchanged() {
         testTransaction {
-            val snapshot = ChefResource(name, code, FIT)
+            val snapshot = ChefResource(code, name, FIT)
 
             val chef = chefs.new(snapshot)
 
@@ -115,7 +115,7 @@ internal class PersistedChefsTest {
     @Test
     fun shouldComplainIfUpdatingAfterDeleted() {
         testTransaction {
-            val snapshot = ChefResource(name, code, FIT)
+            val snapshot = ChefResource(code, name, FIT)
             val chef = chefs.new(snapshot)
 
             chef.update {

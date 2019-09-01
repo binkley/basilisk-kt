@@ -47,7 +47,7 @@ internal class SourcesTest {
     @Test
     fun shouldRoundTrip() {
         testTransaction {
-            sources.new(name, code)
+            sources.new(code, name)
             val source = sources.byCode(code)!!
 
             expect(source.code).toBe(code)
@@ -64,20 +64,20 @@ internal class SourcesTest {
 
         testTransaction {
             val locationA = locations.new(
-                    LocationResource(locationAName, locationACode))
+                    LocationResource(locationACode, locationAName))
             val locationB = locations.new(
-                    LocationResource(locationBName, locationBCode))
+                    LocationResource(locationBCode, locationBName))
             listener.reset()
 
-            val firstSnapshot = SourceResource(name, code, listOf(
+            val firstSnapshot = SourceResource(code, name, listOf(
                     LocationResource(locationA),
                     LocationResource(locationB)))
-            val secondSnapshot = SourceResource("LIME", code, listOf(
+            val secondSnapshot = SourceResource(code, "LIME", listOf(
                     LocationResource(locationA)))
-            val thirdSnapshot = SourceResource("LIME", code, listOf())
+            val thirdSnapshot = SourceResource(code, "LIME", listOf())
 
             val source = sources.new(
-                    firstSnapshot.name, firstSnapshot.code,
+                    firstSnapshot.code, firstSnapshot.name,
                     mutableListOf(locationA, locationB))
 
             listener.expectNext.containsExactly(SourceSavedEvent(
@@ -116,14 +116,14 @@ internal class SourcesTest {
 
         testTransaction {
             val location = locations.new(
-                    LocationResource(locationName, locationCode))
+                    LocationResource(locationCode, locationName))
             listener.reset()
 
             val snapshot = SourceResource(
-                    name, code, listOf(LocationResource(location)))
+                    code, name, listOf(LocationResource(location)))
 
             val source = sources.new(
-                    snapshot.name, snapshot.code,
+                    snapshot.code, snapshot.name,
                     mutableListOf(location))
 
             listener.expectNext.containsExactly(SourceSavedEvent(

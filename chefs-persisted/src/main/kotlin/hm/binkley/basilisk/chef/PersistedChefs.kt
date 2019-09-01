@@ -25,8 +25,8 @@ class PersistedChefs(private val publisher: ApplicationEventPublisher)
     }
 
     override fun new(chef: ChefResource) = from(ChefRecord.new {
-        this.name = chef.name
         this.code = chef.code
+        this.name = chef.name
         this.health = chef.health
     }).update(null) {
         save()
@@ -113,8 +113,8 @@ class PersistedMutableChef internal constructor(
 }
 
 object ChefRepository : IntIdTable("CHEF") {
-    val name = text("name")
     val code = text("code")
+    val name = text("name")
     val health = text("health")
 }
 
@@ -123,21 +123,21 @@ class ChefRecord(id: EntityID<Int>) : IntEntity(id),
         MutableChefDetails {
     companion object : IntEntityClass<ChefRecord>(ChefRepository)
 
-    override var name by ChefRepository.name
     override var code by ChefRepository.code
+    override var name by ChefRepository.name
     override var health by ChefRepository.health
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
         other as ChefRecord
-        return name == other.name
-                && code == other.code
+        return code == other.code
+                && name == other.name
                 && health == other.health
     }
 
-    override fun hashCode() = Objects.hash(name, code, health)
+    override fun hashCode() = Objects.hash(code, name, health)
 
     override fun toString() =
-            "${super.toString()}{id=$id, name=$name, code=$code, health=$health}"
+            "${super.toString()}{id=$id, code=$code, name=$name, health=$health}"
 }

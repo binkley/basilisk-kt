@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS "source"
 (
     id     SERIAL PRIMARY KEY,
-    "name" TEXT NOT NULL,
-    code   TEXT NOT NULL UNIQUE
+    code   TEXT NOT NULL UNIQUE,
+    "name" TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS source_location
