@@ -4,10 +4,11 @@ import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
+import org.jetbrains.exposed.dao.Entity
+import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
-import org.jetbrains.exposed.dao.IntIdTable
+import org.jetbrains.exposed.dao.IdTable
+import org.jetbrains.exposed.sql.Column
 import java.util.*
 import javax.inject.Singleton
 
@@ -112,16 +113,16 @@ class PersistedMutableChef internal constructor(
             "${super.toString()}{snapshot=$snapshot, record=$record}"
 }
 
-object ChefRepository : IntIdTable("CHEF") {
+object ChefRepository : CodeIdTable("CHEF") {
     val code = text("code")
     val name = text("name")
     val health = text("health")
 }
 
-class ChefRecord(id: EntityID<Int>) : IntEntity(id),
+class ChefRecord(id: EntityID<String>) : CodeEntity(id),
         ChefDetails,
         MutableChefDetails {
-    companion object : IntEntityClass<ChefRecord>(ChefRepository)
+    companion object : CodeEntityClass<ChefRecord>(ChefRepository)
 
     override var code by ChefRepository.code
     override var name by ChefRepository.name
@@ -141,3 +142,11 @@ class ChefRecord(id: EntityID<Int>) : IntEntity(id),
     override fun toString() =
             "${super.toString()}{id=$id, code=$code, name=$name, health=$health}"
 }
+
+abstract class CodeIdTable(name: String = "", columnName: String = "code") : IdTable<String>(name) {
+    override val id: Column<EntityID<String>> = text(columnName).primaryKey().entityId()
+}
+
+abstract class CodeEntity(id: EntityID<String>) : Entity<String>(id)
+
+abstract class CodeEntityClass<out E:CodeEntity>(table: IdTable<String>, entityType: Class<E>? = null) : EntityClass<String, E>(table, entityType)
