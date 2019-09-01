@@ -3,9 +3,9 @@ CREATE TABLE IF NOT EXISTS ingredient
     id          SERIAL PRIMARY KEY,
     code        TEXT NOT NULL UNIQUE,
     chef_code   TEXT NOT NULL,
-    recipe_id   INT  NULL,
+    recipe_code TEXT NULL,
     source_code TEXT NOT NULL,
-    CONSTRAINT fk_ingredient_recipe_id_id FOREIGN KEY (recipe_id) REFERENCES recipe (id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT fk_ingredient_recipe_code_id FOREIGN KEY (recipe_code) REFERENCES recipe (code) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT fk_ingredient_source_code_id FOREIGN KEY (source_code) REFERENCES "source" (code) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
 

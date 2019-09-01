@@ -203,7 +203,8 @@ class UsedIngredient internal constructor(
 class MutableIngredient internal constructor(
         private val snapshot: IngredientResource?,
         private val record: IngredientRecord,
-        private val factory: Ingredients) : MutableIngredientDetails by record {
+        private val factory: Ingredients) :
+        MutableIngredientDetails by record {
     val source: Source // Immutable on creation
         get() = factory.sourceFrom(record.source)
     val chef: Chef // Immutable on creation
@@ -261,7 +262,7 @@ object IngredientRepository : IntIdTable("INGREDIENT") {
     val sourceRef = reference("source_code", SourceRepository)
     val code = text("code")
     val chefCode = text("chef_code")
-    val recipe = reference("recipe_id",
+    val recipe = reference("recipe_code",
             RecipeRepository).nullable()
 }
 

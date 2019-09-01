@@ -2,6 +2,9 @@ package hm.binkley.basilisk.recipe
 
 import hm.binkley.basilisk.chef.RemoteChef
 import hm.binkley.basilisk.chef.RemoteChefs
+import hm.binkley.basilisk.db.CodeEntity
+import hm.binkley.basilisk.db.CodeEntityClass
+import hm.binkley.basilisk.db.CodeIdTable
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
@@ -14,9 +17,6 @@ import hm.binkley.basilisk.recipe.RecipeStatus.PLANNING
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
-import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.SizedIterable
 import org.jetbrains.exposed.sql.emptySized
@@ -187,7 +187,7 @@ class MutableRecipe internal constructor(
             "${super.toString()}{snapshot=$snapshot, record=$record}"
 }
 
-object RecipeRepository : IntIdTable("RECIPE") {
+object RecipeRepository : CodeIdTable("RECIPE") {
     val code = text("code")
     val name = text("name")
     val chefCode = text("chef_code")
@@ -195,10 +195,10 @@ object RecipeRepository : IntIdTable("RECIPE") {
             RecipeStatus::class)
 }
 
-class RecipeRecord(id: EntityID<Int>) : IntEntity(id),
+class RecipeRecord(id: EntityID<String>) : CodeEntity(id),
         RecipeDetails,
         MutableRecipeDetails {
-    companion object : IntEntityClass<RecipeRecord>(RecipeRepository)
+    companion object : CodeEntityClass<RecipeRecord>(RecipeRepository)
 
     override var code by RecipeRepository.code
     override var name by RecipeRepository.name
