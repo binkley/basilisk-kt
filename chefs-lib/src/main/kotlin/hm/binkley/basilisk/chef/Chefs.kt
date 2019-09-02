@@ -1,5 +1,7 @@
 package hm.binkley.basilisk.chef
 
+import io.micronaut.context.event.ApplicationEvent
+
 interface Chefs {
     companion object {
         // TODO: Consider types instead of status fields:
@@ -35,3 +37,7 @@ interface MutableChef : MutableChefDetails {
 
     fun delete()
 }
+
+data class ChefSavedEvent(
+        val before: ChefResource?,
+        val after: Chef?) : ApplicationEvent(after ?: before)

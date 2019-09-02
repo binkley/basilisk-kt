@@ -1,6 +1,9 @@
 dependencies {
     kapt "io.micronaut.data:micronaut-data-processor:${micronautDataVersion}"
 
+    // TODO: Hard-coded: Documented by Micronaut as only supported version
+    compileOnly 'jakarta.persistence:jakarta.persistence-api:2.2.2'
+
     compile "io.micronaut.configuration:micronaut-flyway"
     compile "io.micronaut.configuration:micronaut-jdbc-hikari"
     compile "org.jetbrains.exposed:exposed:${exposedVersion}"
