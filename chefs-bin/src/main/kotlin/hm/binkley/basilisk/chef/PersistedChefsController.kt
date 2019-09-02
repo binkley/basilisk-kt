@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.net.URI
 
 @Controller
-class PersistedChefsController(private val chefs: PersistedChefs)
+class PersistedChefsController(private val chefs: DataPersistedChefs)
     : ChefsOperations {
     override fun all() = transaction {
         chefs.all()
@@ -54,7 +54,7 @@ class PersistedChefsController(private val chefs: PersistedChefs)
                 ok<Unit>()
             }
 
-    private fun byCodeOrThrow(code: String): PersistedChef {
+    private fun byCodeOrThrow(code: String): Chef {
         return chefs.byCode(code) ?: throw NotFound("No chef for $code")
     }
 
