@@ -21,7 +21,7 @@ interface ChefDetails {
 }
 
 interface MutableChefDetails {
-    var code: String
+    val code: String
     var name: String
     var health: String
 }

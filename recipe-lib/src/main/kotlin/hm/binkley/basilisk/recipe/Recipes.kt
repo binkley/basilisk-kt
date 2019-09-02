@@ -92,7 +92,7 @@ interface RecipeDetails {
 }
 
 interface MutableRecipeDetails {
-    var code: String
+    val code: String
     var name: String
     var status: RecipeStatus
 }

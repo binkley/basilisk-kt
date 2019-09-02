@@ -14,7 +14,7 @@ interface LocationDetails {
 }
 
 interface MutableLocationDetails {
-    var code: String
+    val code: String
     var name: String
 }
 

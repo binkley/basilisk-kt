@@ -125,7 +125,7 @@ interface IngredientDetails {
 }
 
 interface MutableIngredientDetails {
-    var code: String
+    val code: String
     val name: String // Not editable -- comes from Source
 }
 

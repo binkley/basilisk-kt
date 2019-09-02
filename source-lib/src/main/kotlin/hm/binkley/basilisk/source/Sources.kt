@@ -63,7 +63,7 @@ interface SourceDetails {
 }
 
 interface MutableSourceDetails {
-    var code: String
+    val code: String
     var name: String
 }
 
