@@ -5,7 +5,6 @@ import hm.binkley.basilisk.db.CodeEntityClass
 import hm.binkley.basilisk.db.CodeIdTable
 import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifySaved
-import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
 import java.util.*
@@ -42,10 +41,6 @@ class PersistedLocations(private val publisher: ApplicationEventPublisher)
             notifySaved(before, after?.let { from(it) }, publisher,
                     ::LocationResource, ::LocationSavedEvent)
 }
-
-data class LocationSavedEvent(
-        val before: LocationResource?,
-        val after: PersistedLocation?) : ApplicationEvent(after ?: before)
 
 class PersistedLocation internal constructor(
         internal val record: LocationRecord,

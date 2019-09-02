@@ -1,5 +1,7 @@
 package hm.binkley.basilisk.location
 
+import io.micronaut.context.event.ApplicationEvent
+
 interface Locations {
     fun all(): Iterable<Location>
 
@@ -27,3 +29,7 @@ interface MutableLocation : MutableLocationDetails {
 
     fun delete()
 }
+
+data class LocationSavedEvent(
+        val before: LocationResource?,
+        val after: Location?) : ApplicationEvent(after ?: before)

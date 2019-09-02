@@ -54,7 +54,7 @@ class DataPersistedChef(
     override fun update(block: MutableChef.() -> Unit) =
             update(checkNotNull(snapshot), block)
 
-    /** Used by [PersistedChefs.new] to indicate no initial snapshot */
+    /** Used by [DataPersistedChefs.new] to indicate no initial snapshot */
     internal inline fun update(
             snapshot: ChefResource?,
             block: MutableChef.() -> Unit) = apply {
