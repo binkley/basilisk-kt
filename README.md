@@ -6,8 +6,8 @@
 
 # Basilisk
 
-Demonstrate Kotlin, Micronaut, Kotlin Exposed, JUnit 5, Atrium,
-Testcontainers, Docker, et al.
+Demonstrate Kotlin, Kotlin Exposed, Micronaut, Micronaut Data, JUnit 5, 
+Atrium, Testcontainers, Docker, et al.
 
 * [Features](#features)
 * [Building and running](#building-and-running)
@@ -76,6 +76,16 @@ library modules.  For example:
 In this example, [Chefs persistence library](chefs-persisted/) is unique to
 the "Chefs" program, and [Chefs shared library](chefs-lib/) is shared by both
 the provider of Chefs (the program), and by the consumers (other programs).
+
+[Chefs persistence library](chefs-persisted/) supports two flavors of
+persistence framework, sharing the same
+[chef schema](chefs-persisted/src/main/resources/db/migration/):
+
+- [Kotlin Exposed](chefs-persisted/src/main/kotlin/hm/binkley/basilisk/chef/PersistedChefs.kt)
+- [Micronaut Data](chefs-persisted/src/main/kotlin/hm/binkley/basilisk/chef/DataPersistedChefs.kt)
+
+The [chefs controller](chefs-bin/src/main/kotlin/hm/binkley/basilisk/chef/PersistedChefsController.kt)
+provides an example of switching between changing the injected dependency.
 
 [[Table of contents]](#basilisk)
 
