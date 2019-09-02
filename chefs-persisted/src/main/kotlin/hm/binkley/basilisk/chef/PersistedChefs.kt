@@ -51,12 +51,11 @@ class PersistedChef internal constructor(
         ChefDetails by record {
     private var snapshot: ChefResource? = ChefResource(this)
 
-    /**
-     * @throws IllegalStateException if this chef has been deleted
-     */
+    /** @throws IllegalStateException if this chef has been deleted */
     override fun update(block: MutableChef.() -> Unit) =
             update(checkNotNull(snapshot), block)
 
+    /** Used by [PersistedChefs.new] to indicate no initial snapshot */
     internal inline fun update(
             snapshot: ChefResource?,
             block: MutableChef.() -> Unit) = apply {

@@ -52,29 +52,37 @@ class PersistedLocation internal constructor(
         private val factory: PersistedLocations)
     : Location,
         LocationDetails by record {
+    private var snapshot: LocationResource? = LocationResource(this)
+
+    /** @throws IllegalStateException if this location has been deleted */
     override fun update(block: MutableLocation.() -> Unit) =
-            update(LocationResource(this), block)
+            update(checkNotNull(snapshot), block)
 
     internal inline fun update(
             snapshot: LocationResource?,
             block: MutablePersistedLocation.() -> Unit) = apply {
-        MutablePersistedLocation(snapshot, record, factory).block()
+        MutablePersistedLocation(snapshot, { newSnapshot ->
+            this.snapshot = newSnapshot
+        }, record, factory).block()
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
         other as PersistedLocation
-        return record == other.record
+        return snapshot == snapshot
+                && record == other.record
     }
 
-    override fun hashCode() = record.hashCode()
+    override fun hashCode() = Objects.hash(snapshot, record)
 
-    override fun toString() = "${super.toString()}{record=$record}"
+    override fun toString() =
+            "${super.toString()}{snapshot=$snapshot, record=$record}"
 }
 
 class MutablePersistedLocation internal constructor(
         private val snapshot: LocationResource?,
+        private val setSnapshot: (LocationResource?) -> Unit,
         private val record: LocationRecord,
         private val factory: PersistedLocations)
     : MutableLocation,
@@ -82,11 +90,13 @@ class MutablePersistedLocation internal constructor(
     override fun save() = apply {
         record.flush()
         factory.notifySaved(snapshot, record)
+        setSnapshot(LocationResource(record))
     }
 
     override fun delete() {
         record.delete()
         factory.notifySaved(snapshot, null)
+        setSnapshot(null)
     }
 
     override fun equals(other: Any?): Boolean {

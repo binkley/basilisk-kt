@@ -6,6 +6,6 @@ data class LocationResource(
         @NotNull override val code: String,
         @NotNull override val name: String)
     : LocationDetails {
-    constructor(location: PersistedLocation)
+    constructor(location: LocationDetails)
             : this(location.code, location.name)
 }
