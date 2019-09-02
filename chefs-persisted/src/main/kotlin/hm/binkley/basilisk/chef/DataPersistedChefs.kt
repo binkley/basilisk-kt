@@ -32,17 +32,14 @@ class DataPersistedChefs(
             }
 
     internal fun save(record: DataChefRecord) =
-            DataPersistedChef(repository.upsert(
-                    record.code, record.name, record.health),
-                    this)
+            repository.upsert(record.code, record.name, record.health)
 
     internal fun delete(record: DataChefRecord) =
             repository.delete(record)
 
     internal fun notifySaved(before: ChefResource?, after: DataChefRecord?) =
             notifySaved(before, after?.let { DataPersistedChef(it, this) },
-                    publisher,
-                    ::ChefResource, ::ChefSavedEvent)
+                    publisher, ::ChefResource, ::ChefSavedEvent)
 }
 
 class DataPersistedChef(
