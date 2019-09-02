@@ -3,7 +3,7 @@ package hm.binkley.basilisk.db
 import org.jetbrains.exposed.sql.SizedIterable
 
 fun <T> SizedIterable<T>.asList(updateWith: (ListLike<T>) -> Unit = { }) =
-        ListLike<T>(this, updateWith)
+        ListLike(this, updateWith)
 
 // TODO: There should be a nicer way
 class ListLike<T>(
@@ -22,17 +22,17 @@ class ListLike<T>(
         update()
     }
 
-    override fun get(index: Int) = backing.get(index)
-
-    override fun removeAt(index: Int): T {
-        val removeAt = backing.removeAt(index)
-        update()
-        return removeAt
-    }
+    override fun get(index: Int) = backing[index]
 
     override fun set(index: Int, element: T): T {
         val set = backing.set(index, element)
         update()
         return set
+    }
+
+    override fun removeAt(index: Int): T {
+        val removeAt = backing.removeAt(index)
+        update()
+        return removeAt
     }
 }
