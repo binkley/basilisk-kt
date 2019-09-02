@@ -26,6 +26,7 @@ class DataPersistedChefs(
                 DataPersistedChef(it, this)
             }
 
+    /** @todo Question that "new" here should save */
     override fun new(chef: ChefResource) =
             DataPersistedChef(DataChefRecord(chef), this).update(null) {
                 save()
@@ -118,6 +119,8 @@ interface DataChefRepository : CrudRepository<DataChefRecord, String> {
         SET name = :name, health = :health
         RETURNING *""")
     fun upsert(code: String, name: String, health: String): DataChefRecord
+
+    // TODO: Micronaut Data ignores default, overridden "save"
 }
 
 @Entity
