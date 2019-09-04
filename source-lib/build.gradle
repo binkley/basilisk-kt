@@ -3,9 +3,9 @@ apply from: "${project.rootDir}/persistence.gradle"
 apply from: "${project.rootDir}/testing.gradle"
 
 dependencies {
-    compile project(":db")
+    compile project(":db-lib")
     compile project(":domain-lib")
-    compile project(":locations-lib")
+    compile project(":locations-api")
     testCompile project(":testing")
 }
 

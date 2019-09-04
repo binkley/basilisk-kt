@@ -71,10 +71,10 @@ library modules.  For example:
 * Chefs program
   - [Chefs program itself](chefs-bin/)
   - [Chefs persistence library](chefs-persisted/)
-  - [Chefs shared library](chefs-lib/)
+  - [Chefs shared library](chefs-api/)
 
 In this example, [Chefs persistence library](chefs-persisted/) is unique to
-the "Chefs" program, and [Chefs shared library](chefs-lib/) is shared by both
+the "Chefs" program, and [Chefs shared library](chefs-api/) is shared by both
 the provider of Chefs (the program), and by the consumers (other programs).
 
 [Chefs persistence library](chefs-persisted/) supports two flavors of

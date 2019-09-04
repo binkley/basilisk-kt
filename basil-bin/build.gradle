@@ -7,10 +7,10 @@ mainClassName = "hm.binkley.basilisk.BasilApplication"
 
 dependencies {
     compile project(":app-lib")
-    compile project(":db")
+    compile project(":db-lib")
 
     compile project(":chefs-remote")
-    compile project(":locations-lib")
+    compile project(":locations-api")
     compile project(":source-lib")
     compile project(":recipe-lib")
 
