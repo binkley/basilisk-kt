@@ -7,7 +7,7 @@ dependencies {
     compile project(":domain-lib")
     compile project(":chefs-remote")
     compile project(":locations-api")
-    compile project(":source-lib")
+    compile project(":sources-lib")
 
     testCompile project(":testing")
     testCompile project(":chefs-remote-testing")
