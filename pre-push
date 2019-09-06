@@ -1,3 +1,4 @@
 #!/bin/sh
 
-./gradlew clean build --rerun-tasks --no-build-cache
+# "offline" to demonstrate pusher actually built locally
+./gradlew clean build --offline --rerun-tasks
