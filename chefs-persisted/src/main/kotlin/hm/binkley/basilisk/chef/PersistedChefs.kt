@@ -9,6 +9,7 @@ import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
 import java.util.*
 import javax.inject.Singleton
+import kotlin.reflect.KMutableProperty0
 
 @Singleton
 class PersistedChefs(private val publisher: ApplicationEventPublisher)
@@ -44,11 +45,8 @@ class PersistedChef internal constructor(
         private val factory: PersistedChefs)
     : Chef,
         ChefDetails by record {
-    /** @throws IllegalStateException if this chef has been deleted */
     override fun update(block: MutableChef.() -> Unit) = apply {
-        PersistedMutableChef(snapshot, { newSnapshot ->
-            snapshot = newSnapshot
-        }, record, factory).block()
+        PersistedMutableChef(::snapshot, record, factory).block()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -66,22 +64,21 @@ class PersistedChef internal constructor(
 }
 
 class PersistedMutableChef internal constructor(
-        private val snapshot: ChefResource?,
-        private val setSnapshot: (ChefResource?) -> Unit,
+        private val snapshot: KMutableProperty0<ChefResource?>,
         private val record: ChefRecord,
         private val factory: PersistedChefs)
     : MutableChef,
         MutableChefDetails by record {
     override fun save() = apply {
         record.flush()
-        factory.notifySaved(snapshot, record)
-        setSnapshot(ChefResource(record))
+        factory.notifySaved(snapshot.get(), record)
+        snapshot.set(ChefResource(record))
     }
 
     override fun delete() {
         record.delete()
-        factory.notifySaved(snapshot, null)
-        setSnapshot(null)
+        factory.notifySaved(snapshot.get(), null)
+        snapshot.set(null)
     }
 
     override fun equals(other: Any?): Boolean {
