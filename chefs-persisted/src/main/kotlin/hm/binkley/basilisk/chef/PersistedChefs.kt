@@ -29,8 +29,6 @@ class PersistedChefs(private val publisher: ApplicationEventPublisher)
         this.health = chef.health
     }.let {
         PersistedChef(null, it, this)
-    }.update(null) {
-        save()
     }
 
     internal fun notifySaved(before: ChefResource?, after: ChefRecord?) =
@@ -47,15 +45,9 @@ class PersistedChef internal constructor(
     : Chef,
         ChefDetails by record {
     /** @throws IllegalStateException if this chef has been deleted */
-    override fun update(block: MutableChef.() -> Unit) =
-            update(checkNotNull(snapshot), block)
-
-    /** Used by [PersistedChefs.new] to indicate no initial snapshot */
-    internal inline fun update(
-            snapshot: ChefResource?,
-            block: MutableChef.() -> Unit) = apply {
+    override fun update(block: MutableChef.() -> Unit) = apply {
         PersistedMutableChef(snapshot, { newSnapshot ->
-            this.snapshot = newSnapshot
+            snapshot = newSnapshot
         }, record, factory).block()
     }
 

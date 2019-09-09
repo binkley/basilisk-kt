@@ -3,7 +3,6 @@ package hm.binkley.basilisk.chef
 import ch.tutteli.atrium.api.cc.en_GB.containsExactly
 import ch.tutteli.atrium.api.cc.en_GB.isEmpty
 import ch.tutteli.atrium.api.cc.en_GB.toBe
-import ch.tutteli.atrium.api.cc.en_GB.toThrow
 import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.TestListener
 import hm.binkley.basilisk.chef.Chefs.Companion.FIT
@@ -61,8 +60,14 @@ internal class PersistedChefsTest {
 
             val chef = chefs.new(firstSnapshot)
 
-            listener.expectNext.containsExactly(ChefSavedEvent(
-                    null, chef))
+            // No event until saved
+            listener.expectNext.isEmpty()
+
+            chef.update {
+                save()
+            }
+
+            listener.expectNext.containsExactly(ChefSavedEvent(null, chef))
 
             // Saving without changing does not publish an update
             chef.update {
@@ -95,36 +100,21 @@ internal class PersistedChefsTest {
     }
 
     @Test
-    fun shouldSkipPublishSaveEventsIfUnchanged() {
+    fun shouldSkipPublishingSaveEventsIfUnchanged() {
         testTransaction {
             val snapshot = ChefResource(code, name, FIT)
 
-            val chef = chefs.new(snapshot)
+            val chef = chefs.new(snapshot).update {
+                save()
+            }
 
-            listener.expectNext.containsExactly(ChefSavedEvent(
-                    null, chef))
+            listener.expectNext.containsExactly(ChefSavedEvent(null, chef))
 
             chef.update {
                 save()
             }
 
             listener.expectNext.isEmpty()
-        }
-    }
-
-    @Test
-    fun shouldComplainIfUpdatingAfterDeleted() {
-        testTransaction {
-            val snapshot = ChefResource(code, name, FIT)
-            val chef = chefs.new(snapshot)
-
-            chef.update {
-                delete()
-            }
-
-            expect {
-                chef.update {}
-            }.toThrow<java.lang.IllegalStateException> {}
         }
     }
 }
