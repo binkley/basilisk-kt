@@ -1,6 +1,6 @@
 datasources:
   default:
-    url: jdbc:tc:postgresql:10.9://localhost/basilisk
+    url: jdbc:tc:postgresql:10.10://localhost/basilisk
     username: basilisk
     password: ""
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver

@@ -23,16 +23,17 @@ class PersistedChefs(private val publisher: ApplicationEventPublisher)
         from(it)
     }
 
-    override fun new(chef: ChefResource) = from(ChefRecord.new {
+    override fun new(chef: ChefResource) = ChefRecord.new {
         this.code = chef.code
         this.name = chef.name
         this.health = chef.health
-    }).update(null) {
+    }.let {
+        from(it)
+    }.update(null) {
         save()
     }
 
-    /** For implementors of other record types having a reference. */
-    fun from(record: ChefRecord) = PersistedChef(record, this)
+    private fun from(record: ChefRecord) = PersistedChef(record, this)
 
     internal fun notifySaved(before: ChefResource?, after: ChefRecord?) =
             notifySaved(before, after?.let { from(it) }, publisher,

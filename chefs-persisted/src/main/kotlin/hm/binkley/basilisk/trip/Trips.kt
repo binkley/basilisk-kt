@@ -12,7 +12,7 @@ import java.util.*
 
 object TripRepository : IntIdTable("TRIP") {
     val name = text("name")
-    val chef = reference("chef_id", ChefRepository)
+    val chef = reference("chef_code", ChefRepository)
 }
 
 class TripRecord(id: EntityID<Int>) : IntEntity(id),
