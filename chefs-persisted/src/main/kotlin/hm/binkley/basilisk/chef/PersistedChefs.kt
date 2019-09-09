@@ -14,13 +14,13 @@ import javax.inject.Singleton
 class PersistedChefs(private val publisher: ApplicationEventPublisher)
     : Chefs {
     override fun all() = ChefRecord.all().map {
-        from(it)
+        PersistedChef(ChefResource(it), it, this)
     }
 
     override fun byCode(code: String) = ChefRecord.findOne {
         ChefRepository.code eq code
     }?.let {
-        from(it)
+        PersistedChef(ChefResource(it), it, this)
     }
 
     override fun new(chef: ChefResource) = ChefRecord.new {
@@ -28,25 +28,24 @@ class PersistedChefs(private val publisher: ApplicationEventPublisher)
         this.name = chef.name
         this.health = chef.health
     }.let {
-        from(it)
+        PersistedChef(null, it, this)
     }.update(null) {
         save()
     }
 
-    private fun from(record: ChefRecord) = PersistedChef(record, this)
-
     internal fun notifySaved(before: ChefResource?, after: ChefRecord?) =
-            notifySaved(before, after?.let { from(it) }, publisher,
+            notifySaved(before, after?.let {
+                PersistedChef(ChefResource(after), after, this)
+            }, publisher,
                     ::ChefResource, ::ChefSavedEvent)
 }
 
 class PersistedChef internal constructor(
-        internal val record: ChefRecord,
+        private var snapshot: ChefResource?,
+        private val record: ChefRecord,
         private val factory: PersistedChefs)
     : Chef,
         ChefDetails by record {
-    private var snapshot: ChefResource? = ChefResource(this)
-
     /** @throws IllegalStateException if this chef has been deleted */
     override fun update(block: MutableChef.() -> Unit) =
             update(checkNotNull(snapshot), block)
