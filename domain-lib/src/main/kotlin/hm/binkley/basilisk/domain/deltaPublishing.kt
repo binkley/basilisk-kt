@@ -3,10 +3,10 @@ package hm.binkley.basilisk.domain
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 
-fun <Resource, Event : ApplicationEvent> notifyChanged(
-        before: Resource?, after: Resource?,
+fun <Details, Event : ApplicationEvent> notifyChanged(
+        before: Details?, after: Details?,
         publisher: ApplicationEventPublisher,
-        event: (Resource?, Resource?) -> Event) {
+        event: (Details?, Details?) -> Event) {
     // Only publish if changed, not if unchanged
     if (before == after) return
     publisher.publishEvent(event(before, after))

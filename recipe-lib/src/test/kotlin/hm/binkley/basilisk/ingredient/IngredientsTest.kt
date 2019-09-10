@@ -48,7 +48,7 @@ internal class IngredientsTest {
     @Inject
     lateinit var ingredients: Ingredients
     @Inject
-    lateinit var listener: TestListener<IngredientSavedEvent>
+    lateinit var listener: TestListener<IngredientChangedEvent>
 
     @AfterEach
     fun tearDown() {
@@ -182,26 +182,24 @@ internal class IngredientsTest {
             listener.reset()
 
             val firstSnapshot = IngredientResource(
-                    SourceResource(source),
-                    code, ChefResource(chef),
+                    SourceResource(source), code, name, ChefResource(chef),
                     null,
                     listOf(LocationResource(location)))
             val secondSnapshot = IngredientResource(
                     firstSnapshot.source,
-                    firstSnapshot.code, firstSnapshot.chef,
-                    null,
-                    listOf())
+                    firstSnapshot.code, firstSnapshot.name,
+                    firstSnapshot.chef, null, listOf())
             val thirdSnapshot = IngredientResource(
                     secondSnapshot.source,
-                    secondSnapshot.code, secondSnapshot.chef,
-                    RecipeResource(recipe),
+                    secondSnapshot.code, firstSnapshot.name,
+                    secondSnapshot.chef, RecipeResource(recipe),
                     secondSnapshot.locations)
 
             val ingredient = ingredients.newUnused(
                     source, firstSnapshot.code, chef,
                     mutableListOf(location))
 
-            listener.expectNext.containsExactly(IngredientSavedEvent(
+            listener.expectNext.containsExactly(IngredientChangedEvent(
                     null, IngredientResource(ingredient)))
 
             ingredient.update {
@@ -209,24 +207,24 @@ internal class IngredientsTest {
                 save()
             }
 
-            listener.expectNext.containsExactly(IngredientSavedEvent(
+            listener.expectNext.containsExactly(IngredientChangedEvent(
                     firstSnapshot, IngredientResource(ingredient)))
 
             val usedIngredient = ingredient.use(recipe)
 
-            listener.expectNext.containsExactly(IngredientSavedEvent(
+            listener.expectNext.containsExactly(IngredientChangedEvent(
                     secondSnapshot, IngredientResource(usedIngredient)))
 
             val unusedIngredient = usedIngredient.unuse()
 
-            listener.expectNext.containsExactly(IngredientSavedEvent(
+            listener.expectNext.containsExactly(IngredientChangedEvent(
                     thirdSnapshot, IngredientResource(unusedIngredient)))
 
             ingredient.update {
                 delete()
             }
 
-            listener.expectNext.containsExactly(IngredientSavedEvent(
+            listener.expectNext.containsExactly(IngredientChangedEvent(
                     secondSnapshot, null))
         }
     }
@@ -248,8 +246,7 @@ internal class IngredientsTest {
             listener.reset()
 
             val snapshot = IngredientResource(
-                    SourceResource(source),
-                    code, ChefResource(chef),
+                    SourceResource(source), code, name, ChefResource(chef),
                     null,
                     listOf(LocationResource(location)))
 
@@ -257,7 +254,7 @@ internal class IngredientsTest {
                     source, snapshot.code, chef,
                     mutableListOf(location))
 
-            listener.expectNext.containsExactly(IngredientSavedEvent(
+            listener.expectNext.containsExactly(IngredientChangedEvent(
                     null, IngredientResource(ingredient)))
 
             ingredient.update {

@@ -102,13 +102,12 @@ class Ingredients(
             notifyChanged(before, after?.let {
                 // TODO: EEK!
                 IngredientResource(SourceResource(it.source),
-                        it.code,
+                        it.code, it.name,
                         ChefResource(chefFrom(it.chefCode)),
+                        // TODO: it.recipe?.let { RecipeResource(it) },
                         it.recipe?.let { RecipeResource(recipeFrom(it)) },
-                        it.locations.map {
-                            LocationResource(it)
-                        })
-            }, publisher, ::IngredientSavedEvent)
+                        it.locations.map { LocationResource(it) })
+            }, publisher, ::IngredientChangedEvent)
 
     internal fun sourceFrom(sourceRecord: SourceRecord) =
             sources.from(sourceRecord)
@@ -145,9 +144,9 @@ interface MutableIngredientDetails {
     val name: String // Not editable -- comes from Source
 }
 
-data class IngredientSavedEvent(
-        val before: IngredientResource?,
-        val after: IngredientResource?) : ApplicationEvent(after ?: before)
+data class IngredientChangedEvent(
+        val before: IngredientDetails?,
+        val after: IngredientDetails?) : ApplicationEvent(after ?: before)
 
 sealed class Ingredient<I : Ingredient<I>>(
         internal val record: IngredientRecord,

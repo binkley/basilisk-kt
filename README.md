@@ -33,6 +33,7 @@ Atrium, Testcontainers, Docker, et al.
 * [Kotlin Exposed](#persistence)
 * [Atrium and Testcontainers](#testing)
 * [Swagger](#api)
+* [Design](#design)
 
 ### Clean build
 
@@ -253,9 +254,31 @@ project uses a more domain-oriented approach:
 * REST layer with controllers
 * Domain objects with business logic
 * Pure-function services for non-domain concerns
-* Persistence layer with stores
+* Persistence layer with stores _or_ REST-layer with remote clients
 * Strong separation of objects between layers
-* Source code separation between domains (libraries) and programs (binaries)   
+* Source code separation between domains (libraries) and programs (binaries)
+
+### Types
+
+### Backing stores
+
+* REST: "resources" shared by client controllers and remoting clients
+* Persistence: "records" specific to persistence technology
+
+### Specific domain implementations
+
+* Domain objects: _FOO_ specific to implementation
+* Factories: _FOO_s specific to implementation
+
+### API
+
+* Domain object factory
+* Domain object
+* Details abstraction of domain object
+* Mutable domain object
+* Details abstraction of mutable domain object
+* Change events
+   
 
 Some reading:
 

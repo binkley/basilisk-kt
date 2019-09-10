@@ -51,7 +51,7 @@ class Sources(
             before: SourceResource?, after: SourceRecord?) =
             notifyChanged(before, after?.let {
                 SourceResource(it)
-            }, publisher, ::SourceSavedEvent)
+            }, publisher, ::SourceChangedEvent)
 
     internal fun locationFrom(locationRecord: LocationRecord) =
             locations.from(locationRecord)
@@ -71,7 +71,7 @@ interface MutableSourceDetails {
     var name: String
 }
 
-data class SourceSavedEvent(
+data class SourceChangedEvent(
         val before: SourceResource?,
         val after: SourceResource?) : ApplicationEvent(after ?: before)
 

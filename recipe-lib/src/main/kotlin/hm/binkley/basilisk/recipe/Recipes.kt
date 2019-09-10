@@ -73,7 +73,7 @@ class Recipes(
                         it.locations.map {
                             LocationResource(it)
                         })
-            }, publisher, ::RecipeSavedEvent)
+            }, publisher, ::RecipeChangedEvent)
 
     internal fun chefFrom(chefCode: String) =
             chefs.byCode(chefCode)!! // TODO: What about remote failure?
@@ -112,9 +112,14 @@ interface MutableRecipeDetails {
     var status: RecipeStatus
 }
 
-data class RecipeSavedEvent(
+data class RecipeChangedEvent(
         val before: RecipeResource?,
-        val after: RecipeResource?) : ApplicationEvent(after ?: before)
+        val after: RecipeResource?) : ApplicationEvent(after ?: before) {
+    constructor(before: RecipeDetails?, after: RecipeDetails?)
+            : this(
+            before?.let { RecipeResource(before) },
+            after?.let { RecipeResource(after) })
+}
 
 class Recipe internal constructor(
         internal val record: RecipeRecord,

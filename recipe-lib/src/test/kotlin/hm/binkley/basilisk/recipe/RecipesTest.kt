@@ -37,7 +37,7 @@ internal class RecipesTest {
     @Inject
     lateinit var locations: PersistedLocations
     @Inject
-    lateinit var listener: TestListener<RecipeSavedEvent>
+    lateinit var listener: TestListener<RecipeChangedEvent>
 
     @BeforeEach
     fun setUp() {
@@ -98,8 +98,8 @@ internal class RecipesTest {
                     firstSnapshot.code, firstSnapshot.name, chef,
                     mutableListOf(location))
 
-            listener.expectNext.containsExactly(RecipeSavedEvent(
-                    null, RecipeResource(recipe)))
+            listener.expectNext.containsExactly(RecipeChangedEvent(
+                    null, recipe))
 
             recipe.update {
                 this.name = secondSnapshot.name
@@ -107,8 +107,8 @@ internal class RecipesTest {
                 save()
             }
 
-            listener.expectNext.containsExactly(RecipeSavedEvent(
-                    firstSnapshot, RecipeResource(recipe)))
+            listener.expectNext.containsExactly(RecipeChangedEvent(
+                    firstSnapshot, recipe))
 
             recipe.update {
                 this.status = PREPARING
@@ -116,14 +116,14 @@ internal class RecipesTest {
                 save()
             }
 
-            listener.expectNext.containsExactly(RecipeSavedEvent(
-                    secondSnapshot, RecipeResource(recipe)))
+            listener.expectNext.containsExactly(RecipeChangedEvent(
+                    secondSnapshot, recipe))
 
             recipe.update {
                 delete()
             }
 
-            listener.expectNext.containsExactly(RecipeSavedEvent(
+            listener.expectNext.containsExactly(RecipeChangedEvent(
                     thirdSnapshot, null))
         }
     }
@@ -149,7 +149,7 @@ internal class RecipesTest {
                     snapshot.code, snapshot.name, chef,
                     mutableListOf(location))
 
-            listener.expectNext.containsExactly(RecipeSavedEvent(
+            listener.expectNext.containsExactly(RecipeChangedEvent(
                     null, RecipeResource(recipe)))
 
             recipe.update {

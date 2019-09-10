@@ -28,7 +28,7 @@ internal class SourcesTest {
     @Inject
     lateinit var locations: PersistedLocations
     @Inject
-    lateinit var listener: TestListener<SourceSavedEvent>
+    lateinit var listener: TestListener<SourceChangedEvent>
 
     @BeforeEach
     fun setUp() {
@@ -84,7 +84,7 @@ internal class SourcesTest {
                     firstSnapshot.code, firstSnapshot.name,
                     mutableListOf(locationA, locationB))
 
-            listener.expectNext.containsExactly(SourceSavedEvent(
+            listener.expectNext.containsExactly(SourceChangedEvent(
                     null, SourceResource(source)))
 
             source.update {
@@ -93,7 +93,7 @@ internal class SourcesTest {
                 save()
             }
 
-            listener.expectNext.containsExactly(SourceSavedEvent(
+            listener.expectNext.containsExactly(SourceChangedEvent(
                     firstSnapshot, SourceResource(source)))
 
             source.update {
@@ -101,14 +101,14 @@ internal class SourcesTest {
                 save()
             }
 
-            listener.expectNext.containsExactly(SourceSavedEvent(
+            listener.expectNext.containsExactly(SourceChangedEvent(
                     secondSnapshot, SourceResource(source)))
 
             source.update {
                 delete()
             }
 
-            listener.expectNext.containsExactly(SourceSavedEvent(
+            listener.expectNext.containsExactly(SourceChangedEvent(
                     thirdSnapshot, null))
         }
     }
@@ -130,7 +130,7 @@ internal class SourcesTest {
                     snapshot.code, snapshot.name,
                     mutableListOf(location))
 
-            listener.expectNext.containsExactly(SourceSavedEvent(
+            listener.expectNext.containsExactly(SourceChangedEvent(
                     null, SourceResource(source)))
 
             source.update {
