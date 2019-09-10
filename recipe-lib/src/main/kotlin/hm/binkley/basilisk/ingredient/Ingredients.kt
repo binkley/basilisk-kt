@@ -44,6 +44,10 @@ class Ingredients(
         private val recipes: Recipes,
         private val locations: PersistedLocations,
         private val publisher: ApplicationEventPublisher) {
+    fun all() = IngredientRecord.all().map {
+        from(it)
+    }
+
     fun byCode(code: String) = IngredientRecord.findOne {
         IngredientRepository.code eq code
     }?.let {

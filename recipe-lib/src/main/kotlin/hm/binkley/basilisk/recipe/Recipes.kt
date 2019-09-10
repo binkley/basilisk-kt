@@ -35,6 +35,10 @@ class Recipes(
         private val ingredientsFactory: Provider<Ingredients>, // Circular
         private val locations: PersistedLocations,
         private val publisher: ApplicationEventPublisher) {
+    fun all() = RecipeRecord.all().map {
+        from(it)
+    }
+
     fun byCode(code: String) = RecipeRecord.findOne {
         RecipeRepository.code eq code
     }?.let {
