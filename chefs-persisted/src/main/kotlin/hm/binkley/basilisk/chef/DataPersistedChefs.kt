@@ -1,5 +1,6 @@
 package hm.binkley.basilisk.chef
 
+import hm.binkley.basilisk.domain.notifyChanged
 import io.micronaut.context.event.ApplicationEventPublisher
 import io.micronaut.data.annotation.Query
 import io.micronaut.data.jdbc.annotation.JdbcRepository
@@ -35,10 +36,9 @@ class DataPersistedChefs(
     internal fun delete(record: DataChefRecord) =
             repository.delete(record)
 
-    internal fun notifyChanged(event: ChefChangedEvent) {
-        if (event.after == event.before) return
-        publisher.publishEvent(event)
-    }
+    internal fun notifyChanged(event: ChefChangedEvent) =
+            notifyChanged(event.before, event.after,
+                    publisher, ::ChefChangedEvent)
 }
 
 class DataPersistedChef(

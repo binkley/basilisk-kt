@@ -4,6 +4,7 @@ import hm.binkley.basilisk.db.CodeEntity
 import hm.binkley.basilisk.db.CodeEntityClass
 import hm.binkley.basilisk.db.CodeIdTable
 import hm.binkley.basilisk.db.findOne
+import hm.binkley.basilisk.domain.notifyChanged
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
 import java.util.*
@@ -31,10 +32,9 @@ class PersistedChefs(private val publisher: ApplicationEventPublisher)
         PersistedChef(null, it, this)
     }
 
-    internal fun notifyChanged(event: ChefChangedEvent) {
-        if (event.after == event.before) return
-        publisher.publishEvent(event)
-    }
+    internal fun notifyChanged(event: ChefChangedEvent) =
+            notifyChanged(event.before, event.after,
+                    publisher, ::ChefChangedEvent)
 }
 
 class PersistedChef internal constructor(
