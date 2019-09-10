@@ -30,6 +30,6 @@ interface MutableLocation : MutableLocationDetails {
     fun delete()
 }
 
-data class LocationSavedEvent(
-        val before: LocationResource?,
-        val after: LocationResource?) : ApplicationEvent(after ?: before)
+data class LocationChangedEvent(
+        val before: LocationDetails?,
+        val after: LocationDetails?) : ApplicationEvent(after ?: before)

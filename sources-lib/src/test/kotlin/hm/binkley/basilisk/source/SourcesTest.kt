@@ -9,7 +9,7 @@ import hm.binkley.basilisk.db.testTransaction
 import hm.binkley.basilisk.location.LocationResource
 import hm.binkley.basilisk.location.PersistedLocations
 import io.micronaut.test.annotation.MicronautTest
-import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
@@ -30,8 +30,8 @@ internal class SourcesTest {
     @Inject
     lateinit var listener: TestListener<SourceSavedEvent>
 
-    @AfterEach
-    fun tearDown() {
+    @BeforeEach
+    fun setUp() {
         listener.reset()
     }
 
@@ -64,9 +64,13 @@ internal class SourcesTest {
 
         testTransaction {
             val locationA = locations.new(
-                    LocationResource(locationACode, locationAName))
+                    LocationResource(locationACode, locationAName)).update {
+                save()
+            }
             val locationB = locations.new(
-                    LocationResource(locationBCode, locationBName))
+                    LocationResource(locationBCode, locationBName)).update {
+                save()
+            }
             listener.reset()
 
             val firstSnapshot = SourceResource(code, name, listOf(

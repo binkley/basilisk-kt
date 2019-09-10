@@ -14,7 +14,7 @@ import hm.binkley.basilisk.location.PersistedLocations
 import hm.binkley.basilisk.recipe.RecipeStatus.PLANNING
 import hm.binkley.basilisk.recipe.RecipeStatus.PREPARING
 import io.micronaut.test.annotation.MicronautTest
-import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
@@ -39,8 +39,8 @@ internal class RecipesTest {
     @Inject
     lateinit var listener: TestListener<RecipeSavedEvent>
 
-    @AfterEach
-    fun tearDown() {
+    @BeforeEach
+    fun setUp() {
         listener.reset()
     }
 
@@ -79,7 +79,9 @@ internal class RecipesTest {
         testTransaction {
             val chef = chefs.new(ChefResource(chefCode, chefName))
             val location = locations.new(
-                    LocationResource(locationCode, locationName))
+                    LocationResource(locationCode, locationName)).update {
+                save()
+            }
             listener.reset()
 
             val firstSnapshot = RecipeResource(

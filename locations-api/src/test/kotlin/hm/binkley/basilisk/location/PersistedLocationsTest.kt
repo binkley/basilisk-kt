@@ -7,7 +7,7 @@ import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.TestListener
 import hm.binkley.basilisk.db.testTransaction
 import io.micronaut.test.annotation.MicronautTest
-import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
@@ -17,34 +17,33 @@ import javax.inject.Inject
 @TestInstance(PER_CLASS)
 internal class PersistedLocationsTest {
     companion object {
-        const val name = "LOCATION BOB"
-        const val code = "LOCATION123"
+        const val code = "DAL"
+        const val name = "The Dallas Yellow Rose"
     }
 
     @Inject
     lateinit var locations: PersistedLocations
     @Inject
-    lateinit var listener: TestListener<LocationSavedEvent>
+    lateinit var listener: TestListener<LocationChangedEvent>
 
-    @AfterEach
-    fun tearDown() {
+    @BeforeEach
+    fun setUp() {
         listener.reset()
     }
 
     @Test
     fun shouldFindNoLocation() {
         testTransaction {
-            val ingredient = locations.byCode(code)
+            val location = locations.byCode(code)
 
-            expect(ingredient).toBe(null)
+            expect(location).toBe(null)
         }
     }
 
     @Test
     fun shouldRoundTrip() {
         testTransaction {
-            val firstSnapshot = LocationResource(code, name)
-            locations.new(firstSnapshot)
+            locations.new(LocationResource(code, name))
             val location = locations.byCode(code)!!
 
             expect(location.code).toBe(code)
@@ -56,12 +55,20 @@ internal class PersistedLocationsTest {
     fun shouldPublishSaveEvents() {
         testTransaction {
             val firstSnapshot = LocationResource(code, name)
-            val secondSnapshot = LocationResource(code, "LOCATION ROBERT")
+            val secondSnapshot =
+                    LocationResource(code, "LOCATION ROBERT")
 
             val location = locations.new(firstSnapshot)
 
-            listener.expectNext.containsExactly(LocationSavedEvent(
-                    null, LocationResource(location)))
+            // No event until saved
+            listener.expectNext.isEmpty()
+
+            location.update {
+                save()
+            }
+
+            listener.expectNext.containsExactly(
+                    LocationChangedEvent(null, LocationResource(location)))
 
             // Saving without changing does not publish an update
             location.update {
@@ -80,33 +87,15 @@ internal class PersistedLocationsTest {
                 save()
             }
 
-            listener.expectNext.containsExactly(LocationSavedEvent(
+            listener.expectNext.containsExactly(LocationChangedEvent(
                     firstSnapshot, LocationResource(location)))
 
             location.update {
                 delete()
             }
 
-            listener.expectNext.containsExactly(LocationSavedEvent(
+            listener.expectNext.containsExactly(LocationChangedEvent(
                     secondSnapshot, null))
-        }
-    }
-
-    @Test
-    fun shouldSkipPublishSaveEventsIfUnchanged() {
-        testTransaction {
-            val snapshot = LocationResource(code, name)
-
-            val location = locations.new(snapshot)
-
-            listener.expectNext.containsExactly(LocationSavedEvent(
-                    null, LocationResource(location)))
-
-            location.update {
-                save()
-            }
-
-            listener.expectNext.isEmpty()
         }
     }
 }

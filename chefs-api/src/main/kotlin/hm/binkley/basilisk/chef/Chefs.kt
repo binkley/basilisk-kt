@@ -39,5 +39,5 @@ interface MutableChef : MutableChefDetails {
 }
 
 data class ChefChangedEvent(
-        val before: ChefResource?,
-        val after: ChefResource?) : ApplicationEvent(after ?: before)
+        val before: ChefDetails?,
+        val after: ChefDetails?) : ApplicationEvent(after ?: before)
