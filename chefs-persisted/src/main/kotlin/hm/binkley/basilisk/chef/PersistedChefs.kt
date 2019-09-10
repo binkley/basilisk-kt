@@ -4,7 +4,6 @@ import hm.binkley.basilisk.db.CodeEntity
 import hm.binkley.basilisk.db.CodeEntityClass
 import hm.binkley.basilisk.db.CodeIdTable
 import hm.binkley.basilisk.db.findOne
-import hm.binkley.basilisk.domain.notifySaved
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
 import java.util.*
@@ -32,11 +31,10 @@ class PersistedChefs(private val publisher: ApplicationEventPublisher)
         PersistedChef(null, it, this)
     }
 
-    internal fun notifySaved(before: ChefResource?, after: ChefRecord?) =
-            notifySaved(before, after?.let {
-                PersistedChef(ChefResource(after), after, this)
-            }, publisher,
-                    ::ChefResource, ::ChefSavedEvent)
+    internal fun notifyChanged(event: ChefChangedEvent) {
+        if (event.after == event.before) return
+        publisher.publishEvent(event)
+    }
 }
 
 class PersistedChef internal constructor(
@@ -71,13 +69,15 @@ class PersistedMutableChef internal constructor(
         MutableChefDetails by record {
     override fun save() = apply {
         record.flush()
-        factory.notifySaved(snapshot.get(), record)
+        factory.notifyChanged(
+                ChefChangedEvent(snapshot.get(), ChefResource(record)))
         snapshot.set(ChefResource(record))
     }
 
     override fun delete() {
         record.delete()
-        factory.notifySaved(snapshot.get(), null)
+        factory.notifyChanged(
+                ChefChangedEvent(snapshot.get(), null))
         snapshot.set(null)
     }
 

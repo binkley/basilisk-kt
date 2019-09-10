@@ -1,22 +1,29 @@
 package hm.binkley.basilisk.ingredient
 
 import hm.binkley.basilisk.chef.Chef
+import hm.binkley.basilisk.chef.ChefDetails
 import hm.binkley.basilisk.chef.ChefResource
 import hm.binkley.basilisk.chef.RemoteChef
 import hm.binkley.basilisk.chef.RemoteChefs
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
-import hm.binkley.basilisk.domain.notifySaved
+import hm.binkley.basilisk.domain.notifyChanged
+import hm.binkley.basilisk.location.LocationDetails
 import hm.binkley.basilisk.location.LocationRecord
+import hm.binkley.basilisk.location.LocationResource
 import hm.binkley.basilisk.location.PersistedLocation
 import hm.binkley.basilisk.location.PersistedLocations
 import hm.binkley.basilisk.recipe.Recipe
+import hm.binkley.basilisk.recipe.RecipeDetails
 import hm.binkley.basilisk.recipe.RecipeRecord
 import hm.binkley.basilisk.recipe.RecipeRepository
+import hm.binkley.basilisk.recipe.RecipeResource
 import hm.binkley.basilisk.recipe.Recipes
 import hm.binkley.basilisk.source.Source
+import hm.binkley.basilisk.source.SourceDetails
 import hm.binkley.basilisk.source.SourceRecord
 import hm.binkley.basilisk.source.SourceRepository
+import hm.binkley.basilisk.source.SourceResource
 import hm.binkley.basilisk.source.Sources
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
@@ -92,16 +99,21 @@ class Ingredients(
 
     internal fun notifySaved(
             before: IngredientResource?, after: IngredientRecord?) =
-            notifySaved(before, after?.let { from(it) }, publisher,
-                    ::IngredientResource, ::IngredientSavedEvent)
+            notifyChanged(before, after?.let {
+                // TODO: EEK!
+                IngredientResource(SourceResource(it.source),
+                        it.code,
+                        ChefResource(chefFrom(it.chefCode)),
+                        it.recipe?.let { RecipeResource(recipeFrom(it)) },
+                        it.locations.map {
+                            LocationResource(it)
+                        })
+            }, publisher, ::IngredientSavedEvent)
 
     internal fun sourceFrom(sourceRecord: SourceRecord) =
             sources.from(sourceRecord)
 
     internal fun toRecord(source: Source) = sources.toRecord(source)
-
-    internal fun chefFrom(chefResource: ChefResource) =
-            chefs.from(chefResource)
 
     internal fun chefFrom(chefCode: String) =
             chefs.byCode(chefCode)!! // TODO: What about remote failure?
@@ -120,8 +132,12 @@ class Ingredients(
 }
 
 interface IngredientDetails {
+    val source: SourceDetails
     val code: String
     val name: String
+    val chef: ChefDetails
+    val recipe: RecipeDetails?
+    val locations: Iterable<LocationDetails>
 }
 
 interface MutableIngredientDetails {
@@ -131,22 +147,22 @@ interface MutableIngredientDetails {
 
 data class IngredientSavedEvent(
         val before: IngredientResource?,
-        val after: Ingredient<*>?) : ApplicationEvent(after ?: before)
+        val after: IngredientResource?) : ApplicationEvent(after ?: before)
 
 sealed class Ingredient<I : Ingredient<I>>(
         internal val record: IngredientRecord,
         internal val factory: Ingredients)
     : IngredientDetails by record {
-    val source
+    override val source
         get() = factory.sourceFrom(record.source)
-    val chef
+    override val chef
         get() = factory.chefFrom(record.chefCode)
-    val recipe: Recipe?
+    override val recipe: Recipe?
         get() {
             val recipeRecord = record.recipe
             return recipeRecord?.let { factory.recipeFrom(recipeRecord) }
         }
-    val locations: SizedIterable<PersistedLocation>
+    override val locations: SizedIterable<PersistedLocation>
         get() = record.locations.notForUpdate().mapLazy {
             factory.locationFrom(it)
         }
@@ -272,13 +288,15 @@ class IngredientRecord(id: EntityID<Int>)
         MutableIngredientDetails {
     companion object : IntEntityClass<IngredientRecord>(IngredientRepository)
 
-    var source by SourceRecord referencedOn IngredientRepository.sourceRef
+    override var source by SourceRecord referencedOn IngredientRepository.sourceRef
     override var code by IngredientRepository.code
     override val name
         get() = source.name
     var chefCode by IngredientRepository.chefCode
-    var recipe by RecipeRecord optionalReferencedOn IngredientRepository.recipe
-    var locations by LocationRecord via IngredientLocationsRepository
+    override val chef: ChefDetails
+        get() = TODO("DESIGN DEFECT")
+    override var recipe by RecipeRecord optionalReferencedOn IngredientRepository.recipe
+    override var locations by LocationRecord via IngredientLocationsRepository
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

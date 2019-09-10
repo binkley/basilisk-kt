@@ -81,7 +81,7 @@ internal class SourcesTest {
                     mutableListOf(locationA, locationB))
 
             listener.expectNext.containsExactly(SourceSavedEvent(
-                    null, source))
+                    null, SourceResource(source)))
 
             source.update {
                 this.name = secondSnapshot.name
@@ -90,7 +90,7 @@ internal class SourcesTest {
             }
 
             listener.expectNext.containsExactly(SourceSavedEvent(
-                    firstSnapshot, source))
+                    firstSnapshot, SourceResource(source)))
 
             source.update {
                 this.locations = mutableListOf()
@@ -98,7 +98,7 @@ internal class SourcesTest {
             }
 
             listener.expectNext.containsExactly(SourceSavedEvent(
-                    secondSnapshot, source))
+                    secondSnapshot, SourceResource(source)))
 
             source.update {
                 delete()
@@ -127,7 +127,7 @@ internal class SourcesTest {
                     mutableListOf(location))
 
             listener.expectNext.containsExactly(SourceSavedEvent(
-                    null, source))
+                    null, SourceResource(source)))
 
             source.update {
                 save()

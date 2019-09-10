@@ -1,6 +1,5 @@
 package hm.binkley.basilisk.chef
 
-import hm.binkley.basilisk.domain.notifySaved
 import io.micronaut.context.event.ApplicationEventPublisher
 import io.micronaut.data.annotation.Query
 import io.micronaut.data.jdbc.annotation.JdbcRepository
@@ -11,6 +10,7 @@ import javax.inject.Singleton
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
+import kotlin.reflect.KMutableProperty0
 
 @Singleton
 class DataPersistedChefs(
@@ -18,19 +18,16 @@ class DataPersistedChefs(
         private val publisher: ApplicationEventPublisher)
     : Chefs {
     override fun all() = repository.findAll().map {
-        DataPersistedChef(it, this)
+        DataPersistedChef(ChefResource(it), it, this)
     }
 
     override fun byCode(code: String) =
             repository.findById(code).orElse(null)?.let {
-                DataPersistedChef(it, this)
+                DataPersistedChef(ChefResource(it), it, this)
             }
 
-    /** @todo Question that "new" here should save */
     override fun new(chef: ChefResource) =
-            DataPersistedChef(DataChefRecord(chef), this).update(null) {
-                save()
-            }
+            DataPersistedChef(null, DataChefRecord(chef), this)
 
     internal fun save(record: DataChefRecord) =
             repository.upsert(record.code, record.name, record.health)
@@ -38,29 +35,20 @@ class DataPersistedChefs(
     internal fun delete(record: DataChefRecord) =
             repository.delete(record)
 
-    internal fun notifySaved(before: ChefResource?, after: DataChefRecord?) =
-            notifySaved(before, after?.let { DataPersistedChef(it, this) },
-                    publisher, ::ChefResource, ::ChefSavedEvent)
+    internal fun notifyChanged(event: ChefChangedEvent) {
+        if (event.after == event.before) return
+        publisher.publishEvent(event)
+    }
 }
 
 class DataPersistedChef(
-        internal val record: DataChefRecord,
+        private var snapshot: ChefResource?,
+        private val record: DataChefRecord,
         private val factory: DataPersistedChefs)
     : Chef,
         ChefDetails by record {
-    private var snapshot: ChefResource? = ChefResource(this)
-
-    /** @throws IllegalStateException if this chef has been deleted */
-    override fun update(block: MutableChef.() -> Unit) =
-            update(checkNotNull(snapshot), block)
-
-    /** Used by [DataPersistedChefs.new] to indicate no initial snapshot */
-    internal inline fun update(
-            snapshot: ChefResource?,
-            block: MutableChef.() -> Unit) = apply {
-        DataPersistedMutableChef(snapshot, { newSnapshot ->
-            this.snapshot = newSnapshot
-        }, record, factory).block()
+    override fun update(block: MutableChef.() -> Unit) = apply {
+        DataPersistedMutableChef(::snapshot, record, factory).block()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -78,22 +66,23 @@ class DataPersistedChef(
 }
 
 class DataPersistedMutableChef internal constructor(
-        private val snapshot: ChefResource?,
-        private val setSnapshot: (ChefResource?) -> Unit,
+        private val snapshot: KMutableProperty0<ChefResource?>,
         private val record: DataChefRecord,
         private val factory: DataPersistedChefs)
     : MutableChef,
         MutableChefDetails by record {
     override fun save() = apply {
         factory.save(record)
-        factory.notifySaved(snapshot, record)
-        setSnapshot(ChefResource(record))
+        factory.notifyChanged(
+                ChefChangedEvent(snapshot.get(), ChefResource(record)))
+        snapshot.set(ChefResource(record))
     }
 
     override fun delete() {
         factory.delete(record)
-        factory.notifySaved(snapshot, null)
-        setSnapshot(null)
+        factory.notifyChanged(
+                ChefChangedEvent(snapshot.get(), null))
+        snapshot.set(null)
     }
 
     override fun equals(other: Any?): Boolean {

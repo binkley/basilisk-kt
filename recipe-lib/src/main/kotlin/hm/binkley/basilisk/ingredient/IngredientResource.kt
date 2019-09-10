@@ -11,11 +11,11 @@ data class IngredientResource(
         val chef: ChefResource,
         val recipe: RecipeResource?,
         val locations: List<LocationResource>) {
-    constructor(ingredient: Ingredient<*>)
+    constructor(ingredient: IngredientDetails)
             : this(SourceResource(ingredient.source),
             ingredient.code,
             ChefResource(ingredient.chef),
-            recipeResource(ingredient),
+            ingredient.recipe?.let { RecipeResource(it) },
             ingredient.locations.map { LocationResource(it) })
 
     companion object {

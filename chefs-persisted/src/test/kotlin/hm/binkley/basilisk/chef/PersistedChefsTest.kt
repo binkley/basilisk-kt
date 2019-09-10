@@ -25,7 +25,7 @@ internal class PersistedChefsTest {
     @Inject
     lateinit var chefs: PersistedChefs
     @Inject
-    lateinit var listener: TestListener<ChefSavedEvent>
+    lateinit var listener: TestListener<ChefChangedEvent>
 
     @BeforeEach
     fun setUp() {
@@ -67,7 +67,8 @@ internal class PersistedChefsTest {
                 save()
             }
 
-            listener.expectNext.containsExactly(ChefSavedEvent(null, chef))
+            listener.expectNext.containsExactly(
+                    ChefChangedEvent(null, ChefResource(chef)))
 
             // Saving without changing does not publish an update
             chef.update {
@@ -87,34 +88,15 @@ internal class PersistedChefsTest {
                 save()
             }
 
-            listener.expectNext.containsExactly(ChefSavedEvent(
-                    firstSnapshot, chef))
+            listener.expectNext.containsExactly(ChefChangedEvent(
+                    firstSnapshot, ChefResource(chef)))
 
             chef.update {
                 delete()
             }
 
-            listener.expectNext.containsExactly(ChefSavedEvent(
+            listener.expectNext.containsExactly(ChefChangedEvent(
                     secondSnapshot, null))
-        }
-    }
-
-    @Test
-    fun shouldSkipPublishingSaveEventsIfUnchanged() {
-        testTransaction {
-            val snapshot = ChefResource(code, name, FIT)
-
-            val chef = chefs.new(snapshot).update {
-                save()
-            }
-
-            listener.expectNext.containsExactly(ChefSavedEvent(null, chef))
-
-            chef.update {
-                save()
-            }
-
-            listener.expectNext.isEmpty()
         }
     }
 }

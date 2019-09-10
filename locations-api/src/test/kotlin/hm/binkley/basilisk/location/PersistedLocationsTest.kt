@@ -61,7 +61,7 @@ internal class PersistedLocationsTest {
             val location = locations.new(firstSnapshot)
 
             listener.expectNext.containsExactly(LocationSavedEvent(
-                    null, location))
+                    null, LocationResource(location)))
 
             // Saving without changing does not publish an update
             location.update {
@@ -81,7 +81,7 @@ internal class PersistedLocationsTest {
             }
 
             listener.expectNext.containsExactly(LocationSavedEvent(
-                    firstSnapshot, location))
+                    firstSnapshot, LocationResource(location)))
 
             location.update {
                 delete()
@@ -100,7 +100,7 @@ internal class PersistedLocationsTest {
             val location = locations.new(snapshot)
 
             listener.expectNext.containsExactly(LocationSavedEvent(
-                    null, location))
+                    null, LocationResource(location)))
 
             location.update {
                 save()

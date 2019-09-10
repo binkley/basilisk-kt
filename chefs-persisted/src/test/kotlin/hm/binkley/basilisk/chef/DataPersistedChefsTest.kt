@@ -3,7 +3,6 @@ package hm.binkley.basilisk.chef
 import ch.tutteli.atrium.api.cc.en_GB.containsExactly
 import ch.tutteli.atrium.api.cc.en_GB.isEmpty
 import ch.tutteli.atrium.api.cc.en_GB.toBe
-import ch.tutteli.atrium.api.cc.en_GB.toThrow
 import ch.tutteli.atrium.verbs.expect
 import hm.binkley.basilisk.TestListener
 import hm.binkley.basilisk.chef.Chefs.Companion.FIT
@@ -25,7 +24,7 @@ internal class DataPersistedChefsTest {
     @Inject
     lateinit var chefs: DataPersistedChefs
     @Inject
-    lateinit var listener: TestListener<ChefSavedEvent>
+    lateinit var listener: TestListener<ChefChangedEvent>
 
     @BeforeEach
     fun setUp() {
@@ -40,7 +39,9 @@ internal class DataPersistedChefsTest {
     @Test
     fun shouldRoundTrip() {
         val unsaved = ChefResource(code, name)
-        val saved = chefs.new(unsaved)
+        val saved = chefs.new(unsaved).update {
+            save()
+        }
 
         expect(ChefResource(saved)).toBe(unsaved)
 
@@ -56,8 +57,15 @@ internal class DataPersistedChefsTest {
 
         val chef = chefs.new(firstSnapshot)
 
-        listener.expectNext.containsExactly(ChefSavedEvent(
-                null, chef))
+        // No event until saved
+        listener.expectNext.isEmpty()
+
+        chef.update {
+            save()
+        }
+
+        listener.expectNext.containsExactly(
+                ChefChangedEvent(null, ChefResource(chef)))
 
         // Saving without changing does not publish an update
         chef.update {
@@ -77,44 +85,14 @@ internal class DataPersistedChefsTest {
             save()
         }
 
-        listener.expectNext.containsExactly(ChefSavedEvent(
-                firstSnapshot, chef))
+        listener.expectNext.containsExactly(ChefChangedEvent(
+                firstSnapshot, ChefResource(chef)))
 
         chef.update {
             delete()
         }
 
-        listener.expectNext.containsExactly(ChefSavedEvent(
+        listener.expectNext.containsExactly(ChefChangedEvent(
                 secondSnapshot, null))
-    }
-
-    @Test
-    fun shouldSkipPublishSaveEventsIfUnchanged() {
-        val snapshot = ChefResource(code, name, FIT)
-
-        val chef = chefs.new(snapshot)
-
-        listener.expectNext.containsExactly(ChefSavedEvent(
-                null, chef))
-
-        chef.update {
-            save()
-        }
-
-        listener.expectNext.isEmpty()
-    }
-
-    @Test
-    fun shouldComplainIfUpdatingAfterDeleted() {
-        val snapshot = ChefResource(code, name, FIT)
-        val chef = chefs.new(snapshot)
-
-        chef.update {
-            delete()
-        }
-
-        expect {
-            chef.update {}
-        }.toThrow<java.lang.IllegalStateException> {}
     }
 }

@@ -1,5 +1,7 @@
 package hm.binkley.basilisk.recipe
 
+import hm.binkley.basilisk.chef.ChefDetails
+import hm.binkley.basilisk.chef.ChefResource
 import hm.binkley.basilisk.chef.RemoteChef
 import hm.binkley.basilisk.chef.RemoteChefs
 import hm.binkley.basilisk.db.CodeEntity
@@ -7,10 +9,12 @@ import hm.binkley.basilisk.db.CodeEntityClass
 import hm.binkley.basilisk.db.CodeIdTable
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
-import hm.binkley.basilisk.domain.notifySaved
+import hm.binkley.basilisk.domain.notifyChanged
 import hm.binkley.basilisk.ingredient.Ingredients
 import hm.binkley.basilisk.ingredient.UsedIngredient
+import hm.binkley.basilisk.location.LocationDetails
 import hm.binkley.basilisk.location.LocationRecord
+import hm.binkley.basilisk.location.LocationResource
 import hm.binkley.basilisk.location.PersistedLocation
 import hm.binkley.basilisk.location.PersistedLocations
 import hm.binkley.basilisk.recipe.RecipeStatus.PLANNING
@@ -59,8 +63,17 @@ class Recipes(
     fun toRecord(recipe: Recipe) = recipe.record
 
     internal fun notifySaved(before: RecipeResource?, after: RecipeRecord?) =
-            notifySaved(before, after?.let { from(it) }, publisher,
-                    ::RecipeResource, ::RecipeSavedEvent)
+            notifyChanged(before, after?.let {
+                // TODO: EEK!
+                RecipeResource(
+                        it.code,
+                        it.name,
+                        ChefResource(chefFrom(it.chefCode)),
+                        it.status,
+                        it.locations.map {
+                            LocationResource(it)
+                        })
+            }, publisher, ::RecipeSavedEvent)
 
     internal fun chefFrom(chefCode: String) =
             chefs.byCode(chefCode)!! // TODO: What about remote failure?
@@ -88,7 +101,9 @@ enum class RecipeStatus {
 interface RecipeDetails {
     val code: String
     val name: String
+    val chef: ChefDetails
     val status: RecipeStatus
+    val locations: Iterable<LocationDetails>
 }
 
 interface MutableRecipeDetails {
@@ -99,17 +114,17 @@ interface MutableRecipeDetails {
 
 data class RecipeSavedEvent(
         val before: RecipeResource?,
-        val after: Recipe?) : ApplicationEvent(after ?: before)
+        val after: RecipeResource?) : ApplicationEvent(after ?: before)
 
 class Recipe internal constructor(
         internal val record: RecipeRecord,
         private val factory: Recipes)
     : RecipeDetails by record {
-    val chef
+    override val chef
         get() = factory.chefFrom(record.chefCode)
     val ingredients: SizedIterable<UsedIngredient>
         get() = factory.ingredientsFrom(this)
-    val locations: SizedIterable<PersistedLocation>
+    override val locations: SizedIterable<PersistedLocation>
         get() = record.locations.notForUpdate().mapLazy {
             factory.locationFrom(it)
         }
@@ -203,8 +218,10 @@ class RecipeRecord(id: EntityID<String>) : CodeEntity(id),
     override var code by RecipeRepository.code
     override var name by RecipeRepository.name
     var chefCode by RecipeRepository.chefCode
+    override val chef: ChefDetails
+        get() = TODO("DESIGN DEFECT")
     override var status by RecipeRepository.status
-    var locations by LocationRecord via RecipeLocationsRepository
+    override var locations by LocationRecord via RecipeLocationsRepository
 
     override fun delete() {
         locations = emptySized()

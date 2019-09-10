@@ -97,7 +97,7 @@ internal class RecipesTest {
                     mutableListOf(location))
 
             listener.expectNext.containsExactly(RecipeSavedEvent(
-                    null, recipe))
+                    null, RecipeResource(recipe)))
 
             recipe.update {
                 this.name = secondSnapshot.name
@@ -106,7 +106,7 @@ internal class RecipesTest {
             }
 
             listener.expectNext.containsExactly(RecipeSavedEvent(
-                    firstSnapshot, recipe))
+                    firstSnapshot, RecipeResource(recipe)))
 
             recipe.update {
                 this.status = PREPARING
@@ -115,7 +115,7 @@ internal class RecipesTest {
             }
 
             listener.expectNext.containsExactly(RecipeSavedEvent(
-                    secondSnapshot, recipe))
+                    secondSnapshot, RecipeResource(recipe)))
 
             recipe.update {
                 delete()
@@ -148,7 +148,7 @@ internal class RecipesTest {
                     mutableListOf(location))
 
             listener.expectNext.containsExactly(RecipeSavedEvent(
-                    null, recipe))
+                    null, RecipeResource(recipe)))
 
             recipe.update {
                 save()

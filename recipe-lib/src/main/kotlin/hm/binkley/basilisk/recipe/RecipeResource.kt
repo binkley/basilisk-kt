@@ -9,7 +9,10 @@ data class RecipeResource(
         val chef: ChefResource,
         val status: RecipeStatus,
         val locations: List<LocationResource>) {
-    constructor(recipe: Recipe)
-            : this(recipe.code, recipe.name, ChefResource(recipe.chef),
-            recipe.status, recipe.locations.map { LocationResource(it) })
+    constructor(recipe: RecipeDetails)
+            : this(recipe.code,
+            recipe.name,
+            ChefResource(recipe.chef),
+            recipe.status,
+            recipe.locations.map { LocationResource(it) })
 }

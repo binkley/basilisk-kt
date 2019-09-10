@@ -4,7 +4,7 @@ import hm.binkley.basilisk.db.CodeEntity
 import hm.binkley.basilisk.db.CodeEntityClass
 import hm.binkley.basilisk.db.CodeIdTable
 import hm.binkley.basilisk.db.findOne
-import hm.binkley.basilisk.domain.notifySaved
+import hm.binkley.basilisk.domain.notifyChanged
 import io.micronaut.context.event.ApplicationEventPublisher
 import org.jetbrains.exposed.dao.EntityID
 import java.util.*
@@ -36,10 +36,11 @@ class PersistedLocations(private val publisher: ApplicationEventPublisher)
     /** For implementors of other record types having a reference. */
     fun toRecord(location: PersistedLocation) = location.record
 
-    internal fun notifySaved(
+    internal fun notifyChanged(
             before: LocationResource?, after: LocationRecord?) =
-            notifySaved(before, after?.let { from(it) }, publisher,
-                    ::LocationResource, ::LocationSavedEvent)
+            notifyChanged(before, after?.let {
+                LocationResource(it)
+            }, publisher, ::LocationSavedEvent)
 }
 
 class PersistedLocation internal constructor(
@@ -84,13 +85,13 @@ class MutablePersistedLocation internal constructor(
         MutableLocationDetails by record {
     override fun save() = apply {
         record.flush()
-        factory.notifySaved(snapshot, record)
+        factory.notifyChanged(snapshot, record)
         setSnapshot(LocationResource(record))
     }
 
     override fun delete() {
         record.delete()
-        factory.notifySaved(snapshot, null)
+        factory.notifyChanged(snapshot, null)
         setSnapshot(null)
     }
 

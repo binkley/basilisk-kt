@@ -38,6 +38,6 @@ interface MutableChef : MutableChefDetails {
     fun delete()
 }
 
-data class ChefSavedEvent(
+data class ChefChangedEvent(
         val before: ChefResource?,
-        val after: Chef?) : ApplicationEvent(after ?: before)
+        val after: ChefResource?) : ApplicationEvent(after ?: before)

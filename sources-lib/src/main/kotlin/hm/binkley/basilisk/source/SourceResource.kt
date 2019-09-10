@@ -6,6 +6,6 @@ data class SourceResource(
         val code: String,
         val name: String,
         val locations: List<LocationResource>) {
-    constructor(source: Source) : this(source.code, source.name,
+    constructor(source: SourceDetails) : this(source.code, source.name,
             source.locations.map { LocationResource(it) })
 }

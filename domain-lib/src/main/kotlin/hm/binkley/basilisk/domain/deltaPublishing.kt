@@ -3,14 +3,11 @@ package hm.binkley.basilisk.domain
 import io.micronaut.context.event.ApplicationEvent
 import io.micronaut.context.event.ApplicationEventPublisher
 
-fun <Resource, Domain, Event : ApplicationEvent> notifySaved(
-        before: Resource?, after: Domain?,
+fun <Resource, Event : ApplicationEvent> notifyChanged(
+        before: Resource?, after: Resource?,
         publisher: ApplicationEventPublisher,
-        resource: (Domain) -> Resource,
-        event: (Resource?, Domain?) -> Event) {
+        event: (Resource?, Resource?) -> Event) {
     // Only publish if changed, not if unchanged
-    val afterSnapshot = after?.let { resource(after) }
-    if (before != afterSnapshot) {
-        publisher.publishEvent(event(before, after))
-    }
+    if (before == after) return
+    publisher.publishEvent(event(before, after))
 }

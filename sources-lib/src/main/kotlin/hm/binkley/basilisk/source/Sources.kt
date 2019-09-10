@@ -5,7 +5,8 @@ import hm.binkley.basilisk.db.CodeEntityClass
 import hm.binkley.basilisk.db.CodeIdTable
 import hm.binkley.basilisk.db.asList
 import hm.binkley.basilisk.db.findOne
-import hm.binkley.basilisk.domain.notifySaved
+import hm.binkley.basilisk.domain.notifyChanged
+import hm.binkley.basilisk.location.LocationDetails
 import hm.binkley.basilisk.location.LocationRecord
 import hm.binkley.basilisk.location.PersistedLocation
 import hm.binkley.basilisk.location.PersistedLocations
@@ -46,9 +47,11 @@ class Sources(
     /** For implementors of other record types having a reference. */
     fun toRecord(source: Source) = source.record
 
-    internal fun notifySaved(before: SourceResource?, after: SourceRecord?) =
-            notifySaved(before, after?.let { from(it) }, publisher,
-                    ::SourceResource, ::SourceSavedEvent)
+    internal fun notifyChanged(
+            before: SourceResource?, after: SourceRecord?) =
+            notifyChanged(before, after?.let {
+                SourceResource(it)
+            }, publisher, ::SourceSavedEvent)
 
     internal fun locationFrom(locationRecord: LocationRecord) =
             locations.from(locationRecord)
@@ -60,6 +63,7 @@ class Sources(
 interface SourceDetails {
     val code: String
     val name: String
+    val locations: Iterable<LocationDetails>
 }
 
 interface MutableSourceDetails {
@@ -69,13 +73,13 @@ interface MutableSourceDetails {
 
 data class SourceSavedEvent(
         val before: SourceResource?,
-        val after: Source?) : ApplicationEvent(after ?: before)
+        val after: SourceResource?) : ApplicationEvent(after ?: before)
 
 class Source internal constructor(
         internal val record: SourceRecord,
         private val factory: Sources)
     : SourceDetails by record {
-    val locations: SizedIterable<PersistedLocation>
+    override val locations: SizedIterable<PersistedLocation>
         get() = record.locations.notForUpdate().mapLazy {
             factory.locationFrom(it)
         }
@@ -123,12 +127,12 @@ class MutableSource internal constructor(
 
     fun save() = apply {
         record.flush()
-        factory.notifySaved(snapshot, record)
+        factory.notifyChanged(snapshot, record)
     }
 
     fun delete() {
         record.delete()
-        factory.notifySaved(snapshot, null)
+        factory.notifyChanged(snapshot, null)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -157,7 +161,7 @@ class SourceRecord(id: EntityID<String>) : CodeEntity(id),
 
     override var code by SourceRepository.code
     override var name by SourceRepository.name
-    var locations by LocationRecord via SourceLocationsRepository
+    override var locations by LocationRecord via SourceLocationsRepository
 
     override fun delete() {
         locations = emptySized()
