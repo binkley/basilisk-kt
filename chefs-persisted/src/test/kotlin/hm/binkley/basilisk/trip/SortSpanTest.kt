@@ -10,7 +10,7 @@ import ch.tutteli.atrium.api.cc.en_GB.values
 import ch.tutteli.atrium.verbs.expect
 import org.junit.jupiter.api.Test
 
-class SpanTest {
+class SortSpanTest {
     @Test
     fun shouldSort0() {
         val (sorted, cost) = sort(listOf<TestSpan>())
@@ -62,5 +62,5 @@ class SpanTest {
     }
 
     data class TestSpan(override val start: Int, override val end: Int)
-        : Span<Int>
+        : QQQ<Int>
 }

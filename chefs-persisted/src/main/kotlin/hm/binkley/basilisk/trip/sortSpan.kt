@@ -1,15 +1,15 @@
 package hm.binkley.basilisk.trip
 
-interface Span<T> {
+interface QQQ<T> {
     val start: T
     val end: T
 }
 
-fun <T, S : Span<T>> sort(
-        unsorted: Iterable<S>): Pair<Iterable<Iterable<S>>, Int> {
-    class SpanList<T, S : Span<T>>(private val backing: MutableList<S>)
+fun <T, S : QQQ<T>> sort(unsorted: Iterable<S>)
+        : Pair<Iterable<Iterable<S>>, Int> {
+    class QqqList<T, S : QQQ<T>>(private val backing: MutableList<S>)
         : MutableList<S> by backing,
-            Span<T> {
+            QQQ<T> {
         constructor(s: S) : this(mutableListOf(s))
 
         override val start: T
@@ -22,7 +22,7 @@ fun <T, S : Span<T>> sort(
         override fun toString() = backing.toString()
     }
 
-    val sorted = unsorted.map { SpanList(it) }.toMutableList()
+    val sorted = unsorted.map { QqqList(it) }.toMutableList()
     when (sorted.size) {
         0, 1 -> return Pair(listOf(unsorted), 0)
     }

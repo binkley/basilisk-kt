@@ -1,43 +1,47 @@
 package hm.binkley.basilisk.chef
 
-import hm.binkley.basilisk.db.CodeEntity
-import hm.binkley.basilisk.db.CodeEntityClass
-import hm.binkley.basilisk.db.CodeIdTable
-import hm.binkley.basilisk.db.findOne
 import hm.binkley.basilisk.domain.notifyChanged
 import io.micronaut.context.event.ApplicationEventPublisher
-import org.jetbrains.exposed.dao.EntityID
+import io.micronaut.data.annotation.Query
+import io.micronaut.data.jdbc.annotation.JdbcRepository
+import io.micronaut.data.model.query.builder.sql.Dialect.POSTGRES
+import io.micronaut.data.repository.CrudRepository
 import java.util.*
 import javax.inject.Singleton
+import javax.persistence.Entity
+import javax.persistence.Id
+import javax.persistence.Table
 import kotlin.reflect.KMutableProperty0
 
 @Singleton
-class PersistedChefs(private val publisher: ApplicationEventPublisher)
+class PersistedChefs(
+        private val repository: ChefRepository,
+        private val publisher: ApplicationEventPublisher)
     : Chefs {
-    override fun all() = ChefRecord.all().map {
+    override fun all() = repository.findAll().map {
         PersistedChef(ChefResource(it), it, this)
     }
 
-    override fun byCode(code: String) = ChefRecord.findOne {
-        ChefRepository.code eq code
-    }?.let {
-        PersistedChef(ChefResource(it), it, this)
-    }
+    override fun byCode(code: String) =
+            repository.findById(code).orElse(null)?.let {
+                PersistedChef(ChefResource(it), it, this)
+            }
 
-    override fun new(chef: ChefResource) = ChefRecord.new {
-        this.code = chef.code
-        this.name = chef.name
-        this.health = chef.health
-    }.let {
-        PersistedChef(null, it, this)
-    }
+    override fun new(chef: ChefResource) =
+            PersistedChef(null, ChefRecord(chef), this)
+
+    internal fun save(record: ChefRecord) =
+            repository.upsert(record.code, record.name, record.health)
+
+    internal fun delete(record: ChefRecord) =
+            repository.delete(record)
 
     internal fun notifyChanged(event: ChefChangedEvent) =
             notifyChanged(event.before, event.after,
                     publisher, ::ChefChangedEvent)
 }
 
-class PersistedChef internal constructor(
+class PersistedChef(
         private var snapshot: ChefResource?,
         private val record: ChefRecord,
         private val factory: PersistedChefs)
@@ -68,14 +72,14 @@ class PersistedMutableChef internal constructor(
     : MutableChef,
         MutableChefDetails by record {
     override fun save() = apply {
-        record.flush()
+        factory.save(record)
         factory.notifyChanged(
                 ChefChangedEvent(snapshot.get(), ChefResource(record)))
         snapshot.set(ChefResource(record))
     }
 
     override fun delete() {
-        record.delete()
+        factory.delete(record)
         factory.notifyChanged(
                 ChefChangedEvent(snapshot.get(), null))
         snapshot.set(null)
@@ -95,32 +99,26 @@ class PersistedMutableChef internal constructor(
             "${super.toString()}{snapshot=$snapshot, record=$record}"
 }
 
-object ChefRepository : CodeIdTable("CHEF") {
-    val code = text("code")
-    val name = text("name")
-    val health = text("health")
+@JdbcRepository(dialect = POSTGRES)
+interface ChefRepository : CrudRepository<ChefRecord, String> {
+    @Query("""
+        INSERT INTO chef (code, name, health)
+        VALUES (:code, :name, :health)
+        ON CONFLICT (code) DO UPDATE
+        SET name = :name, health = :health
+        RETURNING *""")
+    fun upsert(code: String, name: String, health: String): ChefRecord
+
+    // TODO: Micronaut Data ignores default, overridden "save"
 }
 
-class ChefRecord(id: EntityID<String>) : CodeEntity(id),
-        ChefDetails,
+@Entity
+@Table(name = "chef")
+data class ChefRecord(
+        @Id override val code: String,
+        override var name: String,
+        override var health: String)
+    : ChefDetails,
         MutableChefDetails {
-    companion object : CodeEntityClass<ChefRecord>(ChefRepository)
-
-    override var code by ChefRepository.code
-    override var name by ChefRepository.name
-    override var health by ChefRepository.health
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        other as ChefRecord
-        return code == other.code
-                && name == other.name
-                && health == other.health
-    }
-
-    override fun hashCode() = Objects.hash(code, name, health)
-
-    override fun toString() =
-            "${super.toString()}{id=$id, code=$code, name=$name, health=$health}"
+    constructor(chef: ChefResource) : this(chef.code, chef.name, chef.health)
 }

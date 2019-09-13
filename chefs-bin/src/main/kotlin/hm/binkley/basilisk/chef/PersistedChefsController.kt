@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.net.URI
 
 @Controller
-class PersistedChefsController(private val chefs: DataPersistedChefs)
+class PersistedChefsController(private val chefs: PersistedChefs)
     : ChefsOperations {
     override fun all() = transaction {
         chefs.all()
