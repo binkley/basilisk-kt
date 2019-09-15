@@ -1,5 +1,5 @@
-CREATE TABLE IF NOT EXISTS "location"
+CREATE TABLE IF NOT EXISTS location
 (
-    code   TEXT NOT NULL PRIMARY KEY ,
-    "name" TEXT NOT NULL
+    code TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL
 );
