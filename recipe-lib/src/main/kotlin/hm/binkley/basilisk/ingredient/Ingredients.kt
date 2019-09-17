@@ -60,6 +60,7 @@ class Ingredients(
         UsedIngredient(it, this)
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun <I : Ingredient<*>> new(
             source: Source, code: String, chef: RemoteChef,
             locations: MutableList<PersistedLocation> = mutableListOf(),
@@ -173,6 +174,7 @@ sealed class Ingredient<I : Ingredient<I>>(
     fun update(block: MutableIngredient.() -> Unit): I =
             update(IngredientResource(this), block)
 
+    @Suppress("UNCHECKED_CAST")
     internal fun update(
             snapshot: IngredientResource?,
             block: MutableIngredient.() -> Unit): I {

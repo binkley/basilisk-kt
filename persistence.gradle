@@ -4,12 +4,12 @@ dependencies {
     // TODO: Hard-coded: Documented by Micronaut as only supported version
     compileOnly "jakarta.persistence:jakarta.persistence-api:2.2.3"
 
-    compile "io.micronaut.configuration:micronaut-flyway"
+    compile "io.micronaut.configuration:micronaut-flyway:${micronautFlywayVersion}"
     compile "io.micronaut.configuration:micronaut-jdbc-hikari"
     compile "org.jetbrains.exposed:exposed:${exposedVersion}"
     compile "io.micronaut.data:micronaut-data-jdbc:${micronautDataVersion}"
 
-    runtime "org.postgresql:postgresql:42.2.8"
+    runtime "org.postgresql:postgresql:${postgresDriverVersion}"
 
     testCompile "org.testcontainers:junit-jupiter:${testContainersVersion}"
 

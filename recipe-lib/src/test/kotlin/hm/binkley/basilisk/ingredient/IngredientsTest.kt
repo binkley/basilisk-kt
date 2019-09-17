@@ -56,11 +56,13 @@ internal class IngredientsTest {
     }
 
     @Test
-    fun shouldFindNoIngredient() {
+    fun shouldFindNoIngredients() {
         testTransaction {
-            val ingredient = ingredients.byCode(code)
+            expect(ingredients.all()).isEmpty()
 
-            expect(ingredient).toBe(null)
+            val found = ingredients.byCode(code)
+
+            expect(found).toBe(null)
         }
     }
 
