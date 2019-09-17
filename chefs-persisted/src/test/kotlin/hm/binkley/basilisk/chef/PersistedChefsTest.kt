@@ -32,8 +32,12 @@ internal class PersistedChefsTest {
     }
 
     @Test
-    fun shouldFindNoChef() {
+    fun shouldFindNoChefs() {
         expect(chefs.all()).isEmpty()
+
+        val found = chefs.byCode(code)
+
+        expect(found).toBe(null)
     }
 
     @Test

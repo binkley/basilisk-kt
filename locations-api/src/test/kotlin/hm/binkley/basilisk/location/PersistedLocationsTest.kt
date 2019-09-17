@@ -32,11 +32,13 @@ internal class PersistedLocationsTest {
     }
 
     @Test
-    fun shouldFindNoLocation() {
+    fun shouldFindNoLocations() {
         testTransaction {
-            val location = locations.byCode(code)
+            expect(locations.all()).isEmpty()
 
-            expect(location).toBe(null)
+            val found = locations.byCode(code)
+
+            expect(found).toBe(null)
         }
     }
 
