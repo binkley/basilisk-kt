@@ -2,14 +2,14 @@ dependencies {
     kapt "io.micronaut.data:micronaut-data-processor:${micronautDataVersion}"
 
     // TODO: Hard-coded: Documented by Micronaut as only supported version
-    compileOnly 'jakarta.persistence:jakarta.persistence-api:2.2.2'
+    compileOnly "jakarta.persistence:jakarta.persistence-api:2.2.3"
 
     compile "io.micronaut.configuration:micronaut-flyway"
     compile "io.micronaut.configuration:micronaut-jdbc-hikari"
     compile "org.jetbrains.exposed:exposed:${exposedVersion}"
     compile "io.micronaut.data:micronaut-data-jdbc:${micronautDataVersion}"
 
-    runtime "org.postgresql:postgresql:42.2.6"
+    runtime "org.postgresql:postgresql:42.2.8"
 
     testCompile "org.testcontainers:junit-jupiter:${testContainersVersion}"
 
