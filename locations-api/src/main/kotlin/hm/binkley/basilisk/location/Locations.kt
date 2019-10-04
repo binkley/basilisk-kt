@@ -32,4 +32,5 @@ interface MutableLocation : MutableLocationDetails {
 
 data class LocationChangedEvent(
         val before: LocationDetails?,
-        val after: LocationDetails?) : ApplicationEvent(after ?: before)
+        val after: LocationDetails?)
+    : ApplicationEvent(after ?: before)
