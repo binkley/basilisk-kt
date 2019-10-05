@@ -13,7 +13,7 @@ import javax.sql.DataSource
 
 @Factory
 @Replaces(DatasourceFactory::class)
-class SharedTestDatasourceFactory(context: ApplicationContext)
+class SharedTestDataSourceFactory(context: ApplicationContext)
     : DatasourceFactory(context) {
     companion object {
         private var cache = ConcurrentHashMap<String, DataSource>(1)
