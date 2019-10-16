@@ -1,8 +1,12 @@
 <img src="basil-lips.jpg" alt="Image of basil lips" align="right"/>
 
-*THIS REPO IS A WORK IN PROGRESS MIGRATING FROM A JAVA SPRING BOOT PROJECT*
+*THIS REPO IS A WORK IN PROGRESS:*
 
-(See [Java Spring Boot version](https://github.com/binkley/basilisk).)
+* Porting to Kotlin from Java
+* Porting to Maven from Gradle
+* Porting to monolith from multi-module*
+
+(See [Java, Gradle version](https://github.com/binkley/basilisk).)
 
 # Basilisk
 
