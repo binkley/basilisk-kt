@@ -6,7 +6,7 @@
 * Porting to Maven from Gradle
 * Porting to monolith from multi-module*
 
-(See [Java, Gradle version](https://github.com/binkley/basilisk).)
+(See [Java version](https://github.com/binkley/basilisk).)
 
 # Basilisk
 
