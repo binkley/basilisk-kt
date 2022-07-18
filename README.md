@@ -3,8 +3,7 @@
 *THIS REPO IS A WORK IN PROGRESS:*
 
 * Porting to Kotlin from Java
-* Porting to Maven from Gradle
-* Porting to monolith from multi-module*
+* Breaking up the domain model
 
 (See [Java version](https://github.com/binkley/basilisk).)
 
