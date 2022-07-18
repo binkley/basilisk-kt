@@ -4,6 +4,7 @@
 
 * Porting to Kotlin from Java
 * Breaking up the domain model
+* Trying Micronaut as an alternative to Spring
 
 (See [Java version](https://github.com/binkley/basilisk).)
 
